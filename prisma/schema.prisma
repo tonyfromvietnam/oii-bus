@@ -1,0 +1,230 @@
+// Data model Xóm Oii (brief §6). Ẩn danh: không có tên thật, email chỉ lưu dạng hash.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Tier {
+  student
+  alumni
+  professional
+  trusted
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum CodeKind {
+  invite
+  alumni
+}
+
+enum ProofMethod {
+  email
+  document
+  voucher
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ReportContext {
+  chat
+  voice
+  behaviour
+}
+
+enum ReportStatus {
+  open
+  actioned
+  dismissed
+}
+
+enum QuestKind {
+  solo
+  pair
+  mentor
+  irl_locked
+}
+
+model User {
+  id             String    @id @default(cuid())
+  psidHash       String?   @unique
+  emailHash      String?   @unique
+  tier           Tier
+  role           Role      @default(user)
+  nickname       String    @db.VarChar(16)
+  coatColor      String    @db.VarChar(7)
+  hat            String    @default("none")
+  probationUntil DateTime?
+  trustedAt      DateTime?
+  bannedAt       DateTime?
+  banReason      String?
+  invitedById    String?
+  createdAt      DateTime  @default(now())
+
+  invitedBy User?  @relation("Invites", fields: [invitedById], references: [id])
+  invitees  User[] @relation("Invites")
+
+  codesCreated   InviteCode[]      @relation("CodeCreator")
+  codeUsed       InviteCode?       @relation("CodeUser")
+  alumniProofs   AlumniProof[]     @relation("ProofOwner")
+  proofsReviewed AlumniProof[]     @relation("ProofReviewer")
+  blocks         Block[]           @relation("Blocker")
+  blockedBy      Block[]           @relation("Blocked")
+  reportsMade    Report[]          @relation("Reporter")
+  reportsAgainst Report[]          @relation("ReportTarget")
+  chatLogs       ChatLog[]
+  submissions    QuestSubmission[]
+  stamps         Stamp[]
+  auditActions   AuditLog[]
+
+  @@index([invitedById])
+}
+
+model InviteCode {
+  code        String    @id
+  kind        CodeKind
+  campaign    String?
+  createdById String?
+  usedById    String?   @unique
+  expiresAt   DateTime?
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  createdBy User? @relation("CodeCreator", fields: [createdById], references: [id])
+  usedBy    User? @relation("CodeUser", fields: [usedById], references: [id])
+
+  @@index([createdById])
+  @@index([campaign])
+}
+
+model AlumniProof {
+  id         String       @id @default(cuid())
+  userId     String
+  method     ProofMethod
+  status     ReviewStatus @default(pending)
+  reviewerId String?
+  fileKey    String?
+  voucherId  String?
+  createdAt  DateTime     @default(now())
+  reviewedAt DateTime?
+
+  user     User  @relation("ProofOwner", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer User? @relation("ProofReviewer", fields: [reviewerId], references: [id])
+
+  @@index([status])
+}
+
+/// Áp dụng hai chiều: không thấy chat, không nghe voice của nhau.
+model Block {
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+model Report {
+  id              String        @id @default(cuid())
+  reporterId      String
+  targetId        String
+  context         ReportContext
+  reason          String
+  messageSnapshot String?
+  instanceId      String
+  status          ReportStatus  @default(open)
+  createdAt       DateTime      @default(now())
+
+  reporter User @relation("Reporter", fields: [reporterId], references: [id])
+  target   User @relation("ReportTarget", fields: [targetId], references: [id])
+
+  @@index([status, createdAt])
+  @@index([targetId])
+}
+
+/// Giữ 14 ngày, chỉ dùng cho moderation (ghi rõ ở /privacy).
+model ChatLog {
+  id         String   @id @default(cuid())
+  instanceId String
+  senderId   String
+  text       String   @db.VarChar(120)
+  x          Float
+  z          Float
+  createdAt  DateTime @default(now())
+
+  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([senderId, createdAt])
+}
+
+model Quest {
+  id          String    @id @default(cuid())
+  week        String // ISO week, ví dụ "2026-W45"
+  title       String
+  description String
+  kind        QuestKind
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  submissions QuestSubmission[]
+  stamps      Stamp[]
+
+  @@index([week, active])
+}
+
+model QuestSubmission {
+  id         String       @id @default(cuid())
+  questId    String
+  userId     String
+  photoKey   String?
+  text       String?      @db.VarChar(500)
+  status     ReviewStatus @default(pending)
+  createdAt  DateTime     @default(now())
+  reviewedAt DateTime?
+
+  quest Quest @relation(fields: [questId], references: [id])
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+model Stamp {
+  userId    String
+  questId   String
+  awardedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest Quest @relation(fields: [questId], references: [id])
+
+  @@id([userId, questId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  targetId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([createdAt])
+  @@index([targetId])
+}

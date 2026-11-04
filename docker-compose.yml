@@ -1,0 +1,37 @@
+name: xom-oii
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: xom
+      POSTGRES_PASSWORD: xom
+      POSTGRES_DB: xom_oii
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xom -d xom_oii"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  livekit:
+    image: livekit/livekit-server:v1.8
+    # --dev: API key "devkey", secret "secret". Chỉ dùng ở máy dev.
+    command: --dev --bind 0.0.0.0
+    ports:
+      - "7880:7880" # HTTP / WebSocket signal
+      - "7881:7881" # RTC qua TCP
+      - "7882:7882/udp" # RTC qua UDP
+
+volumes:
+  pgdata:

@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dusk: #1b2430;
+  --color-fog: #5d6b78;
+  --color-lamp: #f5c66b;
+  --color-brick: #8e3b2e;
+  --color-bus: #c8102e;
+  --font-sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-dusk);
+  color: #f1ece2;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
