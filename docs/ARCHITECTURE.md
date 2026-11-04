@@ -157,11 +157,10 @@ Ghép vào instance "gần đầy" trước để phố không loãng (brief §1
 ### 4.2 StreetRoom
 
 - **Tick mô phỏng 20 Hz**, `patchRate = 100 ms` (snapshot 10 Hz). Client gửi input 15 Hz và nội suy snapshot.
-- **State** (`@colyseus/schema`): `players` (x, z, ry, pose, gesture, seatId, holding), `bus` (x, phase, doorsOpen), `npcs` (Dave, bồ câu), `clock` (giờ London cho ánh sáng, sự kiện giờ chung).
+- **State** (`@colyseus/schema`): `players` (x, z, ry, pose, gesture, seatId, holding, scene). Mỗi instance có 2 scene (`bus`, `library`); vị trí tuyến London tính từ giờ thật nên không cần sync. Scene `library` là `quiet`: server bỏ mọi message chat.
 - **Validate input** cho mỗi `InputMessage`:
   1. zod parse; 2. `dist / dt ≤ MAX_SPEED × tolerance`, sai thì snap về vị trí server; 3. `resolveCollisions` bằng cùng collider với client; 4. đang ngồi/trên bus thì bỏ qua di chuyển.
 - **"Đang gõ…"**: field `typing` gắn `@view(NEAR)`. Mỗi tick, với từng client, server thêm/bớt tag `NEAR` (qua `StateView`) cho người chơi khác trong `HEAR_RADIUS`, nên chỉ người đủ gần mới thấy.
-- **Bus N29**: máy trạng thái trên server (`approaching → stopped 14s → departing → offscreen 10–18s`). Lên bus khi `stopped`, xuống ở lần `stopped` kế tiếp; người trên bus có vị trí gắn với bus.
 
 ### 4.3 Chat chữ theo khoảng cách
 

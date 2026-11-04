@@ -6,7 +6,8 @@ import { TIERS } from "./tiers";
 
 export const TierSchema = z.enum(TIERS);
 
-export const HATS = ["none", "beanie", "cap", "bucket", "flat-cap", "earmuffs"] as const;
+export const HATS = ["none", "non-la", "beanie", "grad-cap", "cat-ears", "headphones"] as const;
+export type Hat = (typeof HATS)[number];
 export const HatSchema = z.enum(HATS);
 
 export const CoatColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Màu áo phải dạng #RRGGBB");

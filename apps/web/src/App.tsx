@@ -3,23 +3,23 @@ import { vi } from "./copy/vi";
 import { fetchStatus, type StreetStatus } from "./lib/api";
 import { ClosedScreen } from "./screens/ClosedScreen";
 
-const Street = lazy(() => import("./Street"));
+const World = lazy(() => import("./World"));
 
 type State =
-  { kind: "loading" } | { kind: "error" } | { kind: "ready"; status: StreetStatus } | { kind: "street" };
+  { kind: "loading" } | { kind: "error" } | { kind: "ready"; status: StreetStatus } | { kind: "world" };
 
 const params = new URLSearchParams(location.search);
 /** Bản prototype tĩnh (artifact / staging không có server) hoặc ?preview → vào thẳng phố offline. */
 const STANDALONE = import.meta.env.VITE_STANDALONE === "true" || params.has("preview");
 
 export function App() {
-  const [state, setState] = useState<State>(STANDALONE ? { kind: "street" } : { kind: "loading" });
+  const [state, setState] = useState<State>(STANDALONE ? { kind: "world" } : { kind: "loading" });
 
   useEffect(() => {
     if (STANDALONE) return;
     const ctrl = new AbortController();
     fetchStatus(ctrl.signal)
-      .then((status) => setState(status.open ? { kind: "street" } : { kind: "ready", status }))
+      .then((status) => setState(status.open ? { kind: "world" } : { kind: "ready", status }))
       .catch((err: unknown) => {
         if (!ctrl.signal.aborted) {
           console.error(err);
@@ -35,12 +35,12 @@ export function App() {
     return (
       <ClosedScreen
         nextOpeningAt={state.status.nextOpeningAt}
-        onPreview={() => setState({ kind: "street" })}
+        onPreview={() => setState({ kind: "world" })}
       />
     );
   return (
-    <Suspense fallback={<Centered>{vi.loadingStreet}</Centered>}>
-      <Street />
+    <Suspense fallback={<Centered>{vi.loadingWorld}</Centered>}>
+      <World />
     </Suspense>
   );
 }

@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dusk: #1b2430;
-  --color-fog: #5d6b78;
-  --color-lamp: #f5c66b;
-  --color-brick: #8e3b2e;
-  --color-bus: #c8102e;
+  --color-dusk: #3b2f45;
+  --color-lamp: #ffd166;
+  --color-bus: #ff5a5f;
   --font-sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Baloo 2", "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+:root {
+  --ink: #3b2f45;
+  --cream: #fff7ec;
+  --pink: #ff7aa2;
+  --pink-ink: #d9487a;
+  --lemon: #ffd96a;
+  --mint: #9de8c9;
+  color-scheme: light;
 }
 
 html,
@@ -17,8 +26,52 @@ body,
 
 body {
   margin: 0;
-  background: var(--color-dusk);
-  color: #f1ece2;
+  background: #ffe6c9;
+  color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.pop {
+  animation: pop 0.28s ease-out;
+}
+/* toast canh giữa bằng translate: giữ translate trong animation */
+.pop.-translate-x-1\/2 {
+  animation-name: pop-center;
+}
+@keyframes pop-center {
+  0% {
+    transform: translateX(-50%) scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: translateX(-50%) scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop {
+    animation: none;
+  }
 }

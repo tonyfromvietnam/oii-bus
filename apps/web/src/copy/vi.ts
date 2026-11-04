@@ -1,132 +1,183 @@
+import type { LandmarkId } from "@xom-oii/world";
+
 /**
- * Toàn bộ copy UI tiếng Việt (brief §15). Văn phong miền Bắc, thân, ngắn.
- * Giữ thuật ngữ Anh khi đó là văn hoá UK (meal deal, yellow sticker, pint, cuppa…).
+ * Toàn bộ copy UI tiếng Việt (brief §15). Văn phong miền Bắc, thân, vui, ngắn.
+ * Giữ thuật ngữ Anh khi đó là văn hoá UK (meal deal, yellow sticker, deadline, landlord…).
  */
 export const vi = {
   appName: "Xóm Oii",
-  streetName: "Oii Street",
   tagline: "Thích ở một mình nhưng thỉnh thoảng sợ cô đơn.",
   positioning: "OiiMate cho bạn một người để nói chuyện. Xóm Oii cho bạn một chỗ có người.",
 
-  loading: "Đang ra đầu ngõ…",
-  loadingStreet: "Đang thắp đèn đường…",
+  loading: "Đang đợi bus…",
+  loadingWorld: "Bus Oii sắp tới bến…",
   serverDown: "Không gọi được server. Thử lại sau một lát nhé.",
 
   closed: {
-    title: "Phố đóng cửa rồi",
-    body: "Oii Street chỉ sáng đèn từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).",
-    countdown: "Mở lại sau",
+    title: "Bus Oii về bến rồi",
+    body: "Xóm Oii mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).",
+    countdown: "Chuyến tiếp theo sau",
     remindMe: "Nhắc tôi qua OiiMate",
-    preview: "Xem thử phố (offline)",
-  },
-
-  open: {
-    closesAt: "Đóng cửa lúc",
+    preview: "Xem thử (offline)",
   },
 
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
-  hud: {
-    offlineBadge: "Bản thử M1 · offline · bạn đang ở phố một mình",
-    weather: "Mưa phùn",
-    wallet: "Ví",
-    help: "Điều khiển",
-    close: "Đóng",
-    chatPlaceholder: "Nói gì đó… (Enter để gửi, Esc để huỷ)",
-    chatButton: "Chat",
-    you: "Bạn",
-    murmur: "· · ·",
-    voiceLocked: "Voice mở sau 14 ngày hoặc khi bạn thành Đã tin cậy.",
-    welcome: "Chào mừng tới Oii Street. Đi dạo, ngồi bến bus, hay ghé Oii Express mua cốc trà nhé.",
+  scenes: {
+    bus: { name: "Bus Oii", sub: "tầng thượng, đang vòng quanh London" },
+    library: { name: "Thư viện Oii", sub: "tầng dưới · suỵt, yên lặng nhé 🤫" },
   },
 
-  helpDesktop: [
-    ["W A S D / ←↑↓→", "Đi lại (Shift để đi nhanh)"],
-    ["Kéo chuột", "Xoay camera"],
-    ["Con lăn", "Zoom gần/xa"],
-    ["Bấm xuống đường", "Đi tới chỗ đó"],
-    ["E", "Tương tác / ngồi / lên bus"],
+  creator: {
+    title: "Chào bạn mới!",
+    body: "Chọn một chút cho nhân vật rồi lên xe nhé.",
+    nickname: "Biệt danh",
+    color: "Màu áo",
+    hat: "Mũ",
+    go: "Lên xe! 🚌",
+    randomNames: [
+      "Bánh Bao",
+      "Trà Sữa",
+      "Bánh Mì",
+      "Su Kem",
+      "Mít Tố Nữ",
+      "Cún Con",
+      "Khoai Lang",
+      "Bé Bơ",
+      "Xôi Gà",
+      "Chè Khúc Bạch",
+    ],
+  },
+  hats: {
+    none: "Không",
+    "non-la": "Nón lá",
+    beanie: "Len",
+    "grad-cap": "Tốt nghiệp",
+    "cat-ears": "Tai mèo",
+    headphones: "Tai nghe",
+  },
+
+  hud: {
+    offlineBadge: "Bản thử · offline · bạn bè trên xe là bot",
+    now: "Đang qua",
+    next: "Sắp tới",
+    meters: "m",
+    quests: "Nhiệm vụ",
+    passport: "Hộ chiếu",
+    chat: "Chat",
+    chatPlaceholder: "Nói gì đó… (Enter gửi, Esc huỷ)",
+    quietChat: "Thư viện yên lặng: chỉ dùng biểu cảm thôi nha 🤫",
+    you: "Bạn",
+    murmur: "· · ·",
+    music: "Lofi",
+    musicOn: "Đang phát lofi",
+    musicOff: "Bật lofi",
+    volume: "Âm lượng",
+    help: "Cách chơi",
+    close: "Đóng",
+    voiceLocked: "Voice mở sau 14 ngày hoặc khi bạn thành Đã tin cậy.",
+    welcome:
+      "Chào mừng lên Bus Oii! Xe chạy vòng London cả cuối tuần. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
+    focusStart: "Bắt đầu tập trung",
+    focusStop: "Dừng",
+    focusing: "Đang tập trung",
+  },
+
+  help: [
+    ["W A S D / ←↑↓→", "Đi lại"],
+    ["Bấm / chạm sàn", "Đi tới chỗ đó"],
+    ["E", "Tương tác · ngồi · đứng dậy"],
     ["Enter", "Chat"],
-    ["1 – 5", "Cử chỉ"],
-    ["V", "Giữ để nói (sắp có)"],
-  ],
-  helpTouch: [
-    ["Joystick trái", "Đi lại"],
-    ["Vuốt bên phải", "Xoay camera"],
-    ["Chạm mặt đường", "Đi tới chỗ đó"],
-    ["Nút E", "Tương tác / ngồi / lên bus"],
+    ["1 – 5", "Biểu cảm"],
+    ["Q", "Nhiệm vụ & hộ chiếu"],
   ],
 
   gestures: {
-    wave: { emoji: "👋", label: "Vẫy" },
-    tea: { emoji: "☕", label: "Mời trà" },
-    hug: { emoji: "🫂", label: "Ôm" },
-    sorry: { emoji: "🙇", label: "Sorry!" },
-    cheers: { emoji: "🍻", label: "Cheers" },
+    wave: { emoji: "👋", label: "Chào" },
+    tea: { emoji: "🧋", label: "Mời trà sữa" },
+    hug: { emoji: "🫶", label: "Thương" },
+    sorry: { emoji: "🙇", label: "Sorry" },
+    cheers: { emoji: "🥳", label: "Yeah" },
   },
-  needTea: "Phải cầm trà mới mời được. Ghé Oii Express nhé ☕",
+  needTea: "Phải cầm trà sữa mới mời được. Ra quầy trà sữa nhé 🧋",
 
   prompts: {
-    "phone-box": "Gọi về nhà",
-    postbox: "Gửi bưu thiếp",
-    shop: "Mua trà £1.20",
-    "npc-dave": "Chào Dave",
-    "door-17": "Gõ cửa nhà 17",
-    "pub-door": "Vào The Oii Arms",
-    "quest-board": "Xem bảng nhiệm vụ",
     seat: "Ngồi",
-    "bus-door": "Lên bus N29",
-    alight: "Xuống bus",
     standUp: "Đứng dậy",
+    photo: "Chụp ảnh với địa danh",
+    "bubble-tea": "Mua trà sữa £3.80",
+    karaoke: "Hát karaoke",
+    "meal-deal": "Mua meal deal £3.50",
+    "quest-board": "Xem nhiệm vụ",
+    umbrella: "Lấy ô",
+    "to-library": "Xuống thư viện 📚",
+    "to-bus": "Lên tầng thượng 🚌",
+    bookshelf: "Lấy một cuốn sách",
+    cat: "Vuốt mèo",
+    radio: "Bật/tắt lofi",
+    duck: "Nhặt vịt 🦆",
   },
 
-  ringRing: "☎️ Ring ring…",
-  callHome: [
-    "“Alo mẹ ạ… con ăn rồi, meal deal ạ. Vâng, có rau mà.”",
-    "“Bên này mới 5 giờ chiều đã tối om rồi bố ạ.”",
-    "“Con vẫn ổn, chỉ hơi nhớ bát phở đầu ngõ thôi.”",
-    "“Mẹ ơi con nấu được canh chua rồi nhé! Hơi chua quá.”",
-    "“Không ai nghe máy. Chắc nhà đang ngủ, bên đó 1 giờ sáng rồi.”",
-  ],
-  postbox: [
-    "Bạn thả một tấm bưu thiếp về nhà. Chắc 2 tuần nữa mới tới 📮",
-    "Bưu thiếp in hình bus đỏ. Mặt sau ghi: “Con ổn. Trời mưa.” 📮",
-    "Royal Mail cảm ơn bạn. Tem £1.70, đắt hơn cốc trà 📮",
-  ],
-  shop: {
-    bought: "Mua một cốc trà £1.20. Ấm tay hẳn ☕",
-    alreadyHolding: "Tay đang cầm trà rồi. Uống hết đã nhé.",
-    broke: "Hết tiền ảo rồi. Tuần sau quay lại nhé.",
-    flavour: [
-      "Kệ yellow sticker hôm nay có sandwich 25p 👀",
-      "Meal deal £3.50: sandwich, snack, nước. Kinh điển.",
+  lines: {
+    photoNone: "Chưa có địa danh nào ngang xe. Đợi chút nhé!",
+    photoTaken: (name: string) => `📸 Tách! Ảnh với ${name} đã vào hộ chiếu.`,
+    photoAgain: (name: string) => `Bạn có ảnh với ${name} rồi, thêm một tấm cho chắc 📸`,
+    teaBought: "Một cốc trà sữa trân châu đường đen, ít đá. Chuẩn vị 🧋",
+    teaHolding: "Tay đang cầm trà sữa rồi, uống hết đã!",
+    broke: "Hết tiền ảo rồi. Tuần sau quay lại nhé 🥲",
+    karaoke: [
+      "🎤 Bạn hát một bài ballad, cả xe vỗ tay 👏",
+      "🎤 Lên nốt cao… hơi phô, nhưng mà tình cảm 💛",
+      "🎤 Song ca với bot Su Su. Hay hơn mong đợi!",
     ],
-  },
-  door17: "Nhà số 17 đang khoá. Bếp chung mở ở bản sau 🔑",
-  pubDoor: "Trong pub chưa mở. Mở ở bản sau 🍺 Ngồi bàn ngoài trời trước nhé.",
-  questBoard: "Bảng nhiệm vụ tuần sắp có: làm quest, nhận tem hộ chiếu UK 🛂",
-  bus: {
-    boarded: "Lên tầng trên N29. Ngồi ngắm phố nhé 🚌",
-    alighted: "Xuống bus. Cảm ơn bác tài!",
-    notYet: "Đợi bus dừng ở bến đã.",
-  },
-  chat: {
-    rejectedLink: "Chưa cho gửi link trong phố đâu nhé.",
-    tooFast: "Từ từ thôi, mỗi giây một câu.",
+    mealDeal: [
+      "Sandwich gà, snack, nước cam. Meal deal kinh điển 🥪",
+      "Máy nhả ra một gói yellow sticker 25p. Hời quá!",
+    ],
+    umbrella: "Ô để sẵn cho mọi người. Đây là London mà ☂️",
+    toLibrary: "Xuống cầu thang… tầng dưới là thư viện! Lofi đang phát 🎧",
+    toBus: "Lên tầng thượng, gió mát quá 🌤️",
+    books: [
+      "📖 “Viết essay 3000 chữ trong một đêm (và sống sót)”",
+      "📖 “Harvard referencing cho người mới”",
+      "📖 “100 món ngon từ mì tôm và trứng”",
+      "📖 “Nói chuyện với landlord: tập 2”",
+      "📖 “Hiểu người Anh qua 50 câu ‘Sorry’”",
+    ],
+    cat: [
+      "🐈 Mèo thư viện kêu “meo” rất khẽ.",
+      "🐈 Mèo lim dim, kệ bạn.",
+      "🐈 Mèo ngửi cốc trà sữa của bạn rồi bỏ đi.",
+    ],
+    duck: (n: number) => `🦆 Nhặt được vịt cao su! (${n}/5)`,
+    focusDone: "Tập trung xong một phiên. Giỏi quá! 📚",
   },
 
-  dave: {
-    name: "Dave",
-    lines: [
-      "Alright, mate? Cuppa or a pint?",
-      "Proper miserable out, innit.",
-      "Bus'll be along in a bit, love.",
-      "Mind the puddles, yeah?",
-      "Lovely evening for it. If you're a duck.",
-      "Fancy a bag of crisps? Salt and vinegar, obviously.",
-      "Cheers, mate!",
-    ],
+  landmarks: {
+    "big-ben": { name: "Big Ben", joke: "Đồng hồ này đúng giờ hơn bus nhiều 😅" },
+    "london-eye": { name: "London Eye", joke: "Vé £30, ngắm từ bus thì free 🎡" },
+    "tower-bridge": { name: "Tower Bridge", joke: "Không phải London Bridge đâu nha 🌉" },
+    "st-pauls": { name: "Nhà thờ St Paul's", joke: "Mái vòm to như cái bánh bao ⛪" },
+    shard: { name: "The Shard", joke: "Cao nhất UK, giá thuê nhà cũng vậy 🏙️" },
+    buckingham: { name: "Cung điện Buckingham", joke: "Vua có ở nhà không ta? 👑" },
+    gherkin: { name: "The Gherkin", joke: "Quả dưa chuột khổng lồ 🥒" },
+    chinatown: { name: "Phố Tàu", joke: "Mì tôm, nước mắm và chút quê nhà 🍜" },
+  } satisfies Record<LandmarkId, { name: string; joke: string }>,
+
+  quests: {
+    title: "Nhiệm vụ tuần này",
+    passportTitle: "Hộ chiếu UK",
+    stampEarned: (t: string) => `🎉 Nhận tem: ${t}`,
+    empty: "Chưa có tem nào. Làm nhiệm vụ để sưu tầm nhé!",
+    items: {
+      ducks: { title: "Tìm 5 chú vịt cao su trên xe", stamp: "Thợ săn vịt", icon: "🦆" },
+      photos: { title: "Chụp ảnh với 3 địa danh", stamp: "Khách du lịch", icon: "📸" },
+      tea: { title: "Mua một cốc trà sữa", stamp: "Hội trà sữa", icon: "🧋" },
+      hotpot: { title: "Ngồi vào nồi lẩu chung", stamp: "Lẩu là chân ái", icon: "🍲" },
+      focus: { title: "Tập trung 1 phút ở thư viện", stamp: "Mọt sách", icon: "📚" },
+      wave: { title: "Vẫy tay chào 3 người", stamp: "Người quen của cả xe", icon: "👋" },
+    },
   },
 } as const;
 
-export type GestureId = keyof typeof vi.gestures;
+export type QuestId = keyof typeof vi.quests.items;

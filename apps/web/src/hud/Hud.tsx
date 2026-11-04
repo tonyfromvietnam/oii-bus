@@ -1,14 +1,19 @@
-import { GESTURES } from "@xom-oii/shared";
+import { GESTURES, HATS, type Hat } from "@xom-oii/shared";
+import { SCENES } from "@xom-oii/world";
 import { useEffect, useRef, useState } from "react";
 import { vi } from "../copy/vi";
-import { gesture, interact, sendChat } from "../game/actions";
+import { gesture, interact, sendChat, setVolume, startFocus, stopFocus, toggleMusic } from "../game/actions";
+import { FOCUS_GOAL_SECONDS } from "../game/GameLoop";
+import { QUEST_GOALS, QUEST_ORDER } from "../game/quests";
 import { game } from "../game/state";
-import { useUi, type LogEntry } from "../game/ui";
+import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
 
 const isTouch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
+const pill = "rounded-full bg-white/90 text-[var(--ink)] shadow-md backdrop-blur-sm";
 
 export function Hud() {
+  const fade = useUi((s) => s.fade);
   return (
     <div
       className="pointer-events-none absolute inset-0 select-none"
@@ -19,43 +24,109 @@ export function Hud() {
       <Toast />
       <BottomBar />
       {isTouch && <Joystick />}
+      <QuestPanel />
       <Help />
+      <Creator />
+      <div
+        className="absolute inset-0 bg-[var(--cream)] transition-opacity duration-300"
+        style={{ opacity: fade ? 1 : 0 }}
+      />
     </div>
   );
 }
 
 function TopBar() {
-  const clock = useUi((s) => s.clock);
+  const scene = useUi((s) => s.scene);
+  const where = useUi((s) => s.where);
   const wallet = useUi((s) => s.wallet);
-  const setHelpOpen = useUi((s) => s.setHelpOpen);
+  const set = useUi((s) => s.set);
+  const doneCount = useUi((s) => Object.keys(s.done).length);
   return (
-    <div className="absolute top-0 right-0 left-0 flex items-start justify-between gap-2 p-3">
-      <div className="rounded-2xl bg-black/45 px-3 py-2 text-white backdrop-blur-sm">
-        <div className="text-sm font-semibold">
-          {vi.appName} · <span className="text-lamp">{vi.streetName}</span>
+    <div className="absolute top-0 right-0 left-0 flex flex-wrap items-start justify-between gap-2 p-3">
+      <div className="flex max-w-[min(440px,100%)] flex-col gap-1.5">
+        <div className={`${pill} px-4 py-2`}>
+          <div className="font-display text-lg leading-tight font-extrabold">
+            {scene === "bus" ? "🚌" : "📚"} {vi.scenes[scene].name}
+            <span className="ml-2 text-xs font-medium opacity-60">{vi.scenes[scene].sub}</span>
+          </div>
+          {scene === "bus" && (
+            <div className="text-sm" data-testid="where">
+              {where.now ? (
+                <>
+                  <b>
+                    {vi.hud.now} {where.now}
+                  </b>{" "}
+                  · <span className="opacity-75">{where.joke}</span>
+                </>
+              ) : (
+                <>
+                  {vi.hud.next} <b>{where.next}</b> · {where.meters}
+                  {vi.hud.meters}
+                </>
+              )}
+            </div>
+          )}
         </div>
-        <div className="mt-0.5 text-xs opacity-80">
-          🕔 London {clock} · 🌧 {vi.hud.weather} · {vi.hud.wallet} £{wallet.toFixed(2)}
+        <div className="px-2 text-[11px] font-medium text-[var(--ink)] opacity-60">
+          {vi.hud.offlineBadge} · 💷 £{wallet.toFixed(2)}
         </div>
-        <div className="mt-1 text-[10px] opacity-60">{vi.hud.offlineBadge}</div>
       </div>
+      <div className="flex items-center gap-2">
+        <MusicControl />
+        <button
+          type="button"
+          onClick={() => set({ questsOpen: true })}
+          className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
+        >
+          ⭐ {vi.hud.quests} <span className="opacity-60">{doneCount}/6</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => set({ helpOpen: true })}
+          className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
+          aria-label={vi.hud.help}
+        >
+          ?
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MusicControl() {
+  const music = useUi((s) => s.music);
+  return (
+    <div className={`${pill} pointer-events-auto flex items-center gap-2 py-1 pr-3 pl-1`}>
       <button
         type="button"
-        onClick={() => setHelpOpen(true)}
-        className="pointer-events-auto rounded-full bg-black/45 px-3 py-2 text-sm text-white backdrop-blur-sm"
+        onClick={toggleMusic}
+        className={`rounded-full px-3 py-1 text-sm font-semibold ${music.on ? "bg-[var(--pink)] text-white" : ""}`}
+        data-testid="music"
       >
-        ⌨️ {vi.hud.help}
+        🎧 {music.on ? vi.hud.musicOn : vi.hud.musicOff}
       </button>
+      {music.on && (
+        <input
+          id="volume"
+          type="range"
+          min={0}
+          max={1}
+          step={0.05}
+          value={music.volume}
+          aria-label={vi.hud.volume}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          className="w-20 accent-[var(--pink)]"
+        />
+      )}
     </div>
   );
 }
 
 function ChatLog() {
   const log = useUi((s) => s.log);
-  const visible = log.slice(-7);
   return (
-    <div className="absolute top-24 right-3 flex w-[min(320px,60vw)] flex-col items-end gap-1 sm:top-20">
-      {visible.map((e) => (
+    <div className="absolute top-28 right-3 hidden w-[min(300px,40vw)] flex-col items-end gap-1 sm:flex">
+      {log.slice(-6).map((e) => (
         <LogLine key={e.id} entry={e} />
       ))}
     </div>
@@ -63,14 +134,13 @@ function ChatLog() {
 }
 
 function LogLine({ entry }: { entry: LogEntry }) {
-  const opacity = entry.band === "far" ? 0.55 : entry.band === "out" ? 0.35 : 1;
-  const italic = entry.band === "system" || entry.band === "far";
+  const opacity = entry.band === "far" ? 0.6 : entry.band === "out" ? 0.4 : 1;
   return (
     <div
-      className="max-w-full rounded-xl bg-black/45 px-2.5 py-1 text-sm text-white backdrop-blur-sm"
-      style={{ opacity, fontStyle: italic ? "italic" : undefined }}
+      className="max-w-full rounded-2xl bg-white/85 px-3 py-1 text-sm text-[var(--ink)] shadow-sm"
+      style={{ opacity }}
     >
-      <span className="font-semibold text-lamp">{entry.who}:</span> {entry.text}
+      <span className="font-bold text-[var(--pink-ink)]">{entry.who}:</span> {entry.text}
     </div>
   );
 }
@@ -81,12 +151,15 @@ function Toast() {
   useEffect(() => {
     if (!toast) return;
     setShown(toast);
-    const id = setTimeout(() => setShown(null), 4200);
+    const id = setTimeout(() => setShown(null), 3800);
     return () => clearTimeout(id);
   }, [toast]);
   if (!shown) return null;
   return (
-    <div className="absolute bottom-40 left-1/2 w-[min(420px,86vw)] -translate-x-1/2 rounded-2xl bg-white/90 px-4 py-2 text-center text-sm text-slate-900 shadow-lg">
+    <div
+      key={shown.id}
+      className="pop absolute bottom-36 left-1/2 w-[min(420px,88vw)] -translate-x-1/2 rounded-3xl bg-white px-4 py-2.5 text-center text-[15px] font-medium text-[var(--ink)] shadow-lg"
+    >
       {shown.text}
     </div>
   );
@@ -95,23 +168,55 @@ function Toast() {
 function BottomBar() {
   const prompt = useUi((s) => s.prompt);
   const chatOpen = useUi((s) => s.chatOpen);
-  const setChatOpen = useUi((s) => s.setChatOpen);
-  const [voiceTip, setVoiceTip] = useState(false);
+  const scene = useUi((s) => s.scene);
+  const desk = useUi((s) => s.seatedAtDesk);
+  const focus = useUi((s) => s.focus);
+  const set = useUi((s) => s.set);
+  const quiet = SCENES[scene].quiet;
+  const mm = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   return (
     <div className="absolute right-0 bottom-0 left-0 flex flex-col items-center gap-2 p-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+      {desk && (
+        <div className={`${pill} pointer-events-auto flex items-center gap-3 px-4 py-2`}>
+          {focus.running ? (
+            <>
+              <span className="text-sm">
+                ⏱️ {vi.hud.focusing} <b className="tabular-nums">{mm(focus.seconds)}</b>
+                <span className="opacity-60"> / {mm(FOCUS_GOAL_SECONDS)}</span>
+              </span>
+              <button
+                type="button"
+                onClick={stopFocus}
+                className="rounded-full bg-black/10 px-3 py-1 text-sm"
+              >
+                {vi.hud.focusStop}
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={startFocus}
+              className="rounded-full bg-[var(--mint)] px-4 py-1 text-sm font-semibold"
+            >
+              ⏱️ {vi.hud.focusStart}
+            </button>
+          )}
+        </div>
+      )}
       {prompt && !chatOpen && (
         <button
           type="button"
           onClick={interact}
-          className="pointer-events-auto rounded-full bg-lamp px-4 py-1.5 text-sm font-semibold text-slate-900 shadow"
+          className="pop pointer-events-auto rounded-full bg-[var(--lemon)] px-5 py-2 text-[15px] font-bold text-[var(--ink)] shadow-md"
           data-testid="prompt"
         >
-          <kbd className="mr-1.5 rounded bg-slate-900/15 px-1.5">E</kbd>
+          {!isTouch && <kbd className="mr-2 rounded-md bg-white/70 px-1.5">E</kbd>}
           {prompt}
         </button>
       )}
       {chatOpen ? (
-        <ChatInput onClose={() => setChatOpen(false)} />
+        <ChatInput onClose={() => set({ chatOpen: false })} />
       ) : (
         <div className="flex flex-wrap items-center justify-center gap-1.5">
           {GESTURES.map((g, i) => (
@@ -119,40 +224,26 @@ function BottomBar() {
               key={g}
               type="button"
               onClick={() => gesture(g)}
-              className="pointer-events-auto rounded-full bg-black/45 px-2.5 py-1.5 text-sm text-white backdrop-blur-sm"
+              className={`${pill} pointer-events-auto h-11 w-11 text-xl transition-transform active:scale-90`}
               title={`${i + 1} · ${vi.gestures[g].label}`}
             >
               {vi.gestures[g].emoji}
-              <span className="ml-1 hidden text-xs opacity-80 sm:inline">{vi.gestures[g].label}</span>
             </button>
           ))}
           <button
             type="button"
-            onClick={() => setChatOpen(true)}
-            className="pointer-events-auto rounded-full bg-black/45 px-3 py-1.5 text-sm text-white backdrop-blur-sm"
+            onClick={() => (quiet ? useUi.getState().showToast(vi.hud.quietChat) : set({ chatOpen: true }))}
+            className={`${pill} pointer-events-auto h-11 px-4 text-sm font-semibold ${quiet ? "opacity-50" : ""}`}
           >
-            💬 {vi.hud.chatButton}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setVoiceTip(true);
-              setTimeout(() => setVoiceTip(false), 3500);
-            }}
-            className="pointer-events-auto rounded-full bg-black/30 px-3 py-1.5 text-sm text-white/60 backdrop-blur-sm"
-          >
-            🎙️
+            💬 {vi.hud.chat}
           </button>
         </div>
       )}
-      {voiceTip && (
-        <div className="rounded-xl bg-black/60 px-3 py-1 text-xs text-white">{vi.hud.voiceLocked}</div>
-      )}
-      {isTouch && !chatOpen && (
+      {isTouch && !chatOpen && prompt && (
         <button
           type="button"
           onClick={interact}
-          className="pointer-events-auto absolute right-5 bottom-24 h-16 w-16 rounded-full bg-lamp/90 text-xl font-bold text-slate-900 shadow-lg"
+          className="pointer-events-auto absolute right-5 bottom-28 h-16 w-16 rounded-full bg-[var(--lemon)] text-xl font-extrabold text-[var(--ink)] shadow-lg"
         >
           E
         </button>
@@ -178,6 +269,7 @@ function ChatInput({ onClose }: { onClose: () => void }) {
       }}
     >
       <input
+        id="chat"
         ref={ref}
         value={text}
         maxLength={240}
@@ -187,44 +279,230 @@ function ChatInput({ onClose }: { onClose: () => void }) {
         }}
         onBlur={() => setTimeout(onClose, 150)}
         placeholder={vi.hud.chatPlaceholder}
-        className="flex-1 rounded-full bg-white/95 px-4 py-2 text-sm text-slate-900 outline-none"
+        className="flex-1 rounded-full bg-white px-5 py-2.5 text-[15px] text-[var(--ink)] shadow-md outline-none focus:ring-2 focus:ring-[var(--pink)]"
       />
     </form>
   );
 }
 
-function Help() {
-  const open = useUi((s) => s.helpOpen);
-  const setHelpOpen = useUi((s) => s.setHelpOpen);
+function Modal({
+  open,
+  onClose,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   if (!open) return null;
-  const rows = isTouch ? vi.helpTouch : vi.helpDesktop;
   return (
     <div
-      className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-black/40 p-4"
-      onClick={() => setHelpOpen(false)}
+      className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[var(--ink)]/30 p-4"
+      onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-2xl bg-dusk/95 p-5 text-white shadow-xl"
+        className="pop max-h-[86vh] w-full max-w-md overflow-y-auto rounded-[28px] bg-[var(--cream)] p-5 text-[var(--ink)] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-1 text-lg font-semibold text-lamp">{vi.hud.help}</h2>
-        <p className="mb-3 text-xs opacity-70">{vi.tagline}</p>
-        <table className="w-full text-sm">
-          <tbody>
-            {rows.map(([k, v]) => (
-              <tr key={k}>
-                <td className="py-1 pr-3 font-mono text-xs text-lamp">{k}</td>
-                <td className="py-1 opacity-90">{v}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function QuestPanel() {
+  const open = useUi((s) => s.questsOpen);
+  const done = useUi((s) => s.done);
+  const progress = useUi((s) => s.progress);
+  const set = useUi((s) => s.set);
+  const q = vi.quests;
+  return (
+    <Modal open={open} onClose={() => set({ questsOpen: false })}>
+      <h2 className="font-display text-2xl font-extrabold">⭐ {q.title}</h2>
+      <ul className="mt-3 flex flex-col gap-2">
+        {QUEST_ORDER.map((id) => {
+          const item = q.items[id];
+          const v = progress[id] ?? 0;
+          const goal = QUEST_GOALS[id];
+          return (
+            <li key={id} className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2 shadow-sm">
+              <span className="text-2xl">{item.icon}</span>
+              <div className="min-w-0 flex-1">
+                <div className={`text-sm font-semibold ${done[id] ? "line-through opacity-50" : ""}`}>
+                  {item.title}
+                </div>
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-black/10">
+                  <div
+                    className="h-full rounded-full bg-[var(--pink)]"
+                    style={{ width: `${(v / goal) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-xs tabular-nums opacity-60">{done[id] ? "✅" : `${v}/${goal}`}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <h3 className="font-display mt-5 text-xl font-extrabold">🛂 {q.passportTitle}</h3>
+      <div className="mt-2 grid grid-cols-3 gap-2">
+        {QUEST_ORDER.map((id) => (
+          <div
+            key={id}
+            className={`flex aspect-square flex-col items-center justify-center rounded-2xl border-2 border-dashed p-1 text-center ${done[id] ? "rotate-[-4deg] border-[var(--pink)] bg-white" : "border-black/15 opacity-40"}`}
+          >
+            <span className="text-3xl">{q.items[id].icon}</span>
+            <span className="mt-1 text-[11px] leading-tight font-semibold">{q.items[id].stamp}</span>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => set({ questsOpen: false })}
+        className="mt-5 w-full rounded-full bg-[var(--ink)] py-2.5 font-semibold text-white"
+      >
+        {vi.hud.close}
+      </button>
+    </Modal>
+  );
+}
+
+function Help() {
+  const open = useUi((s) => s.helpOpen);
+  const set = useUi((s) => s.set);
+  return (
+    <Modal open={open} onClose={() => set({ helpOpen: false })}>
+      <h2 className="font-display text-2xl font-extrabold">{vi.hud.help}</h2>
+      <p className="mt-1 text-sm opacity-70">{vi.positioning}</p>
+      <table className="mt-3 w-full text-sm">
+        <tbody>
+          {(isTouch
+            ? [
+                ["Joystick", "Đi lại"],
+                ["Chạm sàn", "Đi tới chỗ đó"],
+                ["Nút E", "Tương tác"],
+              ]
+            : vi.help
+          ).map(([k, v]) => (
+            <tr key={k}>
+              <td className="py-1.5 pr-3 font-mono text-xs font-bold text-[var(--pink-ink)]">{k}</td>
+              <td className="py-1.5">{v}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="mt-3 text-xs opacity-60">🎙️ {vi.hud.voiceLocked}</p>
+      <button
+        type="button"
+        onClick={() => set({ helpOpen: false })}
+        className="mt-4 w-full rounded-full bg-[var(--ink)] py-2.5 font-semibold text-white"
+      >
+        {vi.hud.close}
+      </button>
+    </Modal>
+  );
+}
+
+const COLORS = ["#ff9eb5", "#ffd166", "#8fd3ff", "#9de8c9", "#cdb8ff", "#ffb38a"];
+const STORE_KEY = "xom-oii:me";
+
+function loadMe(): Me | null {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    const v = JSON.parse(raw) as Me;
+    return typeof v.nickname === "string" &&
+      COLORS.includes(v.color) &&
+      (HATS as readonly string[]).includes(v.hat)
+      ? v
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function Creator() {
+  const open = useUi((s) => s.creatorOpen);
+  const me = useUi((s) => s.me);
+  const set = useUi((s) => s.set);
+
+  useEffect(() => {
+    const saved = loadMe();
+    const initial: Me = saved ?? {
+      nickname: vi.creator.randomNames[Math.floor(Math.random() * vi.creator.randomNames.length)]!,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)]!,
+      hat: "non-la",
+    };
+    set({ me: initial });
+    Object.assign(game.player, { nickname: initial.nickname, color: initial.color, hat: initial.hat });
+  }, [set]);
+
+  const update = (patch: Partial<Me>) => {
+    const next = { ...useUi.getState().me, ...patch };
+    set({ me: next });
+    Object.assign(game.player, next);
+  };
+
+  if (!open) return null;
+  return (
+    <div className="pointer-events-auto absolute inset-x-0 bottom-0 flex justify-center p-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+      <div
+        className="pop w-full max-w-md rounded-[28px] bg-[var(--cream)] p-5 text-[var(--ink)] shadow-2xl"
+        data-testid="creator"
+      >
+        <h2 className="font-display text-2xl font-extrabold">{vi.creator.title} 👋</h2>
+        <p className="text-sm opacity-70">{vi.creator.body}</p>
+        <label htmlFor="nickname" className="mt-3 block text-xs font-bold tracking-wide uppercase opacity-60">
+          {vi.creator.nickname}
+        </label>
+        <input
+          id="nickname"
+          value={me.nickname}
+          maxLength={16}
+          onChange={(e) => update({ nickname: e.target.value })}
+          className="mt-1 w-full rounded-full bg-white px-4 py-2 text-[15px] shadow-sm outline-none focus:ring-2 focus:ring-[var(--pink)]"
+        />
+        <div className="mt-3 text-xs font-bold tracking-wide uppercase opacity-60">{vi.creator.color}</div>
+        <div className="mt-1 flex gap-2">
+          {COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              aria-label={c}
+              onClick={() => update({ color: c })}
+              className={`h-9 w-9 rounded-full shadow-sm transition-transform ${me.color === c ? "scale-110 ring-4 ring-white" : ""}`}
+              style={{ background: c }}
+            />
+          ))}
+        </div>
+        <div className="mt-3 text-xs font-bold tracking-wide uppercase opacity-60">{vi.creator.hat}</div>
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {HATS.map((h: Hat) => (
+            <button
+              key={h}
+              type="button"
+              onClick={() => update({ hat: h })}
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold shadow-sm ${me.hat === h ? "bg-[var(--ink)] text-white" : "bg-white"}`}
+            >
+              {vi.hats[h]}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
-          onClick={() => setHelpOpen(false)}
-          className="mt-4 w-full rounded-full bg-bus py-2 text-sm font-medium"
+          data-testid="go"
+          onClick={() => {
+            const nickname = me.nickname.trim() || vi.creator.randomNames[0];
+            update({ nickname });
+            try {
+              localStorage.setItem(STORE_KEY, JSON.stringify({ ...me, nickname }));
+            } catch {
+              /* không lưu được cũng không sao */
+            }
+            set({ creatorOpen: false });
+          }}
+          className="font-display mt-4 w-full rounded-full bg-[var(--pink)] py-3 text-lg font-extrabold text-white shadow-md active:scale-[0.98]"
         >
-          {vi.hud.close}
+          {vi.creator.go}
         </button>
       </div>
     </div>

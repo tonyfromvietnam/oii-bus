@@ -2,7 +2,9 @@
 
 > Thích ở một mình nhưng thỉnh thoảng sợ cô đơn.
 
-Phần tiếp theo của OiiMate: **Oii Street**, một con phố London 3D trên web. Người dùng ẩn danh đi lại, ngồi, làm cử chỉ, chat chữ và nói chuyện bằng giọng theo khoảng cách. Phố mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).
+Phần tiếp theo của OiiMate: lên **Bus Oii**, chiếc bus hai tầng siêu to chạy vòng London, cùng mọi người. Tầng dưới là thư viện yên lặng nghe lofi. Nhân vật chibi dễ thương, điều khiển đơn giản, có nhiệm vụ tuần và hộ chiếu tem. Mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).
+
+Thiết kế thế giới: [`docs/WORLD.md`](docs/WORLD.md).
 
 Kiến trúc: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Moderation: [`docs/MODERATION.md`](docs/MODERATION.md)
 
@@ -29,8 +31,7 @@ Muốn xem phố ngoài giờ mở cửa: đặt `OPEN_OVERRIDE=true` trong `.en
 pnpm --filter @xom-oii/web build:standalone
 ```
 
-Ra một file duy nhất `apps/web/dist-standalone/index.html`, vào thẳng phố offline. Upload lên bất kỳ host tĩnh nào (ví dụ staging trên duychinhdinh.com).
-Thêm `?time=17:00` (và `&month=11`) vào URL để xem ánh sáng ở một giờ London cụ thể.
+Ra một file duy nhất `apps/web/dist-standalone/index.html`, vào thẳng Bus Oii offline. Upload lên bất kỳ host tĩnh nào (ví dụ staging trên duychinhdinh.com).
 
 ## Lệnh
 
@@ -51,7 +52,7 @@ Thêm `?time=17:00` (và `&month=11`) vào URL để xem ánh sáng ở một gi
 apps/web         client 3D + UI (Vite, React, R3F, Tailwind). Admin là route /admin.
 apps/server      Fastify API + Colyseus rooms, cùng một process
 packages/shared  hằng số, zod schema, giờ mở cửa, proximity, sanitize text
-packages/world   toạ độ phố, collider, seats, spots (dùng chung client + server)
+packages/world   scene bus + thư viện, collider, seats, spots, tuyến London (dùng chung client + server)
 prisma/          schema Postgres
 docs/            kiến trúc, moderation, prototype
 ```
@@ -59,7 +60,7 @@ docs/            kiến trúc, moderation, prototype
 ## Milestones
 
 - [x] **M0** khung repo, CI, docker-compose, kiến trúc
-- [x] **M1** phố tĩnh, đi lại, va chạm, spots, joystick mobile, Playwright smoke
+- [x] **M1** thế giới tĩnh (vẽ lại: Bus Oii + Thư viện), đi lại, va chạm, tương tác, nhiệm vụ, joystick mobile, Playwright smoke
 - [ ] **M2** multiplayer Colyseus, chat theo khoảng cách lọc ở server, instances
 - [ ] **M3** magic link, OTP, invite/alumni, probation, trusted, ban liên đới
 - [ ] **M4** voice LiveKit, server-controlled subscriptions, PannerNode

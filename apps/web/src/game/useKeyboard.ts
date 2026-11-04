@@ -4,7 +4,7 @@ import { gesture, interact } from "./actions";
 import { game } from "./state";
 import { useUi } from "./ui";
 
-/** Bàn phím desktop (brief §8). Bỏ qua khi đang gõ chat. */
+/** Bàn phím desktop. Bỏ qua khi đang gõ hoặc khi đang mở bảng. */
 export function useKeyboard() {
   useEffect(() => {
     const isTyping = (e: KeyboardEvent) =>
@@ -13,24 +13,22 @@ export function useKeyboard() {
     const down = (e: KeyboardEvent) => {
       if (isTyping(e)) return;
       const ui = useUi.getState();
+      if (e.code === "Escape") ui.set({ helpOpen: false, questsOpen: false });
+      if (ui.creatorOpen || ui.questsOpen || ui.helpOpen) return;
       if (e.code === "Enter") {
         e.preventDefault();
         game.input.keys.clear();
-        ui.setChatOpen(true);
+        ui.set({ chatOpen: true });
         return;
       }
-      if (e.code === "Escape") ui.setHelpOpen(false);
       if (e.code === "KeyE" && !e.repeat) interact();
-      if (e.code === "ShiftLeft" || e.code === "ShiftRight") game.input.run = true;
+      if (e.code === "KeyQ" && !e.repeat) ui.set({ questsOpen: true });
       const n = Number(e.key);
       if (!e.repeat && n >= 1 && n <= GESTURES.length) gesture(GESTURES[n - 1]!);
       if (e.code.startsWith("Arrow")) e.preventDefault();
       game.input.keys.add(e.code);
     };
-    const up = (e: KeyboardEvent) => {
-      game.input.keys.delete(e.code);
-      if (e.code === "ShiftLeft" || e.code === "ShiftRight") game.input.run = false;
-    };
+    const up = (e: KeyboardEvent) => game.input.keys.delete(e.code);
     const blur = () => game.input.keys.clear();
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);

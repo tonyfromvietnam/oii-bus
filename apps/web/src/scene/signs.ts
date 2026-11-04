@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { glowing } from "./materials";
 
 export interface SignOptions {
   bg: string;
@@ -9,11 +8,10 @@ export interface SignOptions {
   height?: number;
   border?: string;
   lines?: string[];
-  glowMax?: number;
 }
 
-/** Biển hiệu vẽ bằng canvas → texture. Sáng dần khi trời tối (đăng ký vào `glowing`). */
-export function signMaterial(text: string, o: SignOptions): THREE.MeshLambertMaterial {
+/** Biển hiệu vẽ bằng canvas → texture (MeshBasic: luôn rõ, phẳng, hợp phong cách đồ chơi). */
+export function signMaterial(text: string, o: SignOptions): THREE.MeshBasicMaterial {
   const w = o.width ?? 512;
   const h = o.height ?? 128;
   const canvas = document.createElement("canvas");
@@ -22,31 +20,27 @@ export function signMaterial(text: string, o: SignOptions): THREE.MeshLambertMat
   const ctx = canvas.getContext("2d");
   if (ctx) {
     ctx.fillStyle = o.bg;
-    ctx.fillRect(0, 0, w, h);
+    const r = Math.min(w, h) * 0.18;
+    ctx.beginPath();
+    ctx.roundRect(0, 0, w, h, r);
+    ctx.fill();
     if (o.border) {
       ctx.strokeStyle = o.border;
-      ctx.lineWidth = Math.max(4, h * 0.06);
-      ctx.strokeRect(ctx.lineWidth, ctx.lineWidth, w - ctx.lineWidth * 2, h - ctx.lineWidth * 2);
+      ctx.lineWidth = Math.max(6, h * 0.06);
+      ctx.beginPath();
+      ctx.roundRect(ctx.lineWidth, ctx.lineWidth, w - ctx.lineWidth * 2, h - ctx.lineWidth * 2, r * 0.7);
+      ctx.stroke();
     }
     ctx.fillStyle = o.fg;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const lines = o.lines ?? [text];
-    const lh = h / (lines.length + 0.4);
-    ctx.font = o.font ?? `bold ${Math.floor(lh * 0.7)}px "Be Vietnam Pro", system-ui, sans-serif`;
-    lines.forEach((line, i) => ctx.fillText(line, w / 2, lh * (i + 0.7)));
+    const lh = h / (lines.length + 0.3);
+    ctx.font = o.font ?? `800 ${Math.floor(lh * 0.62)}px "Baloo 2", "Be Vietnam Pro", system-ui, sans-serif`;
+    lines.forEach((line, i) => ctx.fillText(line, w / 2, lh * (i + 0.65)));
   }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
-  const mat = new THREE.MeshLambertMaterial({
-    map: tex,
-    emissive: "#ffffff",
-    emissiveMap: tex,
-    emissiveIntensity: 0.1,
-  });
-  mat.userData.glowBase = 0.05;
-  mat.userData.glowMax = o.glowMax ?? 0.75;
-  glowing.push(mat);
-  return mat;
+  return new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false });
 }
