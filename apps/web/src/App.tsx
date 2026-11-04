@@ -1,18 +1,25 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { vi } from "./copy/vi";
 import { fetchStatus, type StreetStatus } from "./lib/api";
 import { ClosedScreen } from "./screens/ClosedScreen";
-import { OpenScreen } from "./screens/OpenScreen";
 
-type State = { kind: "loading" } | { kind: "error" } | { kind: "ready"; status: StreetStatus };
+const Street = lazy(() => import("./Street"));
+
+type State =
+  { kind: "loading" } | { kind: "error" } | { kind: "ready"; status: StreetStatus } | { kind: "street" };
+
+const params = new URLSearchParams(location.search);
+/** Bản prototype tĩnh (artifact / staging không có server) hoặc ?preview → vào thẳng phố offline. */
+const STANDALONE = import.meta.env.VITE_STANDALONE === "true" || params.has("preview");
 
 export function App() {
-  const [state, setState] = useState<State>({ kind: "loading" });
+  const [state, setState] = useState<State>(STANDALONE ? { kind: "street" } : { kind: "loading" });
 
   useEffect(() => {
+    if (STANDALONE) return;
     const ctrl = new AbortController();
     fetchStatus(ctrl.signal)
-      .then((status) => setState({ kind: "ready", status }))
+      .then((status) => setState(status.open ? { kind: "street" } : { kind: "ready", status }))
       .catch((err: unknown) => {
         if (!ctrl.signal.aborted) {
           console.error(err);
@@ -24,10 +31,17 @@ export function App() {
 
   if (state.kind === "loading") return <Centered>{vi.loading}</Centered>;
   if (state.kind === "error") return <Centered>{vi.serverDown}</Centered>;
-  return state.status.open ? (
-    <OpenScreen closesAt={state.status.closesAt} />
-  ) : (
-    <ClosedScreen nextOpeningAt={state.status.nextOpeningAt} />
+  if (state.kind === "ready")
+    return (
+      <ClosedScreen
+        nextOpeningAt={state.status.nextOpeningAt}
+        onPreview={() => setState({ kind: "street" })}
+      />
+    );
+  return (
+    <Suspense fallback={<Centered>{vi.loadingStreet}</Centered>}>
+      <Street />
+    </Suspense>
   );
 }
 

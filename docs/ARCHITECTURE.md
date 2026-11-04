@@ -1,6 +1,6 @@
 # Kiến trúc Xóm Oii (đề xuất v1)
 
-> Trạng thái: **bản đề xuất để review** (cuối M0). Những chỗ còn cần chốt nằm ở mục [Câu hỏi mở](#9-câu-hỏi-mở).
+> Trạng thái: đã review sau M0. Các quyết định nằm ở [mục 9](#9-quyết-định-đã-chốt-review-m0).
 
 ## 1. Tổng quan
 
@@ -124,7 +124,7 @@ flowchart TD
   S["student đã verify<br/>(2 mã OII-XXXX-XXXX)"] -->|invite code| P["professional<br/>probation 14 ngày<br/>invitedById = student"]
   G["Giveaway OiiMate<br/>ALUM-CAMPAIGN-XXXX<br/>hết hạn 7 ngày"] --> AP["Nộp AlumniProof<br/>email · document · voucher"]
   AP -->|admin duyệt| AL["alumni<br/>probation 14 ngày<br/>KHÔNG liên đới"]
-  S & P & AL -->|"≥3 cuối tuần, 0 report xác nhận<br/>(job hằng tuần)"| T["trusted<br/>voice ngay"]
+  S & P & AL -->|"≥3 cuối tuần, 0 report xác nhận<br/>(job hằng tuần)"| T["cờ trustedAt<br/>voice ngay, giữ hạng gốc"]
 ```
 
 - Dùng mã: transaction `UPDATE InviteCode SET usedById=… WHERE code=… AND usedAt IS NULL AND (expiresAt IS NULL OR expiresAt > now())` để tránh race dùng 2 lần.
@@ -249,10 +249,10 @@ flowchart LR
 - Khi cần scale ngang: bật `RedisPresence` + `RedisDriver` của Colyseus, chạy nhiều máy Fly sau load balancer có sticky session; `/street/seat` vẫn chọn instance qua matchMaker dùng chung.
 - Chi tiết sẽ ở `docs/DEPLOY.md` (M5).
 
-## 9. Câu hỏi mở
+## 9. Quyết định đã chốt (review M0)
 
-1. **Ban liên đới đi bao xa?** Đề xuất: chỉ ban **inviter trực tiếp** (một cấp), không đệ quy lên trên. Vì chỉ student có mã mời, nên thực tế chuỗi luôn dài một cấp.
-2. **`trusted` là hạng hay cờ?** Brief để `trusted` trong enum `tier`, nhưng nếu một alumni thành trusted thì sẽ mất ★. Đề xuất: giữ `tier` là nguồn gốc (student/alumni/professional) và coi `trustedAt` là cờ riêng. Nếu đồng ý, M3 sẽ bỏ `trusted` khỏi enum.
-3. **Domain**: xác nhận `xom.oiimate.app` (web) và `api.xom.oiimate.app` (API + WSS).
-4. **Danh sách từ cấm**: cần một list tiếng Việt + tiếng Anh từ team OiiMate (hiện dự kiến để ở `packages/shared/src/wordlist/`).
-5. **Bot OiiMate**: team bot có thêm được lệnh `/xom` và ký HMAC theo spec ở §3.1 không?
+1. **Ban liên đới một cấp**: chỉ ban inviter trực tiếp, không đệ quy.
+2. **`trusted` là cờ** (`trustedAt`), không phải hạng. `Tier` = `student | alumni | professional`.
+3. **Domain**: production `xom.oiimate.app` + `api.xom.oiimate.app`. Giai đoạn đầu: staging tạm trên `duychinhdinh.com`.
+4. **Từ cấm**: team OiiMate cung cấp danh sách, đặt ở `packages/shared/src/wordlist/`.
+5. **Bot**: team bot thêm lệnh `/xom` và ký HMAC theo §3.1.

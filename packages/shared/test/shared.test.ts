@@ -63,11 +63,11 @@ describe("voice eligibility", () => {
   const now = new Date("2026-11-07T20:00:00Z");
   const later = new Date("2026-11-20T00:00:00Z");
   it("probation chặn voice, trusted thì không", () => {
-    expect(canUseVoice({ tier: "student", probationUntil: later, bannedAt: null }, now)).toBe(false);
-    expect(canUseVoice({ tier: "trusted", probationUntil: later, bannedAt: null }, now)).toBe(true);
-    expect(canUseVoice({ tier: "student", probationUntil: null, bannedAt: null }, now)).toBe(true);
+    expect(canUseVoice({ trustedAt: null, probationUntil: later, bannedAt: null }, now)).toBe(false);
+    expect(canUseVoice({ trustedAt: now, probationUntil: later, bannedAt: null }, now)).toBe(true);
+    expect(canUseVoice({ trustedAt: null, probationUntil: null, bannedAt: null }, now)).toBe(true);
   });
   it("bị ban thì không bao giờ có voice", () => {
-    expect(canUseVoice({ tier: "trusted", probationUntil: null, bannedAt: now }, now)).toBe(false);
+    expect(canUseVoice({ trustedAt: now, probationUntil: null, bannedAt: now }, now)).toBe(false);
   });
 });

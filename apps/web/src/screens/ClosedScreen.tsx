@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { vi } from "../copy/vi";
 import { formatCountdown } from "../lib/countdown";
 
-export function ClosedScreen({ nextOpeningAt }: { nextOpeningAt: string }) {
+export function ClosedScreen({
+  nextOpeningAt,
+  onPreview,
+}: {
+  nextOpeningAt: string;
+  onPreview?: () => void;
+}) {
   const target = new Date(nextOpeningAt).getTime();
   const [now, setNow] = useState(() => Date.now());
 
@@ -16,7 +22,7 @@ export function ClosedScreen({ nextOpeningAt }: { nextOpeningAt: string }) {
       <h1 className="text-3xl font-semibold text-lamp">{vi.closed.title}</h1>
       <p className="max-w-sm opacity-80">{vi.closed.body}</p>
       <div>
-        <div className="text-sm uppercase tracking-widest opacity-60">{vi.closed.countdown}</div>
+        <div className="text-sm tracking-widest uppercase opacity-60">{vi.closed.countdown}</div>
         <div className="mt-1 text-2xl tabular-nums" data-testid="countdown">
           {formatCountdown(target - now)}
         </div>
@@ -29,6 +35,11 @@ export function ClosedScreen({ nextOpeningAt }: { nextOpeningAt: string }) {
       >
         {vi.closed.remindMe}
       </button>
+      {onPreview && (
+        <button type="button" onClick={onPreview} className="text-sm underline opacity-70">
+          {vi.closed.preview}
+        </button>
+      )}
     </main>
   );
 }

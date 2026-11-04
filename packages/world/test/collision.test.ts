@@ -29,3 +29,21 @@ describe("va chạm", () => {
     }
   });
 });
+
+describe("layout", () => {
+  it("có nhà số 17 ở phía bắc", () => {
+    expect(OII_STREET.houses.some((h) => h.side === "north" && h.number === 17)).toBe(true);
+  });
+  it("tối đa 8 đèn đường có PointLight thật", () => {
+    expect(OII_STREET.lamps.filter((l) => l.light).length).toBeLessThanOrEqual(6);
+  });
+  it("điểm spawn không nằm trong vật cản", () => {
+    const s = OII_STREET.spawn;
+    for (const c of OII_STREET.colliders) expect(circleIntersectsBox(s, AVATAR_RADIUS, c)).toBe(false);
+  });
+  it("mọi ghế đều có spot để bấm E", () => {
+    for (const seat of OII_STREET.seats) {
+      expect(OII_STREET.spots.some((s) => s.seatId === seat.id)).toBe(true);
+    }
+  });
+});

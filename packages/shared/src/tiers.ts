@@ -1,15 +1,19 @@
-export const TIERS = ["student", "alumni", "professional", "trusted"] as const;
+/**
+ * Hạng = nguồn gốc tài khoản. "Đã tin cậy" là cờ riêng (`trustedAt`), không phải hạng,
+ * để alumni lên trusted vẫn giữ ★ (quyết định ARCHITECTURE §9.2).
+ */
+export const TIERS = ["student", "alumni", "professional"] as const;
 export type Tier = (typeof TIERS)[number];
 
 export const TIER_LABEL_VI: Record<Tier, string> = {
   student: "Sinh viên",
   alumni: "Cựu sinh viên",
   professional: "Người đi làm",
-  trusted: "Đã tin cậy",
 };
+export const TRUSTED_LABEL_VI = "Đã tin cậy";
 
 export interface VoiceEligibilityInput {
-  tier: Tier;
+  trustedAt: Date | null;
   probationUntil: Date | null;
   bannedAt: Date | null;
 }
@@ -20,6 +24,6 @@ export interface VoiceEligibilityInput {
  */
 export function canUseVoice(u: VoiceEligibilityInput, now: Date = new Date()): boolean {
   if (u.bannedAt) return false;
-  if (u.tier === "trusted") return true;
+  if (u.trustedAt) return true;
   return u.probationUntil === null || u.probationUntil.getTime() <= now.getTime();
 }

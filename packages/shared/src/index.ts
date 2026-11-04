@@ -4,3 +4,4 @@ export * from "./schedule";
 export * from "./schemas";
 export * from "./text";
 export * from "./proximity";
+export * from "./sun";

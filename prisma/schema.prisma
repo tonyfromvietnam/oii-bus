@@ -13,7 +13,6 @@ enum Tier {
   student
   alumni
   professional
-  trusted
 }
 
 enum Role {
@@ -67,6 +66,7 @@ model User {
   coatColor      String    @db.VarChar(7)
   hat            String    @default("none")
   probationUntil DateTime?
+  /// Cờ "Đã tin cậy" (không phải hạng): mở voice ngay.
   trustedAt      DateTime?
   bannedAt       DateTime?
   banReason      String?
