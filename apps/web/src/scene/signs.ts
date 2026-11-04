@@ -36,7 +36,7 @@ export function signMaterial(text: string, o: SignOptions): THREE.MeshBasicMater
     ctx.textBaseline = "middle";
     const lines = o.lines ?? [text];
     const lh = h / (lines.length + 0.3);
-    ctx.font = o.font ?? `800 ${Math.floor(lh * 0.62)}px "Baloo 2", "Be Vietnam Pro", system-ui, sans-serif`;
+    ctx.font = o.font ?? `800 ${Math.floor(lh * 0.62)}px "Nunito", system-ui, sans-serif`;
     lines.forEach((line, i) => ctx.fillText(line, w / 2, lh * (i + 0.65)));
   }
   const tex = new THREE.CanvasTexture(canvas);

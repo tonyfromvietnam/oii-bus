@@ -4,10 +4,10 @@ Hướng mới: **dễ thương, đơn giản, tích cực**. Mọi người ở
 
 ## Không gian
 
-| Scene            | Mô tả                                                                                                                                                                                            | Chat                     | Nhạc          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ | ------------- |
-| `bus` (mặc định) | Tầng thượng mui trần của **Bus Oii**, chiếc bus hai tầng siêu to chạy vòng London. Địa danh trôi qua: Big Ben, London Eye, Tower Bridge, St Paul's, The Shard, Buckingham, The Gherkin, Phố Tàu. | Có (theo khoảng cách)    | Lofi tuỳ chọn |
-| `library`        | Tầng dưới của bus là **Thư viện Oii**: kệ sách, bàn học đèn xanh, góc đọc, mèo ngủ, cửa sổ thấy London trôi qua.                                                                                 | **Không** (chỉ biểu cảm) | Lofi tự bật   |
+| Scene            | Mô tả                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Chat                     | Nhạc          |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------- |
+| `bus` (mặc định) | Tầng thượng mui trần của **Bus Oii**, chiếc bus hai tầng siêu to chạy vòng quanh UK. 13 địa danh: Big Ben, London Eye, Tower Bridge, Buckingham, Brighton Pier, Stonehenge, Royal Crescent (Bath), Radcliffe Camera (Oxford), Bullring (Birmingham), Old Trafford (Manchester), Royal Liver Building (Liverpool), Angel of the North, Lâu đài Edinburgh. Cảnh dọc đường đổi theo vùng: nhà stucco London, đá vàng Bath, gạch đỏ miền Bắc, đá xám Scotland, đồng quê có cừu, bãi biển chòi tắm. | Có (theo khoảng cách)    | Lofi tuỳ chọn |
+| `library`        | Tầng dưới của bus là **Thư viện Oii**: kệ sách, bàn học đèn xanh, góc đọc, mèo ngủ, cửa sổ thấy London trôi qua.                                                                                                                                                                                                                                                                                                                                                                               | **Không** (chỉ biểu cảm) | Lofi tự bật   |
 
 - Vị trí trên tuyến tính từ giờ thật (`routeOffset(Date.now())`, `packages/world/src/route.ts`), nên mọi người, mọi instance thấy cùng một địa danh cùng lúc mà server không cần gửi thêm gì.
 - Lofi được sinh bằng WebAudio (`apps/web/src/audio/lofi.ts`): không có file nhạc, không lo bản quyền, nhẹ.
@@ -19,9 +19,11 @@ Hướng mới: **dễ thương, đơn giản, tích cực**. Mọi người ở
 - WASD/mũi tên theo hướng màn hình, hoặc bấm/chạm sàn để đi tới. Mobile: joystick + nút E.
 - E để tương tác, 1–5 là biểu cảm, Enter để chat, Q mở nhiệm vụ.
 
-## Nhân vật
+## Giao diện & nhân vật
 
-Chibi: đầu to bo tròn, mắt chấm, má hồng, thân nhỏ, cel-shading pastel. Tuỳ biến: biệt danh, 6 màu áo, 6 mũ (nón lá, len, mũ tốt nghiệp, tai mèo, tai nghe, không mũ).
+Theo website OiiMate: nền xanh bạc hà `#f1f8ec`, nút teal `#4e9297`, chữ navy `#1f2d4d`, font Nunito, bong bóng chat có viền và đuôi.
+
+Nhân vật tròn như mascot OiiMate: bong bóng chat có đuôi nhỏ, mắt chấm navy, miệng cười, tay chân tí hon, nhún kiểu thạch khi đi. Tuỳ biến: biệt danh, 6 màu áo, 6 mũ (nón lá, len, mũ tốt nghiệp, tai mèo, tai nghe, không mũ).
 
 ## Nhiệm vụ tuần (bản thử)
 

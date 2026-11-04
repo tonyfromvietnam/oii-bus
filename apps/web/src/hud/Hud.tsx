@@ -10,7 +10,8 @@ import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
 
 const isTouch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
-const pill = "rounded-full bg-white/90 text-[var(--ink)] shadow-md backdrop-blur-sm";
+const pill =
+  "rounded-full bg-white/95 text-[var(--ink)] shadow-[0_2px_10px_rgba(31,45,77,0.10)] backdrop-blur-sm";
 
 export function Hud() {
   const fade = useUi((s) => s.fade);
@@ -46,7 +47,7 @@ function TopBar() {
       <div className="flex max-w-[min(440px,100%)] flex-col gap-1.5">
         <div className={`${pill} px-4 py-2`}>
           <div className="font-display text-lg leading-tight font-extrabold">
-            {scene === "bus" ? "🚌" : "📚"} {vi.scenes[scene].name}
+            <OiiLogo /> {vi.scenes[scene].name}
             <span className="ml-2 text-xs font-medium opacity-60">{vi.scenes[scene].sub}</span>
           </div>
           {scene === "bus" && (
@@ -93,6 +94,20 @@ function TopBar() {
   );
 }
 
+/** Hai bong bóng mascot chồng nhau, theo logo OiiMate. */
+function OiiLogo() {
+  return (
+    <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden className="mr-1 inline-block align-[-4px]">
+      <path d="M11 1a10 10 0 1 1-6.4 17.7L1 21l1.3-4.6A10 10 0 0 1 11 1z" fill="#a8d3d9" />
+      <path d="M23 3a9 9 0 1 0 5.8 15.9L32 21l-1.1-4.1A9 9 0 0 0 23 3z" fill="#fde3a0" />
+      <circle cx="8" cy="10" r="1.2" fill="#1f2d4d" />
+      <circle cx="13" cy="10" r="1.2" fill="#1f2d4d" />
+      <circle cx="21" cy="12" r="1.1" fill="#1f2d4d" />
+      <circle cx="26" cy="12" r="1.1" fill="#1f2d4d" />
+    </svg>
+  );
+}
+
 function MusicControl() {
   const music = useUi((s) => s.music);
   return (
@@ -100,7 +115,7 @@ function MusicControl() {
       <button
         type="button"
         onClick={toggleMusic}
-        className={`rounded-full px-3 py-1 text-sm font-semibold ${music.on ? "bg-[var(--pink)] text-white" : ""}`}
+        className={`rounded-full px-3 py-1 text-sm font-semibold ${music.on ? "bg-[var(--accent)] text-white" : ""}`}
         data-testid="music"
       >
         🎧 {music.on ? vi.hud.musicOn : vi.hud.musicOff}
@@ -115,7 +130,7 @@ function MusicControl() {
           value={music.volume}
           aria-label={vi.hud.volume}
           onChange={(e) => setVolume(Number(e.target.value))}
-          className="w-20 accent-[var(--pink)]"
+          className="w-20 accent-[var(--accent)]"
         />
       )}
     </div>
@@ -140,7 +155,7 @@ function LogLine({ entry }: { entry: LogEntry }) {
       className="max-w-full rounded-2xl bg-white/85 px-3 py-1 text-sm text-[var(--ink)] shadow-sm"
       style={{ opacity }}
     >
-      <span className="font-bold text-[var(--pink-ink)]">{entry.who}:</span> {entry.text}
+      <span className="font-extrabold text-[var(--accent)]">{entry.who}:</span> {entry.text}
     </div>
   );
 }
@@ -158,7 +173,7 @@ function Toast() {
   return (
     <div
       key={shown.id}
-      className="pop absolute bottom-36 left-1/2 w-[min(420px,88vw)] -translate-x-1/2 rounded-3xl bg-white px-4 py-2.5 text-center text-[15px] font-medium text-[var(--ink)] shadow-lg"
+      className="pop absolute bottom-36 left-1/2 w-[min(420px,88vw)] -translate-x-1/2 rounded-3xl border-[2.5px] border-[var(--blue)] bg-white px-4 py-2.5 text-center text-[15px] font-semibold text-[var(--ink)] shadow-lg"
     >
       {shown.text}
     </div>
@@ -197,7 +212,7 @@ function BottomBar() {
             <button
               type="button"
               onClick={startFocus}
-              className="rounded-full bg-[var(--mint)] px-4 py-1 text-sm font-semibold"
+              className="rounded-full bg-[var(--accent)] px-4 py-1 text-sm font-bold text-white"
             >
               ⏱️ {vi.hud.focusStart}
             </button>
@@ -208,10 +223,10 @@ function BottomBar() {
         <button
           type="button"
           onClick={interact}
-          className="pop pointer-events-auto rounded-full bg-[var(--lemon)] px-5 py-2 text-[15px] font-bold text-[var(--ink)] shadow-md"
+          className="pop pointer-events-auto rounded-full bg-[var(--accent)] px-5 py-2 text-[15px] font-bold text-white shadow-md"
           data-testid="prompt"
         >
-          {!isTouch && <kbd className="mr-2 rounded-md bg-white/70 px-1.5">E</kbd>}
+          {!isTouch && <kbd className="mr-2 rounded-md bg-white/25 px-1.5">E</kbd>}
           {prompt}
         </button>
       )}
@@ -243,7 +258,7 @@ function BottomBar() {
         <button
           type="button"
           onClick={interact}
-          className="pointer-events-auto absolute right-5 bottom-28 h-16 w-16 rounded-full bg-[var(--lemon)] text-xl font-extrabold text-[var(--ink)] shadow-lg"
+          className="pointer-events-auto absolute right-5 bottom-28 h-16 w-16 rounded-full bg-[var(--accent)] text-xl font-extrabold text-white shadow-lg"
         >
           E
         </button>
@@ -279,7 +294,7 @@ function ChatInput({ onClose }: { onClose: () => void }) {
         }}
         onBlur={() => setTimeout(onClose, 150)}
         placeholder={vi.hud.chatPlaceholder}
-        className="flex-1 rounded-full bg-white px-5 py-2.5 text-[15px] text-[var(--ink)] shadow-md outline-none focus:ring-2 focus:ring-[var(--pink)]"
+        className="flex-1 rounded-full bg-white px-5 py-2.5 text-[15px] text-[var(--ink)] shadow-md outline-none focus:ring-2 focus:ring-[var(--accent)]"
       />
     </form>
   );
@@ -333,7 +348,7 @@ function QuestPanel() {
                 </div>
                 <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-black/10">
                   <div
-                    className="h-full rounded-full bg-[var(--pink)]"
+                    className="h-full rounded-full bg-[var(--accent)]"
                     style={{ width: `${(v / goal) * 100}%` }}
                   />
                 </div>
@@ -348,7 +363,7 @@ function QuestPanel() {
         {QUEST_ORDER.map((id) => (
           <div
             key={id}
-            className={`flex aspect-square flex-col items-center justify-center rounded-2xl border-2 border-dashed p-1 text-center ${done[id] ? "rotate-[-4deg] border-[var(--pink)] bg-white" : "border-black/15 opacity-40"}`}
+            className={`flex aspect-square flex-col items-center justify-center rounded-2xl border-2 border-dashed p-1 text-center ${done[id] ? "rotate-[-4deg] border-[var(--accent)] bg-[var(--mint)]" : "border-black/15 opacity-40"}`}
           >
             <span className="text-3xl">{q.items[id].icon}</span>
             <span className="mt-1 text-[11px] leading-tight font-semibold">{q.items[id].stamp}</span>
@@ -384,7 +399,7 @@ function Help() {
             : vi.help
           ).map(([k, v]) => (
             <tr key={k}>
-              <td className="py-1.5 pr-3 font-mono text-xs font-bold text-[var(--pink-ink)]">{k}</td>
+              <td className="py-1.5 pr-3 font-mono text-xs font-bold text-[var(--accent-ink)]">{k}</td>
               <td className="py-1.5">{v}</td>
             </tr>
           ))}
@@ -402,7 +417,7 @@ function Help() {
   );
 }
 
-const COLORS = ["#ff9eb5", "#ffd166", "#8fd3ff", "#9de8c9", "#cdb8ff", "#ffb38a"];
+const COLORS = ["#a8d3d9", "#fde3a0", "#c5e3d3", "#f6c6cf", "#d6ccf2", "#ffd2b5"];
 const STORE_KEY = "xom-oii:me";
 
 function loadMe(): Me | null {
@@ -459,7 +474,7 @@ function Creator() {
           value={me.nickname}
           maxLength={16}
           onChange={(e) => update({ nickname: e.target.value })}
-          className="mt-1 w-full rounded-full bg-white px-4 py-2 text-[15px] shadow-sm outline-none focus:ring-2 focus:ring-[var(--pink)]"
+          className="mt-1 w-full rounded-full bg-white px-4 py-2 text-[15px] shadow-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         />
         <div className="mt-3 text-xs font-bold tracking-wide uppercase opacity-60">{vi.creator.color}</div>
         <div className="mt-1 flex gap-2">
@@ -500,7 +515,7 @@ function Creator() {
             }
             set({ creatorOpen: false });
           }}
-          className="font-display mt-4 w-full rounded-full bg-[var(--pink)] py-3 text-lg font-extrabold text-white shadow-md active:scale-[0.98]"
+          className="font-display mt-4 w-full rounded-full bg-[var(--accent)] py-3 text-lg font-extrabold text-white shadow-md active:scale-[0.98]"
         >
           {vi.creator.go}
         </button>

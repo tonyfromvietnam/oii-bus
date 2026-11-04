@@ -1,9 +1,18 @@
 import { useFrame } from "@react-three/fiber";
-import { BUS_PROPS as P, BUS_SCENE, DUCKS, LANDMARKS, ROUTE_LENGTH, routeToLocalX } from "@xom-oii/world";
+import {
+  BUS_PROPS as P,
+  BUS_SCENE,
+  DUCKS,
+  LANDMARKS,
+  ROUTE_LENGTH,
+  nearestLandmark,
+  routeToLocalX,
+  type LandmarkId,
+} from "@xom-oii/world";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { game } from "../game/state";
-import { GROUND, buildLandmark, buildTile } from "./landmarks";
+import { GROUND, buildLandmark, buildTile, type LandmarkObject } from "./landmarks";
 import { C, glow, toon } from "./materials";
 import { signMaterial } from "./signs";
 import { StaticBuilder } from "./StaticBuilder";
@@ -16,11 +25,11 @@ const G = GROUND;
 /** Bus siêu to mui trần: thân đỏ, sàn gỗ, lan can vàng, cờ dây, đồ đạc vui. */
 function buildBus(): THREE.Group {
   const b = new StaticBuilder();
-  const red = toon(C.busRed);
+  const red = toon(C.bus);
   // thân xe
   b.box(red, HALF_L * 2, -G - 0.9, HALF_W * 2, 0, (G + 0.9) / 2, 0);
   b.box(toon(C.cream), HALF_L * 2 + 0.02, 0.35, HALF_W * 2 + 0.02, 0, G + 2.0, 0);
-  b.box(toon(C.busRedDark), HALF_L * 2 + 0.04, 0.3, HALF_W * 2 + 0.04, 0, G + 0.95, 0);
+  b.box(toon(C.busDark), HALF_L * 2 + 0.04, 0.3, HALF_W * 2 + 0.04, 0, G + 0.95, 0);
   // cửa sổ tầng dưới (thư viện sáng đèn ấm bên trong)
   for (let x = -HALF_L + 2; x < HALF_L - 2; x += 2.6) {
     for (const s of [-1, 1])
@@ -63,7 +72,7 @@ function buildBus(): THREE.Group {
     b.box(red, 0.12, 0.5, HALF_W * 2, s * HALF_L, 0.25, 0);
   }
   // cờ dây pastel dọc hai bên
-  const flags = [C.pink, C.lemon, C.mint, C.sky, C.lilac];
+  const flags = [C.oiiBlue, C.oiiYellow, C.mint, C.white, C.oiiBlue];
   // chỉ phía xa: phía gần sẽ cắt ngang nhân vật trong khung hình
   for (const s of [-1]) {
     for (let x = -HALF_L + 1; x < HALF_L; x += 0.9) {
@@ -87,7 +96,7 @@ function buildBus(): THREE.Group {
   for (let x = -HALF_L + 0.5; x < HALF_L; x += 1.4) b.sphere(bulb, 0.06, x, 1.98, -HALF_W);
 
   // --- đồ đạc ---
-  const cushion = toon(C.busRed);
+  const cushion = toon(C.cushion);
   const benchSeat = (x: number, z: number, w: number, d: number, backDir: "x" | "z", backSign: number) => {
     b.box(toon(C.woodDark), w, 0.35, d, x, 0.17, z);
     b.box(cushion, w - 0.05, 0.12, d - 0.05, x, 0.41, z);
@@ -114,7 +123,7 @@ function buildBus(): THREE.Group {
 
   // quầy trà sữa
   const tc = P.teaCart;
-  b.box(toon(C.mint), 1.6, 0.95, 0.9, tc.x, 0.48, tc.z);
+  b.box(toon(C.oiiBlue), 1.6, 0.95, 0.9, tc.x, 0.48, tc.z);
   b.box(toon(C.white), 1.7, 0.08, 1.0, tc.x, 0.98, tc.z);
   for (let i = 0; i < 4; i++) {
     b.cyl(
@@ -127,7 +136,7 @@ function buildBus(): THREE.Group {
     );
   }
   b.cyl(toon(C.ink), 0.04, 1.6, tc.x, 1.75, tc.z - 0.2);
-  b.add(toon(C.pink), new THREE.ConeGeometry(1.2, 0.5, 8), tc.x, 2.6, tc.z - 0.2);
+  b.add(toon(C.oiiYellow), new THREE.ConeGeometry(1.2, 0.5, 8), tc.x, 2.6, tc.z - 0.2);
   b.add(
     signMaterial("Trà sữa 🧋", { bg: "#ff8fab", fg: "#ffffff" }),
     new THREE.PlaneGeometry(1.4, 0.35),
@@ -138,7 +147,7 @@ function buildBus(): THREE.Group {
 
   // góc karaoke
   const k = P.karaoke;
-  b.box(toon("#8f7bd6"), 0.6, 1.0, 0.5, k.x + 0.6, 0.5, k.z);
+  b.box(toon(C.oiiBlue), 0.6, 1.0, 0.5, k.x + 0.6, 0.5, k.z);
   b.cyl(toon("#6b5b7b"), 0.18, 0.02, k.x + 0.6, 0.65, k.z - 0.26, Math.PI / 2);
   b.cyl(toon(C.ink), 0.03, 1.3, k.x - 0.2, 0.65, k.z - 0.1);
   b.sphere(toon("#c0c0d0"), 0.08, k.x - 0.2, 1.33, k.z - 0.1);
@@ -154,7 +163,7 @@ function buildBus(): THREE.Group {
 
   // máy meal deal
   const v = P.vending;
-  b.box(toon("#4f9df0"), 1.1, 2.0, 0.8, v.x, 1.0, v.z);
+  b.box(toon("#4e9297"), 1.1, 2.0, 0.8, v.x, 1.0, v.z);
   b.box(glow("#e9f6ff", 0.4, 1), 0.75, 1.1, 0.05, v.x - 0.08, 1.25, v.z + 0.41);
   b.add(
     signMaterial("MEAL DEAL £3.50", { bg: "#ffd166", fg: "#3b2f45" }),
@@ -211,7 +220,7 @@ function buildBus(): THREE.Group {
   // ô dựng sẵn
   const u = P.umbrellas;
   b.cyl(toon(C.ink), 0.22, 0.6, u.x, 0.3, u.z);
-  [C.pink, C.sky, C.lemon].forEach((c, i) => {
+  [C.oiiBlue, C.oiiYellow, C.accent].forEach((c, i) => {
     b.cyl(toon(C.ink), 0.02, 1.1, u.x - 0.1 + i * 0.1, 0.75, u.z, 0, 0, (i - 1) * 0.2);
     b.add(
       toon(c),
@@ -329,48 +338,56 @@ function Steam() {
 
 const TILE = 40;
 const TILE_COUNT = ROUTE_LENGTH / TILE;
-const BRIDGE_AT = LANDMARKS.find((l) => l.id === "tower-bridge")!.at;
 
-const TOY_HEIGHT: Record<string, number> = { shard: 21, "london-eye": 19 };
+/** Chiều cao "đồ chơi" (m) và bề rộng tối đa của từng địa danh trong khung hình. */
+const TOY: Partial<Record<LandmarkId, number>> = {
+  "big-ben": 20,
+  "london-eye": 19,
+  "tower-bridge": 15,
+  buckingham: 9,
+  "brighton-pier": 8,
+  stonehenge: 9,
+  bath: 10,
+  oxford: 14,
+  birmingham: 11,
+  "old-trafford": 9,
+  liverpool: 16,
+  "angel-north": 13,
+  edinburgh: 16,
+};
+const MAX_WIDTH = 60;
+const LANDMARK_Z = -46;
 const box3 = new THREE.Box3();
+const size = new THREE.Vector3();
 
 /**
- * Thu nhỏ địa danh về cỡ "đồ chơi" (~17 m) và đặt ở xa (~z −48), để cả công trình nằm gọn trong khung hình
+ * Đưa địa danh về cỡ "đồ chơi" và đặt ở xa phía sau bus, để cả công trình nằm gọn trong khung hình
  * khi bus chạy ngang qua.
  */
-function toyScale(lm: ReturnType<typeof buildLandmark>): ReturnType<typeof buildLandmark> {
+function toyScale(id: LandmarkId, lm: LandmarkObject): LandmarkObject {
   const inner = lm.group;
-  box3.setFromObject(inner);
-  const h = box3.max.y - G;
-  const id = LANDMARKS.find((l) => buildLandmarkIds.get(inner) === l.id)?.id ?? "";
-  const s = Math.min(1, (TOY_HEIGHT[id] ?? 17) / h);
-  const zc = (box3.min.z + box3.max.z) / 2;
+  box3.setFromObject(inner).getSize(size);
+  const s = Math.min((TOY[id] ?? 15) / size.y, MAX_WIDTH / size.x);
   inner.scale.setScalar(s);
-  inner.position.set(0, G - G * s, -48 - zc * s);
+  inner.position.set(0, G, LANDMARK_Z);
   const outer = new THREE.Group();
   outer.add(inner);
   return { group: outer, update: lm.update };
 }
-const buildLandmarkIds = new WeakMap<THREE.Object3D, string>();
 
-/** Cảnh London trôi qua: ô cảnh lặp lại + địa danh, vị trí tính từ giờ thật (giống nhau cho mọi người). */
+/** Cảnh UK trôi qua: ô cảnh lặp lại + địa danh, vị trí tính từ giờ thật (giống nhau cho mọi người). */
 function Scenery() {
   const tiles = useMemo(
     () =>
       Array.from({ length: TILE_COUNT }, (_, i) => {
         const at = i * TILE;
-        const dist = Math.abs(((at - BRIDGE_AT + ROUTE_LENGTH / 2) % ROUTE_LENGTH) - ROUTE_LENGTH / 2);
-        return { at, obj: buildTile(TILE, 100 + (i % 5), dist <= TILE * 1.2) };
+        const near = nearestLandmark(at);
+        return { at, obj: buildTile(TILE, 100 + i, near.terrain, near.houses) };
       }),
     [],
   );
   const marks = useMemo(
-    () =>
-      LANDMARKS.map((lm) => {
-        const built = buildLandmark(lm.id);
-        buildLandmarkIds.set(built.group, lm.id);
-        return { at: lm.at, ...toyScale(built) };
-      }),
+    () => LANDMARKS.map((lm) => ({ at: lm.at, ...toyScale(lm.id, buildLandmark(lm.id)) })),
     [],
   );
   const road = useRef<THREE.Group>(null);
@@ -397,7 +414,7 @@ function Scenery() {
           <planeGeometry args={[600, 14]} />
         </mesh>
         <mesh rotation-x={-Math.PI / 2} position={[0, G - 0.1, 0]} material={toon(C.grass)}>
-          <planeGeometry args={[600, 200]} />
+          <planeGeometry args={[600, 260]} />
         </mesh>
       </group>
       {tiles.map((t) => (

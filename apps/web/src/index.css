@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dusk: #3b2f45;
-  --color-lamp: #ffd166;
-  --color-bus: #ff5a5f;
-  --font-sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Baloo 2", "Be Vietnam Pro", system-ui, sans-serif;
+  --color-dusk: #1f2d4d;
+  --color-lamp: #fde3a0;
+  --color-bus: #4e9297;
+  --font-sans: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Nunito", system-ui, sans-serif;
 }
 
 :root {
-  --ink: #3b2f45;
-  --cream: #fff7ec;
-  --pink: #ff7aa2;
-  --pink-ink: #d9487a;
-  --lemon: #ffd96a;
-  --mint: #9de8c9;
+  /* theo website OiiMate */
+  --ink: #1f2d4d;
+  --cream: #f1f8ec;
+  --accent: #4e9297;
+  --accent-ink: #3c7479;
+  --sun: #fde3a0;
+  --blue: #a8d3d9;
+  --mint: #dcefe6;
   color-scheme: light;
 }
 
@@ -26,7 +28,7 @@ body,
 
 body {
   margin: 0;
-  background: #ffe6c9;
+  background: #f1f8ec;
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -74,4 +76,28 @@ body {
   .pop {
     animation: none;
   }
+}
+
+/* bong bóng chat kiểu "Oii." của OiiMate: viền màu, đuôi nhỏ */
+.say {
+  position: relative;
+  border: 2.5px solid var(--blue);
+  border-radius: 18px;
+  background: #ffffff;
+  color: var(--ink);
+  padding: 4px 12px;
+  font-weight: 700;
+}
+.say::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  bottom: -9px;
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-right: 2.5px solid var(--blue);
+  border-bottom: 2.5px solid var(--blue);
+  transform: rotate(35deg) skewX(10deg);
+  border-bottom-right-radius: 4px;
 }

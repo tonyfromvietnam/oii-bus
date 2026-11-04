@@ -43,7 +43,7 @@ export const game = {
     bubble: null,
     seatId: null,
     nickname: "Bánh Bao",
-    color: "#ff9eb5",
+    color: "#a8d3d9",
     hat: "beanie",
   } as PlayerState,
   input: {

@@ -24,7 +24,7 @@ export const vi = {
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
   scenes: {
-    bus: { name: "Bus Oii", sub: "tầng thượng, đang vòng quanh London" },
+    bus: { name: "Bus Oii", sub: "tầng thượng · đang vòng quanh UK" },
     library: { name: "Thư viện Oii", sub: "tầng dưới · suỵt, yên lặng nhé 🤫" },
   },
 
@@ -77,7 +77,7 @@ export const vi = {
     close: "Đóng",
     voiceLocked: "Voice mở sau 14 ngày hoặc khi bạn thành Đã tin cậy.",
     welcome:
-      "Chào mừng lên Bus Oii! Xe chạy vòng London cả cuối tuần. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
+      "Chào mừng lên Bus Oii! Xe chạy vòng quanh UK cả cuối tuần, từ London tới Edinburgh. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
     focusStart: "Bắt đầu tập trung",
     focusStop: "Dừng",
     focusing: "Đang tập trung",
@@ -104,7 +104,7 @@ export const vi = {
   prompts: {
     seat: "Ngồi",
     standUp: "Đứng dậy",
-    photo: "Chụp ảnh với địa danh",
+    photo: "Chụp ảnh với địa danh 📸",
     "bubble-tea": "Mua trà sữa £3.80",
     karaoke: "Hát karaoke",
     "meal-deal": "Mua meal deal £3.50",
@@ -154,14 +154,22 @@ export const vi = {
   },
 
   landmarks: {
-    "big-ben": { name: "Big Ben", joke: "Đồng hồ này đúng giờ hơn bus nhiều 😅" },
+    "big-ben": { name: "Big Ben · London", joke: "Đồng hồ này đúng giờ hơn bus nhiều 😅" },
     "london-eye": { name: "London Eye", joke: "Vé £30, ngắm từ bus thì free 🎡" },
     "tower-bridge": { name: "Tower Bridge", joke: "Không phải London Bridge đâu nha 🌉" },
-    "st-pauls": { name: "Nhà thờ St Paul's", joke: "Mái vòm to như cái bánh bao ⛪" },
-    shard: { name: "The Shard", joke: "Cao nhất UK, giá thuê nhà cũng vậy 🏙️" },
     buckingham: { name: "Cung điện Buckingham", joke: "Vua có ở nhà không ta? 👑" },
-    gherkin: { name: "The Gherkin", joke: "Quả dưa chuột khổng lồ 🥒" },
-    chinatown: { name: "Phố Tàu", joke: "Mì tôm, nước mắm và chút quê nhà 🍜" },
+    "brighton-pier": { name: "Brighton Pier", joke: "Biển Anh: gió nhiều hơn nắng, nhưng vẫn vui 🌊" },
+    stonehenge: { name: "Stonehenge · Wiltshire", joke: "5000 năm rồi vẫn chưa ai biết để làm gì 🪨" },
+    bath: { name: "Royal Crescent · Bath", joke: "Phim cổ trang quay ở đây suốt 🎩" },
+    oxford: { name: "Radcliffe Camera · Oxford", joke: "Thư viện đẹp thế này, deadline cũng dịu đi 📚" },
+    birmingham: { name: "Bullring · Birmingham", joke: "Toà nhà đính 15.000 cái đĩa bạc ✨" },
+    "old-trafford": {
+      name: "Old Trafford · Manchester",
+      joke: "Cuối tuần có trận thì cả thành phố đỏ rực ⚽",
+    },
+    liverpool: { name: "Royal Liver Building · Liverpool", joke: "Hai chú chim Liver canh bến cảng 🐦" },
+    "angel-north": { name: "Angel of the North · Gateshead", joke: "Sải cánh 54 m, rộng hơn máy bay 747 ✈️" },
+    edinburgh: { name: "Lâu đài Edinburgh", joke: "Lên Scotland rồi, nhớ mang áo ấm 🏴" },
   } satisfies Record<LandmarkId, { name: string; joke: string }>,
 
   quests: {

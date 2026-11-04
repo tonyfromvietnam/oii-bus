@@ -45,7 +45,7 @@ let seq = 0;
 
 export const useUi = create<UiState>((set, get) => ({
   scene: "bus",
-  me: { nickname: "Bánh Bao", color: "#ff9eb5", hat: "beanie" },
+  me: { nickname: "Bánh Bao", color: "#a8d3d9", hat: "beanie" },
   prompt: null,
   toast: null,
   log: [],

@@ -9,7 +9,7 @@ import { signMaterial } from "./signs";
 import { StaticBuilder } from "./StaticBuilder";
 
 const B = LIBRARY_SCENE.bounds;
-const BOOK_COLORS = ["#ff8fab", "#ffd166", "#8fd3ff", "#9de8c9", "#cdb8ff", "#ffb38a", "#f6f1e7", "#7fb3ff"];
+const BOOK_COLORS = ["#a8d3d9", "#fde3a0", "#4e9297", "#dcefe6", "#1f2d4d", "#f6c6cf", "#f6f1e7", "#ffd2b5"];
 
 function buildLibrary(): THREE.Group {
   const b = new StaticBuilder();
@@ -19,14 +19,14 @@ function buildLibrary(): THREE.Group {
   // sàn gỗ + thảm
   b.box(toon("#e2b583"), W, 0.2, D, 0, -0.1, 0);
   for (let x = B.minX; x < B.maxX; x += 0.9) b.box(toon("#d4a26f"), 0.04, 0.01, D, x, 0.002, 0);
-  b.add(toon("#ffd6e0"), new THREE.CircleGeometry(2.3, 32), L.nook.x, 0.012, L.nook.z, -Math.PI / 2);
-  b.box(toon("#cfe6ff"), 13, 0.012, 5.2, 0, 0.008, -0.45);
+  b.add(toon("#fde3a0"), new THREE.CircleGeometry(2.3, 32), L.nook.x, 0.012, L.nook.z, -Math.PI / 2);
+  b.box(toon("#dcefe6"), 13, 0.012, 5.2, 0, 0.008, -0.45);
   // tường xa (cửa sổ lớn) + hai tường bên
-  const wall = toon("#fff1dc");
+  const wall = toon("#eef6e8");
   b.box(wall, W, 5, 0.3, 0, 2.5, B.minZ - 0.15);
   b.box(wall, 0.3, 5, D, B.minX - 0.15, 2.5, 0);
   b.box(wall, 0.3, 5, D, B.maxX + 0.15, 2.5, 0);
-  b.box(toon("#f4c7a1"), W, 0.6, 0.32, 0, 0.3, B.minZ - 0.14);
+  b.box(toon("#4e9297"), W, 0.6, 0.32, 0, 0.3, B.minZ - 0.14);
   // kệ sách hai bên, đầy sách màu
   for (const side of [-1, 1]) {
     const sx = side * (B.maxX - 0.4);
@@ -87,9 +87,9 @@ function buildLibrary(): THREE.Group {
     [n.x - 1.1, Math.PI / 2],
     [n.x + 1.3, -Math.PI / 2],
   ] as const) {
-    b.box(toon(C.lilac), 0.9, 0.45, 0.9, cx, 0.25, n.z);
-    b.box(toon(C.lilac), 0.25, 0.7, 0.9, cx - Math.sin(rot) * 0.35, 0.7, n.z);
-    for (const az of [-0.42, 0.42]) b.box(toon("#b9a2f0"), 0.9, 0.3, 0.16, cx, 0.6, n.z + az);
+    b.box(toon(C.oiiBlue), 0.9, 0.45, 0.9, cx, 0.25, n.z);
+    b.box(toon(C.oiiBlue), 0.25, 0.7, 0.9, cx - Math.sin(rot) * 0.35, 0.7, n.z);
+    for (const az of [-0.42, 0.42]) b.box(toon("#8fc2ca"), 0.9, 0.3, 0.16, cx, 0.6, n.z + az);
   }
   b.cyl(toon(C.wood), 0.4, 0.05, n.x, 0.55, n.z + 0.2);
   b.cyl(toon(C.woodDark), 0.06, 0.55, n.x, 0.27, n.z + 0.2);
@@ -106,11 +106,11 @@ function buildLibrary(): THREE.Group {
   // radio lofi
   const r = L.radio;
   b.box(toon(C.woodDark), 1.2, 0.7, 0.5, r.x, 0.35, r.z);
-  b.box(toon("#ff8fab"), 0.9, 0.5, 0.4, r.x, 0.95, r.z);
+  b.box(toon("#4e9297"), 0.9, 0.5, 0.4, r.x, 0.95, r.z);
   b.cyl(toon(C.ink), 0.13, 0.02, r.x - 0.2, 0.95, r.z + 0.2, Math.PI / 2);
   b.box(toon(C.cream), 0.25, 0.15, 0.02, r.x + 0.22, 1.0, r.z + 0.205);
   b.add(
-    signMaterial("lofi radio ♪", { bg: "#3b2f45", fg: "#ffd166" }),
+    signMaterial("lofi radio ♪", { bg: "#1f2d4d", fg: "#fde3a0" }),
     new THREE.PlaneGeometry(0.9, 0.22),
     r.x,
     0.55,
@@ -121,7 +121,7 @@ function buildLibrary(): THREE.Group {
   for (let i = 0; i < 5; i++)
     b.box(toon(C.wood), 2.0, 0.25 + i * 0.3, 0.4, st.x, (0.25 + i * 0.3) / 2, st.z + 1.0 - i * 0.4);
   b.add(
-    signMaterial("", { bg: "#ff5a5f", fg: "#ffffff", lines: ["🚌 Lên tầng thượng"] }),
+    signMaterial("", { bg: "#4e9297", fg: "#ffffff", lines: ["🚌 Lên tầng thượng"] }),
     new THREE.PlaneGeometry(1.6, 0.4),
     st.x,
     2.3,
@@ -163,12 +163,12 @@ function makeSkylineTexture(): THREE.CanvasTexture {
   cv.height = h;
   const ctx = cv.getContext("2d")!;
   const sky = ctx.createLinearGradient(0, 0, 0, h);
-  sky.addColorStop(0, "#9fd8ff");
-  sky.addColorStop(1, "#ffe3c4");
+  sky.addColorStop(0, "#9fd2dc");
+  sky.addColorStop(1, "#f1f8ec");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
   const rnd = mulberry32(21);
-  const colors = ["#ffc7d1", "#ffe3a3", "#bfe8d6", "#cfd8ff", "#ffd2b5"];
+  const colors = ["#e9cf98", "#c46a55", "#f7f3ea", "#dcefe6", "#b9b3a8"];
   for (let x = 0; x < w;) {
     const bw = 60 + rnd() * 90;
     const bh = 70 + rnd() * 110;
@@ -238,7 +238,7 @@ function Notes() {
     ctx.font = "48px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#ff8fab";
+    ctx.fillStyle = "#4e9297";
     ctx.fillText("♪", 32, 34);
     const t = new THREE.CanvasTexture(cv);
     return new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false });

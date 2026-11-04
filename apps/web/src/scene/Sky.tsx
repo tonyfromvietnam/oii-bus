@@ -5,9 +5,9 @@ import { game } from "../game/state";
 import { applyDarkness } from "./materials";
 import { StaticBuilder } from "./StaticBuilder";
 
-const DAY = { top: new THREE.Color("#79c6ff"), bottom: new THREE.Color("#ffe6c9") };
+const DAY = { top: new THREE.Color("#9fd2dc"), bottom: new THREE.Color("#f1f8ec") };
 // khi London tối: hoàng hôn tím hồng, không bao giờ tối om
-const DUSK = { top: new THREE.Color("#9d95f2"), bottom: new THREE.Color("#ffd3c4") };
+const DUSK = { top: new THREE.Color("#8ea6cf"), bottom: new THREE.Color("#fde3c8") };
 
 /** Trời gradient pastel + mây bông + nắng ấm. Đổi sang hoàng hôn tím khi London tối thật. */
 export function Sky() {
@@ -66,7 +66,7 @@ export function Sky() {
         />
       </mesh>
       <primitive object={clouds} />
-      <hemisphereLight ref={hemi} args={["#e6f4ff", "#ffd9b8", 1.5]} />
+      <hemisphereLight ref={hemi} args={["#eef8f6", "#e9dcc4", 1.5]} />
       <directionalLight ref={sun} position={[30, 50, 40]} color="#fff1d6" intensity={2} />
     </>
   );
@@ -77,7 +77,7 @@ export function LibraryLights() {
   const { scene } = useThree();
   useEffect(() => {
     const prev = scene.background;
-    scene.background = new THREE.Color("#ffe9d1");
+    scene.background = new THREE.Color("#f1f8ec");
     return () => {
       scene.background = prev;
     };

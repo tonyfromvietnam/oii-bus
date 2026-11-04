@@ -29,8 +29,8 @@ export default function World() {
         gl={{ antialias: true, powerPreference: "high-performance" }}
         camera={{ fov: 42, near: 0.1, far: 420, position: [0, 9, 14] }}
         onCreated={({ gl }) => {
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.05;
+          gl.toneMapping = THREE.NeutralToneMapping;
+          gl.toneMappingExposure = 1.0;
         }}
         style={{ touchAction: "none" }}
       >
