@@ -15,7 +15,7 @@ git push -u origin main
 
 ## 2. Run it on your machine (optional)
 
-Needs Node 20+ and `corepack enable` (for pnpm 9).
+Needs Node 22+ and `corepack enable` (for pnpm 9).
 
 ```bash
 pnpm install
@@ -46,7 +46,7 @@ Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git
 | ---------------------- | ----------------------------------------------------------------------------- |
 | Build command          | `pnpm install --frozen-lockfile && pnpm --filter @oii-bus/web build:artifact` |
 | Build output directory | `apps/web/dist-artifact`                                                      |
-| Environment variable   | `NODE_VERSION` = `20`                                                         |
+| Environment variable   | `NODE_VERSION` = `22`                                                         |
 
 Then Custom domains → add `bus.duychinhdinh.com`.
 

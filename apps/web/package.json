@@ -2,6 +2,7 @@
   "name": "@oii-bus/web",
   "version": "0.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,10 +15,10 @@
     "build:artifact": "vite build --mode artifact"
   },
   "dependencies": {
-    "@react-three/drei": "9.117.3",
-    "@react-three/fiber": "8.17.10",
     "@oii-bus/shared": "workspace:*",
     "@oii-bus/world": "workspace:*",
+    "@react-three/drei": "9.117.3",
+    "@react-three/fiber": "8.17.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "0.170.0",
@@ -26,7 +27,7 @@
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "@tailwindcss/vite": "^4.0.0",
-    "@types/node": "^20.17.10",
+    "@types/node": "^22.20.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@types/three": "0.170.0",

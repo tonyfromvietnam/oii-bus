@@ -21,11 +21,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @oii-bus/web build:artifact
@@ -33,7 +33,7 @@ jobs:
         if: ${{ vars.PAGES_CNAME != '' }}
         run: echo "${{ vars.PAGES_CNAME }}" > apps/web/dist-artifact/CNAME
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: apps/web/dist-artifact
 

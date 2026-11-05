@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.webp binary
+
+pnpm-lock.yaml linguist-generated=true -diff
+docs/**/*.md linguist-documentation

@@ -42,7 +42,7 @@ flowchart LR
 | 1   | Repo GitHub `oii-bus` (Claude có quyền push) | Code, CI                                                | Cài Claude GitHub App cho repo                        |
 | 2   | Domain + quyền sửa DNS                       | `bus.` (web), `api.bus.` (server)                       | Web và API phải chung site để cookie đi qua WebSocket |
 | 3   | Cloudflare                                   | Pages (web), R2 (ảnh quest/bằng chứng), DNS             | Free tier đủ cho staging                              |
-| 4   | Fly.io (hoặc Railway)                        | Server Node 20, WebSocket bền                           | 1 máy shared-cpu-1x, region `lhr`                     |
+| 4   | Fly.io (hoặc Railway)                        | Server Node 22, WebSocket bền                           | 1 máy shared-cpu-1x, region `lhr`                     |
 | 5   | Neon (hoặc Supabase) Postgres                | Prisma                                                  | Lấy `DATABASE_URL`                                    |
 | 6   | Upstash Redis                                | Session, magic link, OTP, rate limit, hàng đợi se duyên | Lấy `REDIS_URL`                                       |
 | 7   | LiveKit Cloud                                | Voice theo khoảng cách                                  | `LIVEKIT_URL/API_KEY/API_SECRET`                      |

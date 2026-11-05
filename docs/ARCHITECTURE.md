@@ -13,7 +13,7 @@ flowchart LR
     LK_C["livekit-client<br/>(lazy-load)"]
   end
 
-  subgraph Server["Node 20 · 1 process (apps/server)"]
+  subgraph Server["Node 22 · 1 process (apps/server)"]
     API["Fastify<br/>auth · seat · voice token · quest · admin"]
     ROOMS["Colyseus<br/>StreetRoom × N instance"]
     VOICE["VoiceDirector<br/>2 Hz updateSubscriptions"]
