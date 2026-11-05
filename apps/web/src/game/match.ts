@@ -11,7 +11,6 @@ import {
 import { chime } from "../audio/sfx";
 import { viTemple } from "../copy/vi";
 import { game } from "./state";
-import { completeQuest } from "./handbook";
 import { ui } from "./ui";
 
 /**
@@ -103,7 +102,6 @@ export function startSearch(gender: Gender, seeking: Seeking) {
     recent.push(found.id);
     if (recent.length > 3) recent.shift();
     chime();
-    completeQuest("d7-duyen");
     ui().set({
       duyen: {
         ...ui().duyen,

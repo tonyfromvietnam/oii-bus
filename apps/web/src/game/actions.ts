@@ -6,32 +6,13 @@ import {
   sanitizeUserText,
   type Gesture,
 } from "@oii-bus/shared";
-import {
-  DUCKS,
-  SCENES,
-  landmarkStatus,
-  seatById,
-  type PlaceId,
-  type SceneId,
-  type Spot,
-} from "@oii-bus/world";
+import { DUCKS, SCENES, landmarkStatus, seatById, type SceneId, type Spot } from "@oii-bus/world";
 import { awardMerit, applyMerit, type MeritKind } from "@oii-bus/shared";
 import { lofi } from "../audio/lofi";
 import { bell, mo } from "../audio/sfx";
 import { vi, viTemple } from "../copy/vi";
 import { meritTotal } from "./match";
 import { bump, gainXp } from "./progress";
-import { PLACES, viHandbook } from "../copy/handbook";
-import {
-  buddyNear,
-  completeQuest,
-  floorUnlocked,
-  FLOOR_UNLOCK,
-  matchBuddy,
-  placeBuddyNearPlayer,
-  questAt,
-  useHandbook,
-} from "./handbook";
 import { XP } from "@oii-bus/shared";
 import { NPCS, type Npc } from "./npcs";
 import { progressQuest } from "./quests";
@@ -47,10 +28,6 @@ export type Interaction = { kind: "spot"; spot: Spot } | { kind: "duck"; id: str
 export function interactionLabel(i: Interaction): string {
   if (i.kind === "stand-up") return vi.prompts.standUp;
   if (i.kind === "duck") return vi.prompts.duck;
-  if (i.spot.kind === "place" && i.spot.placeId) {
-    const q = questAt(i.spot.placeId);
-    return q ? `📘 ${q.title}` : viHandbook.visit(PLACES[i.spot.placeId].name);
-  }
   return vi.prompts[i.spot.kind];
 }
 
@@ -94,17 +71,12 @@ function standUp() {
 
 export function goToScene(scene: SceneId) {
   const u = ui();
-  if (!floorUnlocked(scene)) {
-    u.showToast(viHandbook.locked(FLOOR_UNLOCK[scene]));
-    return;
-  }
   u.set({ fade: true });
   setTimeout(() => {
     const sp = SCENES[scene].spawn;
     Object.assign(game.player, { x: sp.x, z: sp.z, ry: sp.ry, pose: "stand", seatId: null });
     game.input.moveTarget = null;
     game.scene = scene;
-    placeBuddyNearPlayer();
     stopFocus();
     u.set({ scene, chatOpen: false, seatedAtDesk: false });
     if (scene === "library") {
@@ -113,8 +85,6 @@ export function goToScene(scene: SceneId) {
       u.showToast(vi.arrive.library);
     } else if (scene === "temple") {
       u.showToast(vi.arrive.temple);
-    } else if (scene === "street") {
-      u.showToast(vi.arrive.street);
     } else {
       u.showToast(vi.arrive.bus);
     }
@@ -229,8 +199,6 @@ export function interact() {
     case "donate":
       u.set({ donateOpen: true });
       return;
-    case "place":
-      return visitPlace(s.placeId!);
     case "matchmaker":
       u.set({ duyen: { ...u.duyen, open: true } });
       return;
@@ -273,7 +241,6 @@ export function gesture(id: Gesture) {
       }
     }
     progressQuest("wave", game.waved.size);
-    if (game.waved.size >= 3) completeQuest("d6-wave");
   }
 }
 
@@ -355,25 +322,4 @@ export function sitAndFocus() {
   game.input.moveTarget = null;
   ui().set({ seatedAtDesk: true });
   startFocus();
-}
-
-/** Ghé một địa điểm ở Phố Tân Sinh Viên: làm nhiệm vụ nếu có, không thì nghe một mẹo. */
-function visitPlace(id: PlaceId) {
-  const hb = useHandbook.getState();
-  const q = questAt(id);
-  const info = PLACES[id];
-  if (q) {
-    if (q.type === "buddy") return matchBuddy();
-    if (q.type === "duo") {
-      if (!hb.buddy) return ui().showToast(viHandbook.needBuddy);
-      if (!buddyNear()) return ui().showToast(viHandbook.buddyFar(hb.buddy.name));
-      game.player.gesture = { id: "cheers", until: game.time + 2 };
-      completeQuest(q.id);
-      return ui().showToast(q.explain);
-    }
-    return hb.set({ quest: q });
-  }
-  if (id === "busstop") return goToScene("bus");
-  if (id === "freshers" && !hb.buddy) return matchBuddy();
-  say(`${info.icon} ${info.npc}: ${info.hello}`, 5);
 }

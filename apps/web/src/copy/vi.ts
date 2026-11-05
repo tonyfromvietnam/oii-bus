@@ -24,7 +24,6 @@ export const vi = {
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
   scenes: {
-    street: { name: "Phố Tân Sinh Viên", sub: "nơi Oii-Bus thả người mới", short: "Phố", icon: "🏘️" },
     bus: { name: "Oii-Bus", sub: "tầng thượng · Cùng thành phố", short: "Bus", icon: "🚌" },
     library: {
       name: "Thư viện Oii",
@@ -74,7 +73,6 @@ export const vi = {
     bus: "🚌 Ngắm UK, đi dạo, tìm bạn cùng thành phố",
     library: "📚 Yên lặng, nghe lofi, tập trung học",
     temple: "🏮 Thắp hương để tăng duyên, rồi xin quẻ",
-    street: "🏘️ Phố Tân Sinh Viên: làm 3 nhiệm vụ mỗi ngày nhé",
   },
 
   hud: {
@@ -147,7 +145,6 @@ export const vi = {
     "wish-tree": "Buộc chỉ đỏ lên cây duyên",
     matchmaker: "Xin quẻ se duyên 💞",
     bell: "Thỉnh chuông 🔔",
-    place: "Ghé vào",
   },
 
   lines: {

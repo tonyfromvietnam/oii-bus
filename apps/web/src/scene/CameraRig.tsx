@@ -13,12 +13,11 @@ const desired = new THREE.Vector3();
 
 /** Góc camera cố định (không xoay, không zoom) để ai cũng điều khiển được. */
 const OFFSET = {
-  street: new THREE.Vector3(0, 5.2, 12),
   bus: new THREE.Vector3(0, 3.7, 12.5),
   library: new THREE.Vector3(0, 7.5, 10),
   temple: new THREE.Vector3(0, 6.5, 12),
 };
-const FOV = { street: 46, bus: 50, library: 42, temple: 46 };
+const FOV = { bus: 50, library: 42, temple: 46 };
 
 /** Camera theo sau từ góc chéo cố định. Chạm/bấm sàn để đi tới. */
 export function CameraRig() {
@@ -63,11 +62,7 @@ export function CameraRig() {
     // giữ khung hình trong phạm vi scene để không phí màn hình
     const marginX = narrow ? 2 : 7;
     const cx = Math.min(b.maxX - marginX, Math.max(b.minX + marginX, p.x));
-    target.set(
-      cx,
-      game.scene === "bus" ? 1.9 : game.scene === "street" ? 1.4 : 0.6,
-      p.z * 0.4 - (game.scene === "bus" ? 1 : game.scene === "street" ? 1.6 : 0),
-    );
+    target.set(cx, game.scene === "bus" ? 1.9 : 0.6, p.z * 0.4 - (game.scene === "bus" ? 1 : 0));
     const off = OFFSET[game.scene];
     if (narrow) {
       // màn dọc (điện thoại): nhìn cao hơn để sàn chiếm nhiều chỗ, trời vẫn còn ở phía trên

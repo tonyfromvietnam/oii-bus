@@ -3,7 +3,6 @@ import { landmarkStatus, type SceneId } from "@oii-bus/world";
 import { useEffect, useRef, useState } from "react";
 import { vi, viCity, viTemple } from "../copy/vi";
 import { donate, goToScene } from "../game/actions";
-import { FLOOR_UNLOCK, floorUnlocked, useHandbook } from "../game/handbook";
 import { CITY_PEOPLE, createPlan, peopleIn, toggleJoin } from "../game/city";
 import { cancelSearch, endSession, sendDm, startSearch } from "../game/match";
 import { game } from "../game/state";
@@ -21,9 +20,7 @@ const label = "text-xs font-extrabold tracking-wide uppercase opacity-60";
 /** Thang máy giữa ba tầng (không cần đi tìm cầu thang). */
 export function FloorSwitcher() {
   const scene = useUi((s) => s.scene);
-  useHandbook((s) => s.done);
-  useHandbook((s) => s.chapterDoneOn);
-  const floors: SceneId[] = ["street", "bus", "library", "temple"];
+  const floors: SceneId[] = ["bus", "library", "temple"];
   return (
     <div className={`${pill} pointer-events-auto flex gap-1 p-1`} data-testid="floors">
       {floors.map((f) => (
@@ -31,12 +28,10 @@ export function FloorSwitcher() {
           key={f}
           type="button"
           onClick={() => f !== scene && goToScene(f)}
-          className={`rounded-full px-2.5 py-1.5 text-sm font-bold ${f === scene ? "bg-[var(--ink)] text-white" : ""} ${floorUnlocked(f) ? "" : "opacity-45"}`}
+          className={`rounded-full px-3 py-1.5 text-sm font-bold ${f === scene ? "bg-[var(--ink)] text-white" : ""}`}
           aria-pressed={f === scene}
-          title={floorUnlocked(f) ? vi.scenes[f].name : `Mở sau Ngày ${FLOOR_UNLOCK[f]}`}
         >
-          {floorUnlocked(f) ? vi.scenes[f].icon : "🔒"}{" "}
-          <span className="hidden sm:inline">{vi.scenes[f].short}</span>
+          {vi.scenes[f].icon} <span>{vi.scenes[f].short}</span>
         </button>
       ))}
     </div>

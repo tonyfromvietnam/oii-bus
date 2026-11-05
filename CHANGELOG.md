@@ -8,9 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Added
 
 - **Daily loop**: daily streak (London days), XP with Oyster-zone levels (Zone 6 → Zone 1 → Zone VIP), "today" stats, a daily quote, and a shareable 1080×1350 card with a referral link (`?ref=`).
-- **Cẩm nang tân sinh viên (Newcomer handbook)**: a 7-day campaign played as real actions on a new low-poly **UK high street** floor (Arrivals, bank, letting agent, GP, pharmacy, supermarket, Asian grocer, laundrette, café, station, Freshers tent, Oii-Bus stop). 3 quests per day (quizzes, put-in-order, pick-the-right-items, duo tasks with a buddy, chat, wave); a new chapter opens the next London day, and finishing chapters unlocks the bus, library, same-city board and temple. Content comes from the OiiMate Q&A sheet, with gov.uk / NHS / TfL links, plus a searchable Q&A bank.
-- **Bạn đồng hành (buddy matching)**: on day 1 you are paired with a buddy at the Freshers tent. They follow you between floors, chat 1:1 and are needed for the duo quests; day 7 ends at the temple matchmaking.
-- `?unlock=all` opens every floor and chapter (for testing and demos).
+- **Hộ chiếu tân sinh viên**: a 12-step first-30-days checklist for new students in the UK (eVisa, GP, council tax, NI number, Railcard…) with tips and official links; each step gives XP.
 
 - Standard repository files: README with badges and screenshots, LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, issue and PR templates, CODEOWNERS.
 - Dependabot for npm and GitHub Actions; CodeQL code scanning.
