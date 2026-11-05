@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
 
 test("desktop: lên Bus Oii, đi lại bằng bàn phím, thấy địa danh", async ({ page, isMobile }) => {
   test.skip(isMobile, "chỉ desktop");
-  await expect(page.getByTestId("where")).toContainText(/Đang qua|Sắp tới/);
+  await expect(page.getByTestId("where")).toContainText(/📍|→/);
   const before = await pos(page);
   await page.keyboard.down("KeyD");
   // máy CI render chậm (không GPU): giữ phím tới khi nhân vật đi được một đoạn

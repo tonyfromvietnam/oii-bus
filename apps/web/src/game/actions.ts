@@ -80,11 +80,11 @@ export function goToScene(scene: SceneId) {
     if (scene === "library") {
       lofi.start();
       u.set({ music: { ...ui().music, on: true } });
-      u.showToast(vi.lines.toLibrary);
+      u.showToast(vi.arrive.library);
     } else if (scene === "temple") {
-      u.showToast(vi.lines.toTemple);
+      u.showToast(vi.arrive.temple);
     } else {
-      u.showToast(vi.lines.toBus);
+      u.showToast(vi.arrive.bus);
     }
     setTimeout(() => ui().set({ fade: false }), 120);
   }, 280);
@@ -304,3 +304,14 @@ export function donate(amount: number) {
 
 /** Gõ mõ khi đang tụng kinh. */
 export const tapMo = mo;
+
+/** Thư viện: một chạm là ngồi vào bàn trống và bắt đầu tập trung. */
+export function sitAndFocus() {
+  const p = game.player;
+  const free = SCENES.library.seats.find((s) => s.desk && !isSeatTaken(s.id));
+  if (!free) return;
+  Object.assign(p, { pose: "sit", seatId: free.id, x: free.x, z: free.z, ry: free.ry });
+  game.input.moveTarget = null;
+  ui().set({ seatedAtDesk: true });
+  startFocus();
+}

@@ -6,6 +6,8 @@ Phần tiếp theo của OiiMate: lên **Bus Oii**, chiếc bus siêu to chạy 
 
 Thiết kế thế giới: [`docs/WORLD.md`](docs/WORLD.md).
 
+**Bắt đầu / deploy nhanh: [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md)**
+
 Kiến trúc: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Triển khai: [`docs/DEPLOY.md`](docs/DEPLOY.md) · Moderation: [`docs/MODERATION.md`](docs/MODERATION.md)
 
 ## Chạy local

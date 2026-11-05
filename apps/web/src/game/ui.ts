@@ -10,6 +10,7 @@ export interface LogEntry {
   who: string;
   text: string;
   band: DistanceBand | "system" | "self";
+  at: number;
 }
 
 export interface Me {
@@ -63,7 +64,7 @@ export interface UiState {
   city: CityState;
   setPrompt: (p: string | null) => void;
   showToast: (text: string) => void;
-  pushLog: (e: Omit<LogEntry, "id">) => void;
+  pushLog: (e: Omit<LogEntry, "id" | "at">) => void;
   set: (patch: Partial<UiState>) => void;
   spend: (amount: number) => boolean;
 }
@@ -105,7 +106,7 @@ export const useUi = create<UiState>((set, get) => ({
     if (get().prompt !== prompt) set({ prompt });
   },
   showToast: (text) => set({ toast: { id: ++seq, text } }),
-  pushLog: (e) => set((s) => ({ log: [...s.log, { ...e, id: ++seq }].slice(-30) })),
+  pushLog: (e) => set((s) => ({ log: [...s.log, { ...e, id: ++seq, at: Date.now() }].slice(-30) })),
   set: (patch) => set(patch),
   spend: (amount) => {
     const w = get().wallet;

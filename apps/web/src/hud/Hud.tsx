@@ -1,14 +1,14 @@
-import { GESTURES, HATS, type Hat } from "@xom-oii/shared";
+import { GESTURES, HATS, luckPercent, type Hat } from "@xom-oii/shared";
 import { SCENES } from "@xom-oii/world";
 import { useEffect, useRef, useState } from "react";
 import { vi } from "../copy/vi";
-import { gesture, interact, sendChat, setVolume, startFocus, stopFocus, toggleMusic } from "../game/actions";
+import { gesture, interact, sendChat, setVolume, sitAndFocus, stopFocus, toggleMusic } from "../game/actions";
 import { FOCUS_GOAL_SECONDS } from "../game/GameLoop";
 import { QUEST_GOALS, QUEST_ORDER } from "../game/quests";
 import { game } from "../game/state";
 import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
-import { CityPanel, CityPassing, DonatePanel, FloorSwitcher, MeritChip, SeDuyenPanel } from "./Panels";
+import { CityPanel, DonatePanel, FloorSwitcher, SeDuyenPanel } from "./Panels";
 import { viCity } from "../copy/vi";
 
 const isTouch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
@@ -44,70 +44,39 @@ export function Hud() {
 function TopBar() {
   const scene = useUi((s) => s.scene);
   const where = useUi((s) => s.where);
-  const wallet = useUi((s) => s.wallet);
   const set = useUi((s) => s.set);
   const doneCount = useUi((s) => Object.keys(s.done).length);
   return (
-    <div className="absolute top-0 right-0 left-0 flex flex-wrap items-start justify-between gap-2 p-3">
-      <div className="flex max-w-[min(440px,100%)] flex-col gap-1.5">
-        <div className={`${pill} px-4 py-2`}>
-          <div className="font-display text-lg leading-tight font-extrabold">
-            <OiiLogo /> {vi.scenes[scene].name}
-            <span className="ml-2 text-xs font-medium opacity-60">{vi.scenes[scene].sub}</span>
-          </div>
+    <div className="absolute top-0 right-0 left-0 flex items-start justify-between gap-2 p-3">
+      <div className={`${pill} flex min-w-0 items-center gap-2 py-1.5 pr-4 pl-2`}>
+        <OiiLogo />
+        <div className="min-w-0">
+          <div className="truncate text-base leading-tight font-black">{vi.scenes[scene].name}</div>
           {scene === "bus" && (
-            <div className="text-sm" data-testid="where">
-              {where.now ? (
-                <>
-                  <b>
-                    {vi.hud.now} {where.now}
-                  </b>{" "}
-                  · <span className="opacity-75">{where.joke}</span>
-                </>
-              ) : (
-                <>
-                  {vi.hud.next} <b>{where.next}</b> · {where.meters}
-                  {vi.hud.meters}
-                </>
-              )}
+            <div className="truncate text-xs font-semibold opacity-70" data-testid="where">
+              {where.now ? `📍 ${where.now}` : `→ ${where.next}`}
             </div>
           )}
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          <FloorSwitcher />
-          {scene === "temple" && <MeritChip />}
-          <CityPassing />
-        </div>
-        <div className="px-2 text-[11px] font-medium text-[var(--ink)] opacity-60">
-          {vi.hud.offlineBadge} · 💷 £{wallet.toFixed(2)}
+          {scene === "temple" && <MeritLine />}
+          {scene === "library" && (
+            <div className="text-xs font-semibold opacity-70">🤫 {vi.hud.quietShort}</div>
+          )}
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1.5">
         <MusicControl />
-        {scene === "bus" && (
-          <button
-            type="button"
-            onClick={() => set({ city: { ...useUi.getState().city, open: true } })}
-            className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
-            data-testid="city-button"
-          >
-            📍 <span className="hidden sm:inline">{viCity.button}</span>
-          </button>
-        )}
         <button
           type="button"
           onClick={() => set({ questsOpen: true })}
-          className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
+          className={`${pill} pointer-events-auto h-10 px-3 text-sm font-bold`}
+          aria-label={vi.hud.quests}
         >
-          ⭐ <span className="hidden sm:inline">{vi.hud.quests}</span>{" "}
-          <span className="opacity-60">
-            {doneCount}/{QUEST_ORDER.length}
-          </span>
+          ⭐ {doneCount}/{QUEST_ORDER.length}
         </button>
         <button
           type="button"
           onClick={() => set({ helpOpen: true })}
-          className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
+          className={`${pill} pointer-events-auto h-10 w-10 text-sm font-bold`}
           aria-label={vi.hud.help}
         >
           ?
@@ -141,7 +110,7 @@ function MusicControl() {
         className={`rounded-full px-3 py-1 text-sm font-semibold ${music.on ? "bg-[var(--accent)] text-white" : ""}`}
         data-testid="music"
       >
-        🎧 {music.on ? vi.hud.musicOn : vi.hud.musicOff}
+        🎧<span className="sr-only">{music.on ? vi.hud.musicOn : vi.hud.musicOff}</span>
       </button>
       {music.on && (
         <input
@@ -153,7 +122,7 @@ function MusicControl() {
           value={music.volume}
           aria-label={vi.hud.volume}
           onChange={(e) => setVolume(Number(e.target.value))}
-          className="w-20 accent-[var(--accent)]"
+          className="w-16 accent-[var(--accent)]"
         />
       )}
     </div>
@@ -162,9 +131,16 @@ function MusicControl() {
 
 function ChatLog() {
   const log = useUi((s) => s.log);
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  // chỉ 3 câu gần nhất, mỗi câu hiện 8 giây
+  const recent = log.filter((e) => now - e.at < 8000).slice(-3);
   return (
-    <div className="absolute top-28 right-3 hidden w-[min(300px,40vw)] flex-col items-end gap-1 sm:flex">
-      {log.slice(-6).map((e) => (
+    <div className="absolute top-20 right-3 hidden w-[min(280px,40vw)] flex-col items-end gap-1 sm:flex">
+      {recent.map((e) => (
         <LogLine key={e.id} entry={e} />
       ))}
     </div>
@@ -210,70 +186,73 @@ function BottomBar() {
   const desk = useUi((s) => s.seatedAtDesk);
   const focus = useUi((s) => s.focus);
   const set = useUi((s) => s.set);
+  const [emotes, setEmotes] = useState(false);
   const quiet = SCENES[scene].quiet;
   const mm = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   return (
     <div className="absolute right-0 bottom-0 left-0 flex flex-col items-center gap-2 p-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-      {desk && (
-        <div className={`${pill} pointer-events-auto flex items-center gap-3 px-4 py-2`}>
-          {focus.running ? (
-            <>
-              <span className="text-sm">
-                ⏱️ {vi.hud.focusing} <b className="tabular-nums">{mm(focus.seconds)}</b>
-                <span className="opacity-60"> / {mm(FOCUS_GOAL_SECONDS)}</span>
-              </span>
-              <button
-                type="button"
-                onClick={stopFocus}
-                className="rounded-full bg-black/10 px-3 py-1 text-sm"
-              >
-                {vi.hud.focusStop}
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={startFocus}
-              className="rounded-full bg-[var(--accent)] px-4 py-1 text-sm font-bold text-white"
-            >
-              ⏱️ {vi.hud.focusStart}
-            </button>
-          )}
-        </div>
-      )}
       {prompt && !chatOpen && (
         <button
           type="button"
           onClick={interact}
-          className="pop pointer-events-auto rounded-full bg-[var(--accent)] px-5 py-2 text-[15px] font-bold text-white shadow-md"
+          className="pop pointer-events-auto rounded-full bg-[var(--ink)] px-5 py-2 text-[15px] font-bold text-white shadow-md"
           data-testid="prompt"
         >
           {!isTouch && <kbd className="mr-2 rounded-md bg-white/25 px-1.5">E</kbd>}
           {prompt}
         </button>
       )}
+      {desk && focus.running ? (
+        <div className={`${pill} pointer-events-auto flex items-center gap-3 px-4 py-2`}>
+          <span className="text-sm">
+            ⏱️ <b className="tabular-nums">{mm(focus.seconds)}</b>
+            <span className="opacity-60"> / {mm(FOCUS_GOAL_SECONDS)}</span>
+          </span>
+          <button
+            type="button"
+            onClick={stopFocus}
+            className="rounded-full bg-black/10 px-3 py-1 text-sm font-bold"
+          >
+            {vi.hud.focusStop}
+          </button>
+        </div>
+      ) : (
+        !chatOpen && <MainAction />
+      )}
       {chatOpen ? (
         <ChatInput onClose={() => set({ chatOpen: false })} />
       ) : (
         <div className="flex flex-wrap items-center justify-center gap-1.5">
-          {GESTURES.map((g, i) => (
-            <button
-              key={g}
-              type="button"
-              onClick={() => gesture(g)}
-              className={`${pill} pointer-events-auto h-11 w-11 text-xl transition-transform active:scale-90`}
-              title={`${i + 1} · ${vi.gestures[g].label}`}
-            >
-              {vi.gestures[g].emoji}
-            </button>
-          ))}
+          <FloorSwitcher />
+          {emotes &&
+            GESTURES.map((g, i) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => gesture(g)}
+                className={`${pill} pop pointer-events-auto h-10 w-10 text-lg transition-transform active:scale-90`}
+                title={`${i + 1} · ${vi.gestures[g].label}`}
+              >
+                {vi.gestures[g].emoji}
+              </button>
+            ))}
+          <button
+            type="button"
+            onClick={() => setEmotes(!emotes)}
+            className={`${pill} pointer-events-auto h-10 w-10 text-lg ${emotes ? "ring-2 ring-[var(--accent)]" : ""}`}
+            aria-label={vi.hud.emotes}
+            aria-expanded={emotes}
+          >
+            {emotes ? "✕" : "😊"}
+          </button>
           <button
             type="button"
             onClick={() => (quiet ? useUi.getState().showToast(vi.hud.quietChat) : set({ chatOpen: true }))}
-            className={`${pill} pointer-events-auto h-11 px-4 text-sm font-semibold ${quiet ? "opacity-50" : ""}`}
+            className={`${pill} pointer-events-auto h-10 w-10 text-lg ${quiet ? "opacity-40" : ""}`}
+            aria-label={vi.hud.chat}
           >
-            💬 {vi.hud.chat}
+            💬
           </button>
         </div>
       )}
@@ -281,11 +260,61 @@ function BottomBar() {
         <button
           type="button"
           onClick={interact}
-          className="pointer-events-auto absolute right-5 bottom-28 h-16 w-16 rounded-full bg-[var(--accent)] text-xl font-extrabold text-white shadow-lg"
+          className="pointer-events-auto absolute right-5 bottom-40 h-16 w-16 rounded-full bg-[var(--ink)] text-xl font-extrabold text-white shadow-lg"
         >
           E
         </button>
       )}
+    </div>
+  );
+}
+
+/** Mỗi tầng một việc chính, nút to, rõ ràng. */
+function MainAction() {
+  const scene = useUi((s) => s.scene);
+  const where = useUi((s) => s.where);
+  const set = useUi((s) => s.set);
+  const big =
+    "pointer-events-auto rounded-full bg-[var(--accent)] px-6 py-3 text-base font-black text-white shadow-lg active:scale-[0.98]";
+  if (scene === "bus") {
+    return (
+      <button
+        type="button"
+        className={big}
+        data-testid="city-button"
+        onClick={() => set({ city: { ...useUi.getState().city, open: true } })}
+      >
+        📍 {viCity.button}
+        {where.now && <span className="ml-1 font-semibold opacity-80">· {cityShort(where.now)}</span>}
+      </button>
+    );
+  }
+  if (scene === "library") {
+    return (
+      <button type="button" className={big} data-testid="focus-button" onClick={sitAndFocus}>
+        ⏱️ {vi.hud.focusStart}
+      </button>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className={big}
+      data-testid="seduyen-button"
+      onClick={() => set({ duyen: { ...useUi.getState().duyen, open: true } })}
+    >
+      💞 {vi.hud.seDuyen}
+    </button>
+  );
+}
+
+const cityShort = (landmark: string) => landmark.split("·").pop()!.trim();
+
+function MeritLine() {
+  const merit = useUi((s) => s.merit);
+  return (
+    <div className="text-xs font-semibold opacity-70" data-testid="merit">
+      🪷 {merit} · 💞 +{luckPercent(merit)}%
     </div>
   );
 }
@@ -488,7 +517,6 @@ function Creator() {
         data-testid="creator"
       >
         <h2 className="font-display text-2xl font-extrabold">{vi.creator.title} 👋</h2>
-        <p className="text-sm opacity-70">{vi.creator.body}</p>
         <label htmlFor="nickname" className="mt-3 block text-xs font-bold tracking-wide uppercase opacity-60">
           {vi.creator.nickname}
         </label>

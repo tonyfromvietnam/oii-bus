@@ -24,7 +24,10 @@ export default function World() {
   const scene = useUi((s) => s.scene);
   const me = useUi((s) => s.me);
   useEffect(() => {
-    useUi.getState().pushLog({ who: vi.scenes.bus.name, text: vi.hud.welcome, band: "system" });
+    // một câu chào ngắn sau khi tạo nhân vật
+    return useUi.subscribe((s, prev) => {
+      if (prev.creatorOpen && !s.creatorOpen) s.showToast(vi.arrive.bus);
+    });
   }, []);
   return (
     <div className="relative h-full w-full overflow-hidden" data-testid="world">

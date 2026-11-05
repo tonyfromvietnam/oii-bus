@@ -28,7 +28,7 @@ export function FloorSwitcher() {
           key={f}
           type="button"
           onClick={() => f !== scene && goToScene(f)}
-          className={`rounded-full px-3 py-1 text-sm font-bold ${f === scene ? "bg-[var(--accent)] text-white" : ""}`}
+          className={`rounded-full px-3 py-1.5 text-sm font-bold ${f === scene ? "bg-[var(--ink)] text-white" : ""}`}
           aria-pressed={f === scene}
         >
           {vi.scenes[f].icon} <span>{vi.scenes[f].short}</span>

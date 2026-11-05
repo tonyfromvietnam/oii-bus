@@ -34,7 +34,7 @@ export function Joystick() {
     <div
       ref={base}
       data-testid="joystick"
-      className="pointer-events-auto absolute bottom-24 left-6 h-32 w-32 touch-none rounded-full border border-white/25 bg-white/10 backdrop-blur-sm"
+      className="pointer-events-auto absolute bottom-36 left-5 h-32 w-32 touch-none rounded-full border border-white/25 bg-white/10 backdrop-blur-sm"
       onPointerDown={(e) => {
         active.current = e.pointerId;
         e.currentTarget.setPointerCapture(e.pointerId);

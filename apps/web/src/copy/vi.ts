@@ -24,7 +24,7 @@ export const vi = {
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
   scenes: {
-    bus: { name: "Bus Oii", sub: "tầng thượng · Cùng thành phố", short: "Tầng thượng", icon: "🏙️" },
+    bus: { name: "Bus Oii", sub: "tầng thượng · Cùng thành phố", short: "Bus", icon: "🚌" },
     library: {
       name: "Thư viện Oii",
       sub: "tầng giữa · suỵt, yên lặng nhé 🤫",
@@ -68,7 +68,17 @@ export const vi = {
     headphones: "Tai nghe",
   },
 
+  /** Một câu ngắn khi tới mỗi tầng: tầng này để làm gì. */
+  arrive: {
+    bus: "🚌 Ngắm UK, đi dạo, tìm bạn cùng thành phố",
+    library: "📚 Yên lặng, nghe lofi, tập trung học",
+    temple: "🏮 Thắp hương để tăng duyên, rồi xin quẻ",
+  },
+
   hud: {
+    quietShort: "Yên lặng · lofi",
+    emotes: "Biểu cảm",
+    seDuyen: "Xin quẻ se duyên",
     offlineBadge: "Bản thử · offline · bạn bè trên xe là bot",
     now: "Đang qua",
     next: "Sắp tới",
@@ -89,7 +99,7 @@ export const vi = {
     voiceLocked: "Voice mở sau 14 ngày hoặc khi bạn thành Đã tin cậy.",
     welcome:
       "Chào mừng lên Bus Oii! Xe chạy vòng quanh UK cả cuối tuần, từ London tới Edinburgh. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
-    focusStart: "Bắt đầu tập trung",
+    focusStart: "Tập trung",
     focusStop: "Dừng",
     focusing: "Đang tập trung",
   },
