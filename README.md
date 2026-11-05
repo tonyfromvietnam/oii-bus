@@ -11,7 +11,8 @@ _Thích ở một mình nhưng thỉnh thoảng sợ cô đơn._
 [![CodeQL](https://github.com/tonyfromvietnam/oii-bus/actions/workflows/codeql.yml/badge.svg)](https://github.com/tonyfromvietnam/oii-bus/actions/workflows/codeql.yml)
 ![Node](https://img.shields.io/badge/node-%E2%89%A522-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
-![License](https://img.shields.io/badge/license-proprietary-lightgrey)
+[![License: MIT](https://img.shields.io/badge/license-MIT-4e9297)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-4e9297)](CONTRIBUTING.md)
 
 [**Live prototype**](https://tonyfromvietnam.github.io/oii-bus/) · [Architecture](docs/ARCHITECTURE.md) · [World design](docs/WORLD.md) · [Deploy](docs/DEPLOY.md) · [Changelog](CHANGELOG.md)
 
@@ -23,7 +24,7 @@ _Thích ở một mình nhưng thỉnh thoảng sợ cô đơn._
 
 ## About
 
-Oii-Bus is the companion world to **[OiiMate](https://oii-mate.com)**, the anonymous 1:1 Messenger chat for Vietnamese students in the UK.
+Oii-Bus is the open-source companion world to **[OiiMate](https://oii-mate.com)**, the anonymous 1:1 Messenger chat for Vietnamese students in the UK.
 OiiMate gives you _someone to talk to_; Oii-Bus gives you _somewhere with people_.
 
 Everyone rides one giant three-floor bus that loops past 28 UK landmarks, from Big Ben to the Giant's Causeway.
@@ -126,7 +127,8 @@ The full stack (API, database, Redis, LiveKit, email) is described in [docs/DEPL
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md) first.
+Oii-Bus is open source and contributions are very welcome: new landmarks, translations, bug fixes, accessibility and performance work.
+Look for issues labelled [`good first issue`](https://github.com/tonyfromvietnam/oii-bus/labels/good%20first%20issue). Please read [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md) first.
 Report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 ## Tiếng Việt
@@ -136,4 +138,6 @@ Tài liệu kỹ thuật chi tiết (tiếng Việt) nằm trong thư mục [`do
 
 ## License
 
-Copyright © 2026 Duy Chinh Dinh. All rights reserved. See [LICENSE](LICENSE).
+[MIT](LICENSE) © 2026 Duy Chinh Dinh and Oii-Bus contributors.
+
+Oii-Bus is an independent fan-made world; UK landmarks are depicted as stylised toy models for illustration.

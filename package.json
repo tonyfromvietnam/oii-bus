@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "private": true,
   "description": "A cosy 3D bus touring the UK where Vietnamese students hang out, study and meet new people. Companion world to OiiMate.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "Duy Chinh Dinh",
   "homepage": "https://tonyfromvietnam.github.io/oii-bus/",
   "repository": {

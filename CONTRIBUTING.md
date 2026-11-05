@@ -2,6 +2,10 @@
 
 Thanks for helping make Oii-Bus better. This guide explains how we work.
 
+## License of contributions
+
+Oii-Bus is licensed under the [MIT License](LICENSE). By submitting a pull request you agree that your contribution is licensed under the same terms.
+
 ## Ground rules
 
 - Be kind. Everyone here follows the [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -55,6 +59,15 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm --filter @oii-bus/web test:e2e   # when you touch UI or controls
+```
+
+## Configuring the GitHub repository (maintainers)
+
+Repository settings (description, topics, security features, branch protection, labels) are applied with one script:
+
+```bash
+gh auth login
+./scripts/setup-github.sh
 ```
 
 ## Adding a landmark

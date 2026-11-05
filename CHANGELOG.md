@@ -10,9 +10,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Standard repository files: README with badges and screenshots, LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, issue and PR templates, CODEOWNERS.
 - Dependabot for npm and GitHub Actions; CodeQL code scanning.
 - `.editorconfig` and `.gitattributes` for consistent formatting and line endings.
+- `scripts/setup-github.sh`: one command to apply repository settings (topics, security features, `main` ruleset, labels).
 
 ### Changed
 
+- **Oii-Bus is now open source under the MIT License.**
 - Node.js 22 LTS is now the minimum (Node 20 reached end of life).
 - GitHub Actions updated to current major versions.
 
