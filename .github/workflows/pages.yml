@@ -32,7 +32,7 @@ jobs:
       - name: Custom domain (tuỳ chọn)
         if: ${{ vars.PAGES_CNAME != '' }}
         run: echo "${{ vars.PAGES_CNAME }}" > apps/web/dist-artifact/CNAME
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v4
         with:
           path: apps/web/dist-artifact
