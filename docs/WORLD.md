@@ -49,3 +49,16 @@ Tìm 5 vịt cao su · chụp ảnh với 3 địa danh · mua trà sữa · ng�
 ## Graphics
 
 Nhân vật giữ cel-shading. Cảnh vật dùng vật liệu PBR, texture tự vẽ (sàn gỗ, nhựa đường, cỏ, gạch, đá lát), ánh sáng môi trường (RoomEnvironment), bóng đổ mềm. `?lowfx` tắt bóng đổ cho máy yếu.
+
+## Vòng lặp hằng ngày (giữ chân người chơi)
+
+| Phần                   | Cách hoạt động                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔥 Chuỗi ngày          | Mỗi ngày (theo giờ London) lên xe một lần: +10 XP, cộng thêm 2 XP mỗi ngày liên tiếp (tối đa +20). Bỏ một ngày thì chuỗi bắt đầu lại, giữ kỷ lục. |
+| Cấp theo zone          | Zone 6 "Mới lên xe" → Zone 1 "Dân London chính hiệu" → Zone VIP "Tiền bối Oii-Bus" (`ZONES` trong `packages/shared/src/progress.ts`).             |
+| XP                     | Thắp hương 5 · tụng kinh 1/10 giây · tập trung 2/phút (+20 mỗi phiên) · tem 15 · chụp địa danh 5 · kế hoạch 10 · việc tân sinh viên 10… (`XP`).   |
+| Thẻ khoe               | Ảnh 1080×1350 kiểu OiiMate: mascot, chuỗi ngày, cấp, 3 số liệu hôm nay, câu của ngày, link mời `?ref=`.                                           |
+| Câu mỗi ngày           | Ai mở cùng ngày thấy cùng câu (`pickForDay`).                                                                                                     |
+| Hộ chiếu tân sinh viên | 12 việc trong 30 ngày đầu, mỗi việc có mẹo và link chính thức (gov.uk, NHS, TfL…).                                                                |
+
+Bản thử lưu tiến độ trong trình duyệt. Từ M3, server giữ XP/chuỗi ngày và ghi nhận lượt mời, dùng cùng hàm trong `@oii-bus/shared`.

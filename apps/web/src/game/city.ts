@@ -2,6 +2,8 @@ import { PlanCreateSchema, cityName, type CityId, type PlanCreate } from "@oii-b
 import { viCity } from "../copy/vi";
 import { progressQuest } from "./quests";
 import { ui } from "./ui";
+import { gainXp } from "./progress";
+import { XP } from "@oii-bus/shared";
 
 /**
  * "Cùng thành phố" — bản thử offline. Người và kế hoạch "ví dụ" là dữ liệu mẫu.
@@ -118,6 +120,7 @@ export function createPlan(input: unknown): boolean {
   };
   ui().set({ city: { ...c, plans: [plan, ...c.plans], tab: "plans" } });
   ui().showToast(viCity.created);
+  gainXp(XP.plan);
   progressQuest("plan", 1);
   return true;
 }

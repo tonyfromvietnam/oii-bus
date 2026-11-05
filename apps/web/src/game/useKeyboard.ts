@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { gesture, interact } from "./actions";
 import { game } from "./state";
 import { useUi } from "./ui";
+import { useProgress } from "./progress";
 
 /** Bàn phím desktop. Bỏ qua khi đang gõ hoặc khi đang mở bảng. */
 export function useKeyboard() {
@@ -32,6 +33,7 @@ export function useKeyboard() {
       if (e.code === "KeyE" && !e.repeat) interact();
       if (e.code === "KeyQ" && !e.repeat) ui.set({ questsOpen: true });
       if (e.code === "KeyC" && !e.repeat) ui.set({ city: { ...ui.city, open: true } });
+      if (e.code === "KeyP" && !e.repeat) useProgress.getState().set({ open: true });
       const n = Number(e.key);
       if (!e.repeat && n >= 1 && n <= GESTURES.length) gesture(GESTURES[n - 1]!);
       if (e.code.startsWith("Arrow")) e.preventDefault();

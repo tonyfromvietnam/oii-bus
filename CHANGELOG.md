@@ -7,6 +7,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- **Daily loop**: daily streak (London days), XP with Oyster-zone levels (Zone 6 → Zone 1 → Zone VIP), "today" stats, a daily quote, and a shareable 1080×1350 card with a referral link (`?ref=`).
+- **Hộ chiếu tân sinh viên**: a 12-step first-30-days checklist for new students in the UK (eVisa, GP, council tax, NI number, Railcard…) with tips and official links; each step gives XP.
+
 - Standard repository files: README with badges and screenshots, LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, issue and PR templates, CODEOWNERS.
 - Dependabot for npm and GitHub Actions; CodeQL code scanning.
 - `.editorconfig` and `.gitattributes` for consistent formatting and line endings.

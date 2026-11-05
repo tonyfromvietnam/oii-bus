@@ -90,3 +90,18 @@ test("desktop: Cùng thành phố — chọn thành phố và đăng kế hoạc
   await page.getByTestId("plan-create").click();
   await expect(page.getByTestId("plans")).toContainText("Đi ăn lẩu cuối tuần");
 });
+
+test("desktop: vòng lặp hằng ngày — chuỗi ngày, cấp zone, thẻ khoe, hộ chiếu tân sinh viên", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "chỉ desktop");
+  await expect(page.getByTestId("profile-chip")).toContainText("Zone 6");
+  await page.getByTestId("profile-chip").click();
+  await expect(page.getByTestId("level")).toContainText("Zone 6");
+  await page.getByTestId("make-card").click();
+  await expect(page.getByTestId("share-card").locator("img")).toBeVisible();
+  await page.getByTestId("profile").getByRole("button", { name: "Tân sinh viên" }).click();
+  await page.locator("#nc-gp").check();
+  await expect(page.getByTestId("newcomer")).toContainText("1/12");
+});

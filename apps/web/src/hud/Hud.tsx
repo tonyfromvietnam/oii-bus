@@ -9,6 +9,7 @@ import { game } from "../game/state";
 import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
 import { CityPanel, DonatePanel, FloorSwitcher, SeDuyenPanel } from "./Panels";
+import { ProfileChip, ProfilePanel } from "./Profile";
 import { viCity } from "../copy/vi";
 
 const isTouch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
@@ -31,6 +32,7 @@ export function Hud() {
       <DonatePanel />
       <SeDuyenPanel />
       <CityPanel />
+      <ProfilePanel />
       <Help />
       <Creator />
       <div
@@ -64,6 +66,7 @@ function TopBar() {
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
+        <ProfileChip />
         <MusicControl />
         <button
           type="button"

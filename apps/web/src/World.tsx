@@ -6,6 +6,7 @@ import { GameLoop } from "./game/GameLoop";
 import { NPCS } from "./game/npcs";
 import { game } from "./game/state";
 import { useUi } from "./game/ui";
+import { dailyCheckIn, readReferral } from "./game/progress";
 import { useKeyboard } from "./game/useKeyboard";
 import { Hud } from "./hud/Hud";
 import { Avatar } from "./scene/Avatar";
@@ -24,9 +25,13 @@ export default function World() {
   const scene = useUi((s) => s.scene);
   const me = useUi((s) => s.me);
   useEffect(() => {
-    // một câu chào ngắn sau khi tạo nhân vật
+    readReferral();
+    // lên xe (sau khi tạo nhân vật): điểm danh chuỗi ngày, rồi câu chào ngắn
     return useUi.subscribe((s, prev) => {
-      if (prev.creatorOpen && !s.creatorOpen) s.showToast(vi.arrive.bus);
+      if (prev.creatorOpen && !s.creatorOpen) {
+        s.showToast(vi.arrive.bus);
+        setTimeout(dailyCheckIn, 2200);
+      }
     });
   }, []);
   return (

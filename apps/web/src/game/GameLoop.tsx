@@ -3,6 +3,8 @@ import { CHANT_SECONDS, londonDarkness } from "@oii-bus/shared";
 import { SCENES, landmarkStatus, resolveCollisions, routeOffset } from "@oii-bus/world";
 import { vi, viTemple } from "../copy/vi";
 import { endSession } from "./match";
+import { bump, gainXp } from "./progress";
+import { XP } from "@oii-bus/shared";
 import { seatById } from "@oii-bus/world";
 import { earnMerit, findInteraction, interactionLabel, npcSays, tapMo } from "./actions";
 import { NPCS, randomWalkable } from "./npcs";
@@ -108,7 +110,10 @@ export function GameLoop() {
       }
       if (Math.floor(game.chantElapsed / CHANT_SECONDS) !== Math.floor(before / CHANT_SECONDS)) {
         const pts = earnMerit("chant", 1, true);
-        if (pts > 0) p.bubble = { text: viTemple.chant(pts), until: game.time + 2 };
+        if (pts > 0) {
+          p.bubble = { text: viTemple.chant(pts), until: game.time + 2 };
+          gainXp(XP.chantTick);
+        }
       }
     } else {
       game.chantElapsed = 0;
@@ -123,8 +128,14 @@ export function GameLoop() {
       const s = Math.floor(game.focus.elapsed);
       if (s !== ui().focus.seconds) {
         ui().set({ focus: { running: true, seconds: s } });
+        // mỗi phút tập trung: +XP và tính vào "hôm nay"
+        if (s > 0 && s % 60 === 0) {
+          gainXp(XP.focusMinute);
+          bump("focusMinutes");
+        }
         if (s === FOCUS_GOAL_SECONDS) {
           ui().showToast(vi.lines.focusDone);
+          gainXp(XP.focusSession);
           progressQuest("focus", 1);
         }
       }

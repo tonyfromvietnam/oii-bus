@@ -12,6 +12,8 @@ import { lofi } from "../audio/lofi";
 import { bell, mo } from "../audio/sfx";
 import { vi, viTemple } from "../copy/vi";
 import { meritTotal } from "./match";
+import { bump, gainXp } from "./progress";
+import { XP } from "@oii-bus/shared";
 import { NPCS, type Npc } from "./npcs";
 import { progressQuest } from "./quests";
 import { game } from "./state";
@@ -111,6 +113,7 @@ export function interact() {
   if (i.kind === "stand-up") return standUp();
   if (i.kind === "duck") {
     game.ducksFound.add(i.id);
+    gainXp(XP.duck);
     u.showToast(vi.lines.duck(game.ducksFound.size));
     progressQuest("ducks", game.ducksFound.size);
     return;
@@ -133,6 +136,7 @@ export function interact() {
       p.gesture = { id: "cheers", until: game.time + 1.5 };
       if (game.photos.has(current.id)) return u.showToast(vi.lines.photoAgain(name));
       game.photos.add(current.id);
+      gainXp(XP.photo);
       u.showToast(vi.lines.photoTaken(name));
       progressQuest("photos", game.photos.size);
       return;
@@ -141,6 +145,7 @@ export function interact() {
       if (p.holding === "tea") return u.showToast(vi.lines.teaHolding);
       if (!u.spend(3.8)) return u.showToast(vi.lines.broke);
       p.holding = "tea";
+      gainXp(XP.bubbleTea);
       u.showToast(vi.lines.teaBought);
       progressQuest("tea", 1);
       return;
@@ -172,6 +177,8 @@ export function interact() {
         p.holding = null;
         p.gesture = { id: "sorry", until: game.time + 2.5 };
         u.showToast(viTemple.incense(pts));
+        gainXp(XP.incense);
+        bump("incense");
         progressQuest("incense", 1);
       }
       return;
@@ -229,6 +236,7 @@ export function gesture(id: Gesture) {
       if (n.scene !== game.scene || game.waved.has(n.id)) continue;
       if (distance2D(n, p) < 4.5) {
         game.waved.add(n.id);
+        gainXp(XP.wave);
         n.gesture = { id: n.mode === "study" ? "hug" : "wave", until: game.time + 2.5 };
       }
     }

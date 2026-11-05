@@ -1,5 +1,7 @@
 import { vi, type QuestId } from "../copy/vi";
 import { ui } from "./ui";
+import { bump, gainXp } from "./progress";
+import { XP } from "@oii-bus/shared";
 
 /** Mục tiêu của từng quest (bản thử offline; từ M5 do admin tạo và duyệt). */
 export const QUEST_GOALS: Record<QuestId, number> = {
@@ -32,6 +34,8 @@ export function progressQuest(id: QuestId, value: number) {
   u.set({ progress: { ...u.progress, [id]: v } });
   if (v >= QUEST_GOALS[id]) {
     u.set({ done: { ...ui().done, [id]: true } });
+    gainXp(XP.stamp);
+    bump("done");
     setTimeout(() => ui().showToast(vi.quests.stampEarned(vi.quests.items[id].stamp)), 300);
   }
 }
