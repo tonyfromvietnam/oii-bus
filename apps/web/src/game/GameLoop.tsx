@@ -1,9 +1,9 @@
 import { useFrame } from "@react-three/fiber";
-import { CHANT_SECONDS, londonDarkness } from "@xom-oii/shared";
-import { SCENES, landmarkStatus, resolveCollisions, routeOffset } from "@xom-oii/world";
+import { CHANT_SECONDS, londonDarkness } from "@oii-bus/shared";
+import { SCENES, landmarkStatus, resolveCollisions, routeOffset } from "@oii-bus/world";
 import { vi, viTemple } from "../copy/vi";
 import { endSession } from "./match";
-import { seatById } from "@xom-oii/world";
+import { seatById } from "@oii-bus/world";
 import { earnMerit, findInteraction, interactionLabel, npcSays, tapMo } from "./actions";
 import { NPCS, randomWalkable } from "./npcs";
 import { progressQuest } from "./quests";

@@ -1,5 +1,5 @@
-import type { CityId, DistanceBand, Gender, Hat, Seeking } from "@xom-oii/shared";
-import type { SceneId } from "@xom-oii/world";
+import type { CityId, DistanceBand, Gender, Hat, Seeking } from "@oii-bus/shared";
+import type { SceneId } from "@oii-bus/world";
 import { create } from "zustand";
 import type { QuestId } from "../copy/vi";
 import { SAMPLE_PLANS, type Plan } from "./city";

@@ -1,5 +1,5 @@
 {
-  "name": "@xom-oii/web",
+  "name": "@oii-bus/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -16,8 +16,8 @@
   "dependencies": {
     "@react-three/drei": "9.117.3",
     "@react-three/fiber": "8.17.10",
-    "@xom-oii/shared": "workspace:*",
-    "@xom-oii/world": "workspace:*",
+    "@oii-bus/shared": "workspace:*",
+    "@oii-bus/world": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "0.170.0",

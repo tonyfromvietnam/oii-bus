@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { TEMPLE_PROPS as T, TEMPLE_SCENE, mulberry32 } from "@xom-oii/world";
+import { TEMPLE_PROPS as T, TEMPLE_SCENE, mulberry32 } from "@oii-bus/world";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { C, glow, mat, metal, shiny, texMat } from "./materials";

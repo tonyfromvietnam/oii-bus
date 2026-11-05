@@ -2,16 +2,16 @@
 
 ## 1. Create the GitHub repo and push
 
-1. On GitHub, create an **empty** repo named `xom-oii` (no README, no .gitignore).
+1. On GitHub, create an **empty** repo named `oii-bus` (no README, no .gitignore).
    - Public = GitHub Pages is free. Private needs a paid GitHub plan for Pages (or use Cloudflare Pages, step 3B).
 2. From this folder:
 
 ```bash
-git remote add origin git@github.com:<your-user>/xom-oii.git
+git remote add origin git@github.com:<your-user>/oii-bus.git
 git push -u origin main
 ```
 
-(If you received `xom-oii.bundle` instead of a folder: `git clone xom-oii.bundle xom-oii && cd xom-oii`, then the two commands above.)
+(If you received `oii-bus.bundle` instead of a folder: `git clone oii-bus.bundle oii-bus && cd oii-bus`, then the two commands above.)
 
 ## 2. Run it on your machine (optional)
 
@@ -30,33 +30,33 @@ Open http://localhost:5173/?preview to enter the bus straight away (skips the we
 
 1. Repo → **Settings → Pages → Source: GitHub Actions**.
 2. Push to `main` (or Actions → "Deploy prototype (GitHub Pages)" → Run workflow).
-3. Link: `https://<your-user>.github.io/xom-oii/`
+3. Link: `https://<your-user>.github.io/oii-bus/`
 
-Custom domain `xom.duychinhdinh.com`:
+Custom domain `bus.duychinhdinh.com`:
 
-1. Repo → Settings → Secrets and variables → Actions → **Variables** → add `PAGES_CNAME` = `xom.duychinhdinh.com`.
-2. At your DNS provider: `CNAME  xom  →  <your-user>.github.io`
-3. Repo → Settings → Pages → Custom domain → `xom.duychinhdinh.com`, tick "Enforce HTTPS".
+1. Repo → Settings → Secrets and variables → Actions → **Variables** → add `PAGES_CNAME` = `bus.duychinhdinh.com`.
+2. At your DNS provider: `CNAME  bus  →  <your-user>.github.io`
+3. Repo → Settings → Pages → Custom domain → `bus.duychinhdinh.com`, tick "Enforce HTTPS".
 
 ### B. Cloudflare Pages (alternative, works with private repos)
 
-Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick `xom-oii`:
+Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick `oii-bus`:
 
 | Setting                | Value                                                                         |
 | ---------------------- | ----------------------------------------------------------------------------- |
-| Build command          | `pnpm install --frozen-lockfile && pnpm --filter @xom-oii/web build:artifact` |
+| Build command          | `pnpm install --frozen-lockfile && pnpm --filter @oii-bus/web build:artifact` |
 | Build output directory | `apps/web/dist-artifact`                                                      |
 | Environment variable   | `NODE_VERSION` = `20`                                                         |
 
-Then Custom domains → add `xom.duychinhdinh.com`.
+Then Custom domains → add `bus.duychinhdinh.com`.
 
 ### C. Inside your existing website
 
 ```bash
-pnpm --filter @xom-oii/web build:artifact
+pnpm --filter @oii-bus/web build:artifact
 ```
 
-Copy the three files in `apps/web/dist-artifact/` (`index.html`, `app.js`, `app.css`) into a `xom/` folder of your website → `duychinhdinh.com/xom/`.
+Copy the three files in `apps/web/dist-artifact/` (`index.html`, `app.js`, `app.css`) into an `oii-bus/` folder of your website → `duychinhdinh.com/oii-bus/`.
 
 ## 4. CI
 

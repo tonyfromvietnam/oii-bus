@@ -1,5 +1,5 @@
-import { emptyLedger, type Gesture, type Hat } from "@xom-oii/shared";
-import { SCENES, type SceneId } from "@xom-oii/world";
+import { emptyLedger, type Gesture, type Hat } from "@oii-bus/shared";
+import { SCENES, type SceneId } from "@oii-bus/world";
 
 /**
  * Trạng thái mô phỏng, thay đổi mỗi frame → để ngoài React (mutable) cho nhẹ.
@@ -68,7 +68,7 @@ export type Game = typeof game;
 // Debug cho Playwright smoke test (chỉ đọc). Bản offline: không có dữ liệu nhạy cảm.
 declare global {
   interface Window {
-    __xom?: Game;
+    __oiiBus?: Game;
   }
 }
-if (typeof window !== "undefined") window.__xom = game;
+if (typeof window !== "undefined") window.__oiiBus = game;

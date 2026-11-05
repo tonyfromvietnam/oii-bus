@@ -7,14 +7,14 @@ import {
   type Gender,
   type MatchCandidate,
   type Seeking,
-} from "@xom-oii/shared";
+} from "@oii-bus/shared";
 import { chime } from "../audio/sfx";
 import { viTemple } from "../copy/vi";
 import { game } from "./state";
 import { ui } from "./ui";
 
 /**
- * Se duyên 1:1 — bản thử offline. Thuật toán ghép là hàm thật trong `@xom-oii/shared` (pickMatch),
+ * Se duyên 1:1 — bản thử offline. Thuật toán ghép là hàm thật trong `@oii-bus/shared` (pickMatch),
  * chỉ có "người lạ" là bot. Từ M2: hàng đợi ở Redis, server gọi matchQueue() mỗi giây.
  */
 export interface DmMessage {
@@ -30,7 +30,7 @@ interface Stranger extends MatchCandidate {
 }
 
 const LINES_F = [
-  "Hi! Bạn cũng đi Bus Oii à 😄",
+  "Hi! Bạn cũng đi Oii-Bus à 😄",
   "Mình học ở đây được 1 năm rồi. Bạn năm mấy?",
   "Cuối tuần bạn hay làm gì? Mình hay đi chợ Á mua đồ nấu 🍜",
   "Bạn thắp hương cầu gì đấy, kể đi 😆",
@@ -43,7 +43,7 @@ const LINES_M = [
   "Bạn ở thành phố nào thế?",
   "Hôm qua mình thử nấu phở, nước dùng hơi… thiếu hồn 😅",
   "Bạn có hay đi thư viện tầng giữa không, nhạc lofi chill lắm.",
-  "Vui quá, hẹn gặp lại bạn ở Xóm Oii nhé!",
+  "Vui quá, hẹn gặp lại bạn ở Oii-Bus nhé!",
 ];
 
 const s = (id: string, name: string, gender: Gender, city: CityId, merit: number): Stranger => ({

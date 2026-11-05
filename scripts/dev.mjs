@@ -3,14 +3,14 @@
 import { spawnSync, spawn } from "node:child_process";
 import { copyFileSync, existsSync } from "node:fs";
 
-const log = (msg) => console.log(`\x1b[33m[xom-oii]\x1b[0m ${msg}`);
+const log = (msg) => console.log(`\x1b[33m[oii-bus]\x1b[0m ${msg}`);
 
 if (!existsSync(".env")) {
   copyFileSync(".env.example", ".env");
   log("Đã tạo .env từ .env.example");
 }
 
-const skipInfra = process.argv.includes("--no-infra") || process.env.XOM_SKIP_INFRA === "1";
+const skipInfra = process.argv.includes("--no-infra") || process.env.OIIBUS_SKIP_INFRA === "1";
 const hasDocker = spawnSync("docker", ["info"], { stdio: "ignore" }).status === 0;
 
 if (skipInfra) {

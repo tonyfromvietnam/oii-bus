@@ -18,7 +18,7 @@ import { Temple } from "./scene/Temple";
 /** `?lowfx`: tắt bóng đổ, giảm độ phân giải (máy yếu, test tự động). */
 const LOW_FX = typeof location !== "undefined" && new URLSearchParams(location.search).has("lowfx");
 
-/** Xóm Oii: tầng thượng Bus Oii (mặc định) và thư viện tầng dưới. Lazy-load từ App. */
+/** Oii-Bus: tầng thượng Oii-Bus (mặc định) và thư viện tầng dưới. Lazy-load từ App. */
 export default function World() {
   useKeyboard();
   const scene = useUi((s) => s.scene);

@@ -9,7 +9,7 @@ import {
   routeToLocalX,
 } from "../src";
 
-describe("tuyến Bus Oii vòng quanh UK", () => {
+describe("tuyến Oii-Bus vòng quanh UK", () => {
   it("offset tính từ giờ thật, quay vòng", () => {
     expect(routeOffset(0)).toBe(0);
     expect(routeOffset(1000)).toBeCloseTo(BUS_SPEED);
@@ -54,7 +54,7 @@ describe("tuyến Bus Oii vòng quanh UK", () => {
 
 describe("thành phố của địa danh", () => {
   it("mỗi địa danh gắn với một thành phố trong danh sách", async () => {
-    const { CITIES } = await import("@xom-oii/shared");
+    const { CITIES } = await import("@oii-bus/shared");
     const ids = new Set(CITIES.map((c) => c.id));
     for (const lm of LANDMARKS) expect(ids.has(lm.city)).toBe(true);
   });

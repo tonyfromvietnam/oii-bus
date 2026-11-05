@@ -1,4 +1,4 @@
-import { GESTURES } from "@xom-oii/shared";
+import { GESTURES } from "@oii-bus/shared";
 import { useEffect } from "react";
 import { gesture, interact } from "./actions";
 import { game } from "./state";

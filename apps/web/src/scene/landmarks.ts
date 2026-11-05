@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { mulberry32, type HouseStyle, type LandmarkId, type Terrain } from "@xom-oii/world";
+import { mulberry32, type HouseStyle, type LandmarkId, type Terrain } from "@oii-bus/world";
 import { signMaterial } from "./signs";
 import { C, glow, mat, shiny, texMat } from "./materials";
 import { StaticBuilder } from "./StaticBuilder";

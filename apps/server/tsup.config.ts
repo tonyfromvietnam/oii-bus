@@ -8,5 +8,5 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   // Gói workspace xuất thẳng TypeScript nguồn → bundle vào để chạy được bằng node.
-  noExternal: [/^@xom-oii\//],
+  noExternal: [/^@oii-bus\//],
 });

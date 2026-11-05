@@ -1,4 +1,4 @@
-// Data model Xóm Oii (brief §6). Ẩn danh: không có tên thật, email chỉ lưu dạng hash.
+// Data model Oii-Bus (brief §6). Ẩn danh: không có tên thật, email chỉ lưu dạng hash.
 
 generator client {
   provider = "prisma-client-js"

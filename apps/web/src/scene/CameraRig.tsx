@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { SCENES } from "@xom-oii/world";
+import { SCENES } from "@oii-bus/world";
 import { useEffect } from "react";
 import * as THREE from "three";
 import { game } from "../game/state";

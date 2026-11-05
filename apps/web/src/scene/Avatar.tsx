@@ -1,6 +1,6 @@
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import type { Hat } from "@xom-oii/shared";
+import type { Hat } from "@oii-bus/shared";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { vi } from "../copy/vi";

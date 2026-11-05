@@ -1,7 +1,7 @@
 /**
  * "Phúc đức" ở Chùa Cầu Duyên: thắp hương, tụng kinh, công đức, buộc chỉ đỏ, thỉnh chuông.
  * Có cooldown và trần mỗi ngày để không ai "cày" được: làm đều đặn quan trọng hơn làm nhiều.
- * Điểm reset mỗi tuần (khi Xóm Oii đóng cửa tối Chủ nhật).
+ * Điểm reset mỗi tuần (khi Oii-Bus đóng cửa tối Chủ nhật).
  */
 export const MERIT_KINDS = ["incense", "chant", "donate", "wish", "bell"] as const;
 export type MeritKind = (typeof MERIT_KINDS)[number];

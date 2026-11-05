@@ -1,5 +1,5 @@
 {
-  "name": "@xom-oii/world",
+  "name": "@oii-bus/world",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@xom-oii/shared": "workspace:*"
+    "@oii-bus/shared": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^2.1.8"

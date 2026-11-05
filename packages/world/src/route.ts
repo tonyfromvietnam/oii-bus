@@ -1,8 +1,8 @@
-import type { CityId } from "@xom-oii/shared";
+import type { CityId } from "@oii-bus/shared";
 import { wrapCentered } from "./util";
 
 /**
- * Tuyến Bus Oii vòng quanh UK. Bus đứng yên trong toạ độ của nó; cảnh vật trôi qua.
+ * Tuyến Oii-Bus vòng quanh UK. Bus đứng yên trong toạ độ của nó; cảnh vật trôi qua.
  * Vị trí trên tuyến tính từ giờ thật (ms) → mọi người, mọi instance thấy cùng một địa danh cùng lúc,
  * không cần server đồng bộ thêm gì.
  */

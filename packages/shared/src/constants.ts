@@ -37,7 +37,7 @@ export const MAGIC_LINK_TTL_MS = 5 * 60_000;
 export const OTP_TTL_MS = 10 * 60_000;
 export const OTP_MAX_ATTEMPTS = 5;
 export const SESSION_TTL_MS = 14 * 24 * 60 * 60_000;
-export const SESSION_COOKIE = "xom_sid";
+export const SESSION_COOKIE = "oiibus_sid";
 
 // --- Dữ liệu ---
 export const CHAT_LOG_RETENTION_DAYS = 14;

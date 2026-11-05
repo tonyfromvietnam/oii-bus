@@ -1,4 +1,4 @@
-import { closingAt, isStreetOpen, nextOpeningAt } from "@xom-oii/shared";
+import { closingAt, isStreetOpen, nextOpeningAt } from "@oii-bus/shared";
 import type { FastifyPluginAsync } from "fastify";
 import type { Env } from "../config";
 

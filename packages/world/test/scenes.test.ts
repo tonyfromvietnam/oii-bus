@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AVATAR_RADIUS } from "@xom-oii/shared";
+import { AVATAR_RADIUS } from "@oii-bus/shared";
 import { DUCKS, SCENES, circleIntersectsBox } from "../src";
 
 const inside = (p: { x: number; z: number }, b: { minX: number; maxX: number; minZ: number; maxZ: number }) =>

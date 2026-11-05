@@ -1,5 +1,5 @@
-import { GESTURES, HATS, luckPercent, type Hat } from "@xom-oii/shared";
-import { SCENES } from "@xom-oii/world";
+import { GESTURES, HATS, cityName, luckPercent, type Hat } from "@oii-bus/shared";
+import { SCENES, landmarkStatus } from "@oii-bus/world";
 import { useEffect, useRef, useState } from "react";
 import { vi } from "../copy/vi";
 import { gesture, interact, sendChat, setVolume, sitAndFocus, stopFocus, toggleMusic } from "../game/actions";
@@ -285,7 +285,7 @@ function MainAction() {
         onClick={() => set({ city: { ...useUi.getState().city, open: true } })}
       >
         📍 {viCity.button}
-        {where.now && <span className="ml-1 font-semibold opacity-80">· {cityShort(where.now)}</span>}
+        {where.now && <span className="ml-1 font-semibold opacity-80">· {currentCity()}</span>}
       </button>
     );
   }
@@ -308,7 +308,11 @@ function MainAction() {
   );
 }
 
-const cityShort = (landmark: string) => landmark.split("·").pop()!.trim();
+/** Thành phố của địa danh đang đi qua (London, Manchester…). */
+const currentCity = () => {
+  const lm = landmarkStatus(game.route).current;
+  return lm ? cityName(lm.city) : "";
+};
 
 function MeritLine() {
   const merit = useUi((s) => s.merit);
@@ -470,7 +474,7 @@ function Help() {
 }
 
 const COLORS = ["#a8d3d9", "#fde3a0", "#c5e3d3", "#f6c6cf", "#d6ccf2", "#ffd2b5"];
-const STORE_KEY = "xom-oii:me";
+const STORE_KEY = "oii-bus:me";
 
 function loadMe(): Me | null {
   try {

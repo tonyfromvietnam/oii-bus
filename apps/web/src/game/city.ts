@@ -1,4 +1,4 @@
-import { PlanCreateSchema, cityName, type CityId, type PlanCreate } from "@xom-oii/shared";
+import { PlanCreateSchema, cityName, type CityId, type PlanCreate } from "@oii-bus/shared";
 import { viCity } from "../copy/vi";
 import { progressQuest } from "./quests";
 import { ui } from "./ui";

@@ -1,7 +1,7 @@
 import { box, type AABB } from "./coords";
 
 /**
- * Hai không gian của Xóm Oii (bản vẽ lại sau review M1):
+ * Hai không gian của Oii-Bus (bản vẽ lại sau review M1):
  *  - "bus": tầng trên mui trần của chiếc bus hai tầng siêu to chạy vòng London. Mặc định, mọi người ở đây.
  *    Tầng thượng còn là nơi tìm người cùng thành phố và rủ nhau lên kế hoạch đi chơi.
  *  - "library": tầng giữa là thư viện yên lặng, nghe lofi, không chat chữ.

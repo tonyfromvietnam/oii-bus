@@ -1,8 +1,8 @@
-# Xóm Oii
+# Oii-Bus
 
 > Thích ở một mình nhưng thỉnh thoảng sợ cô đơn.
 
-Phần tiếp theo của OiiMate: lên **Bus Oii**, chiếc bus siêu to chạy vòng quanh UK qua 28 địa danh. Tầng thượng tìm người cùng thành phố và rủ nhau đi chơi; tầng giữa là thư viện lofi; tầng dưới cùng là Chùa Cầu Duyên (thắp hương, tích phúc đức, xin quẻ se duyên 1:1). Nhân vật chibi dễ thương, điều khiển đơn giản, có nhiệm vụ tuần và hộ chiếu tem. Mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).
+Phần tiếp theo của OiiMate: lên **Oii-Bus**, chiếc bus siêu to chạy vòng quanh UK qua 28 địa danh. Tầng thượng tìm người cùng thành phố và rủ nhau đi chơi; tầng giữa là thư viện lofi; tầng dưới cùng là Chùa Cầu Duyên (thắp hương, tích phúc đức, xin quẻ se duyên 1:1). Nhân vật chibi dễ thương, điều khiển đơn giản, có nhiệm vụ tuần và hộ chiếu tem. Mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).
 
 Thiết kế thế giới: [`docs/WORLD.md`](docs/WORLD.md).
 
@@ -30,10 +30,10 @@ Muốn xem phố ngoài giờ mở cửa: đặt `OPEN_OVERRIDE=true` trong `.en
 ### Prototype tĩnh (không cần server)
 
 ```bash
-pnpm --filter @xom-oii/web build:standalone
+pnpm --filter @oii-bus/web build:standalone
 ```
 
-Ra một file duy nhất `apps/web/dist-standalone/index.html`, vào thẳng Bus Oii offline. Upload lên bất kỳ host tĩnh nào (ví dụ staging trên duychinhdinh.com).
+Ra một file duy nhất `apps/web/dist-standalone/index.html`, vào thẳng Oii-Bus offline. Upload lên bất kỳ host tĩnh nào (ví dụ staging trên duychinhdinh.com).
 
 ## Lệnh
 
@@ -43,7 +43,7 @@ Ra một file duy nhất `apps/web/dist-standalone/index.html`, vào thẳng Bus
 | `pnpm lint`                           | ESLint + Prettier check             |
 | `pnpm typecheck`                      | `tsc` mọi package                   |
 | `pnpm test`                           | Vitest mọi package                  |
-| `pnpm --filter @xom-oii/web test:e2e` | Playwright smoke (desktop + mobile) |
+| `pnpm --filter @oii-bus/web test:e2e` | Playwright smoke (desktop + mobile) |
 | `pnpm build`                          | build web (Vite) + server (tsup)    |
 | `pnpm db:generate` / `db:migrate`     | Prisma                              |
 | `pnpm infra:up` / `infra:down`        | chỉ bật/tắt docker compose          |
@@ -62,7 +62,7 @@ docs/            kiến trúc, moderation, prototype
 ## Milestones
 
 - [x] **M0** khung repo, CI, docker-compose, kiến trúc
-- [x] **M1** thế giới tĩnh (vẽ lại: Bus Oii + Thư viện), đi lại, va chạm, tương tác, nhiệm vụ, joystick mobile, Playwright smoke
+- [x] **M1** thế giới tĩnh (vẽ lại: Oii-Bus + Thư viện), đi lại, va chạm, tương tác, nhiệm vụ, joystick mobile, Playwright smoke
 - [ ] **M2** multiplayer Colyseus, chat theo khoảng cách lọc ở server, instances
 - [ ] **M3** magic link, OTP, invite/alumni, probation, trusted, ban liên đới
 - [ ] **M4** voice LiveKit, server-controlled subscriptions, PannerNode

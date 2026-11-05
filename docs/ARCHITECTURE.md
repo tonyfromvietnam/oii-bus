@@ -1,4 +1,4 @@
-# Kiến trúc Xóm Oii (đề xuất v1)
+# Kiến trúc Oii-Bus (đề xuất v1)
 
 > Trạng thái: đã review sau M0. Các quyết định nằm ở [mục 9](#9-quyết-định-đã-chốt-review-m0).
 
@@ -74,18 +74,18 @@ sequenceDiagram
   participant DB as Postgres
   participant W as Web
 
-  U->>B: /xom
+  U->>B: /bus
   B->>A: POST /internal/magic-link {psidHash, tier}<br/>Header: X-Oii-Signature = HMAC(secret, ts+body)
   A->>A: kiểm chữ ký + timestamp (±60s, chống replay)
   A->>R: SET ml:{sha256(token)} = {psidHash, tier} EX 300
-  A-->>B: {url: https://xom.oiimate.app/enter?t=token}
+  A-->>B: {url: https://bus.oiimate.app/enter?t=token}
   B-->>U: gửi link
   U->>W: mở /enter?t=token
   W->>A: POST /auth/magic/consume {t}
   A->>R: GETDEL ml:{sha256(t)} (dùng 1 lần)
   A->>DB: upsert User theo psidHash (lần đầu: chọn nickname/màu áo)
   A->>R: SET sess:{sid} = {userId} EX 14 ngày
-  A-->>W: Set-Cookie xom_sid (httpOnly, Secure, SameSite=Lax)
+  A-->>W: Set-Cookie oiibus_sid (httpOnly, Secure, SameSite=Lax)
   W->>W: history.replaceState xoá ?t khỏi URL
 ```
 
@@ -112,7 +112,7 @@ sequenceDiagram
   U->>W: nhập mã
   W->>A: POST /auth/otp/verify {email, code}
   A->>R: so sánh hằng thời gian · attempts++ · quá 5 lần → xoá
-  A-->>W: Set-Cookie xom_sid (như trên)
+  A-->>W: Set-Cookie oiibus_sid (như trên)
 ```
 
 Email **không bao giờ** được ghi xuống Postgres; chỉ `emailHash = sha256(pepper + lower(email))` để chống tạo trùng tài khoản.
@@ -228,7 +228,7 @@ Job định kỳ (chạy trong cùng process ở v1, dùng khoá Redis để ch�
 
 ## 7. Bảo mật
 
-- Cookie `xom_sid`: httpOnly, Secure, SameSite=Lax, domain `xom.oiimate.app`. Web và API chung site (ví dụ `xom.oiimate.app` và `api.xom.oiimate.app`) để cookie đi kèm cả request HTTP lẫn WebSocket.
+- Cookie `oiibus_sid`: httpOnly, Secure, SameSite=Lax, domain `bus.oiimate.app`. Web và API chung site (ví dụ `bus.oiimate.app` và `api.bus.oiimate.app`) để cookie đi kèm cả request HTTP lẫn WebSocket.
 - Các request thay đổi dữ liệu phải có header `X-Requested-With` và kiểm `Origin` để chống CSRF.
 - Text người dùng chỉ render bằng `textContent` / JSX text. ESLint chặn `innerHTML` và `dangerouslySetInnerHTML` trong `apps/web`.
 - Endpoint `/internal/*` chỉ nhận request có HMAC hợp lệ; `/admin/*` yêu cầu `role = admin`, mọi hành động đều ghi AuditLog.
@@ -237,7 +237,7 @@ Job định kỳ (chạy trong cùng process ở v1, dùng khoá Redis để ch�
 
 ```mermaid
 flowchart LR
-  CF["Cloudflare Pages<br/>xom.oiimate.app<br/>(apps/web dist)"] -->|HTTPS + WSS| FLY["Fly.io · lhr<br/>api.xom.oiimate.app<br/>(apps/server)"]
+  CF["Cloudflare Pages<br/>bus.oiimate.app<br/>(apps/web dist)"] -->|HTTPS + WSS| FLY["Fly.io · lhr<br/>api.bus.oiimate.app<br/>(apps/server)"]
   FLY --> NEON[("Postgres managed")]
   FLY --> UP[("Upstash Redis")]
   FLY --> LKC["LiveKit Cloud"]
@@ -252,9 +252,9 @@ flowchart LR
 
 1. **Ban liên đới một cấp**: chỉ ban inviter trực tiếp, không đệ quy.
 2. **`trusted` là cờ** (`trustedAt`), không phải hạng. `Tier` = `student | alumni | professional`.
-3. **Domain**: production `xom.oiimate.app` + `api.xom.oiimate.app`. Giai đoạn đầu: staging tạm trên `duychinhdinh.com`.
+3. **Domain**: production `bus.oiimate.app` + `api.bus.oiimate.app`. Giai đoạn đầu: staging tạm trên `duychinhdinh.com`.
 4. **Từ cấm**: team OiiMate cung cấp danh sách, đặt ở `packages/shared/src/wordlist/`.
-5. **Bot**: team bot thêm lệnh `/xom` và ký HMAC theo §3.1.
+5. **Bot**: team bot thêm lệnh `/bus` và ký HMAC theo §3.1.
 
 ## 10. Se duyên, phúc đức, Cùng thành phố (thêm sau review)
 
@@ -280,5 +280,5 @@ sequenceDiagram
 ```
 
 - Hàm ghép, phúc đức, schema đều thuần và có test trong `packages/shared` (`matching.ts`, `merit.ts`, `schemas.ts`). Server chỉ việc gọi.
-- Danh tính trong se duyên là biệt danh ngẫu nhiên theo phiên, không phải nickname trong Xóm.
+- Danh tính trong se duyên là biệt danh ngẫu nhiên theo phiên, không phải nickname trên Oii-Bus.
 - `Plan`, `PlanMember`, `CityVisit` trong Prisma. Chỉ trả kế hoạch cho tài khoản đã xác minh; tạo kế hoạch cần cờ `trusted`.

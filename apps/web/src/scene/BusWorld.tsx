@@ -8,7 +8,7 @@ import {
   nearestLandmark,
   routeToLocalX,
   type LandmarkId,
-} from "@xom-oii/world";
+} from "@oii-bus/world";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { game } from "../game/state";
@@ -51,7 +51,7 @@ function buildBus(): THREE.Group {
   const logo = signMaterial("", {
     bg: "#fff4e0",
     fg: "#ff5a5f",
-    lines: ["Bus Oii 🚌  ·  Xóm Oii"],
+    lines: ["Oii-Bus 🚌  ·  Oii-Bus"],
     width: 1024,
     height: 160,
   });

@@ -1,5 +1,5 @@
 {
-  "name": "@xom-oii/server",
+  "name": "@oii-bus/server",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",
-    "@xom-oii/shared": "workspace:*",
-    "@xom-oii/world": "workspace:*",
+    "@oii-bus/shared": "workspace:*",
+    "@oii-bus/world": "workspace:*",
     "fastify": "^5.2.0",
     "zod": "^3.24.1"
   },

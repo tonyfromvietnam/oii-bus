@@ -1,7 +1,7 @@
 name: Deploy prototype (GitHub Pages)
 
 # Bản prototype tĩnh (offline, bot): build `apps/web` ở chế độ artifact rồi đưa lên GitHub Pages.
-# Không cần secret. Muốn dùng domain riêng: đặt biến repo PAGES_CNAME (ví dụ xom.duychinhdinh.com).
+# Không cần secret. Muốn dùng domain riêng: đặt biến repo PAGES_CNAME (ví dụ bus.duychinhdinh.com).
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @xom-oii/web build:artifact
+      - run: pnpm --filter @oii-bus/web build:artifact
       - name: Custom domain (tuỳ chọn)
         if: ${{ vars.PAGES_CNAME != '' }}
         run: echo "${{ vars.PAGES_CNAME }}" > apps/web/dist-artifact/CNAME

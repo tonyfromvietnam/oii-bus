@@ -41,10 +41,10 @@ importers:
       '@fastify/cors':
         specifier: ^10.0.1
         version: 10.1.0
-      '@xom-oii/shared':
+      '@oii-bus/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@xom-oii/world':
+      '@oii-bus/world':
         specifier: workspace:*
         version: link:../../packages/world
       fastify:
@@ -69,18 +69,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@oii-bus/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@oii-bus/world':
+        specifier: workspace:*
+        version: link:../../packages/world
       '@react-three/drei':
         specifier: 9.117.3
         version: 9.117.3(@react-three/fiber@8.17.10(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.170.0))(@types/react@18.3.31)(@types/three@0.170.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.170.0)(use-sync-external-store@1.7.0(react@18.3.1))
       '@react-three/fiber':
         specifier: 8.17.10
         version: 8.17.10(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.170.0)
-      '@xom-oii/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@xom-oii/world':
-        specifier: workspace:*
-        version: link:../../packages/world
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -140,7 +140,7 @@ importers:
 
   packages/world:
     dependencies:
-      '@xom-oii/shared':
+      '@oii-bus/shared':
         specifier: workspace:*
         version: link:../shared
     devDependencies:

@@ -5,9 +5,9 @@ import {
   distanceBand,
   sanitizeUserText,
   type Gesture,
-} from "@xom-oii/shared";
-import { DUCKS, SCENES, landmarkStatus, seatById, type SceneId, type Spot } from "@xom-oii/world";
-import { awardMerit, applyMerit, type MeritKind } from "@xom-oii/shared";
+} from "@oii-bus/shared";
+import { DUCKS, SCENES, landmarkStatus, seatById, type SceneId, type Spot } from "@oii-bus/world";
+import { awardMerit, applyMerit, type MeritKind } from "@oii-bus/shared";
 import { lofi } from "../audio/lofi";
 import { bell, mo } from "../audio/sfx";
 import { vi, viTemple } from "../copy/vi";
@@ -281,7 +281,7 @@ export function stopFocus() {
   ui().set({ focus: { running: false, seconds: 0 } });
 }
 
-/** Cộng phúc đức (theo luật trong @xom-oii/shared). Trả về số điểm được cộng, 0 nếu bị chặn. */
+/** Cộng phúc đức (theo luật trong @oii-bus/shared). Trả về số điểm được cộng, 0 nếu bị chặn. */
 export function earnMerit(kind: MeritKind, units = 1, quiet = false): number {
   const now = Date.now();
   const r = awardMerit(kind, game.merit, now, units);

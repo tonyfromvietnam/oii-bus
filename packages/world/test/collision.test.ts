@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AVATAR_RADIUS } from "@xom-oii/shared";
+import { AVATAR_RADIUS } from "@oii-bus/shared";
 import { BUS_SCENE, circleIntersectsBox, clampToBounds, resolveCollisions } from "../src";
 
 describe("va chạm", () => {

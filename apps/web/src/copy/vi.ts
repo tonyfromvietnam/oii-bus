@@ -1,21 +1,21 @@
-import type { LandmarkId } from "@xom-oii/world";
+import type { LandmarkId } from "@oii-bus/world";
 
 /**
  * Toàn bộ copy UI tiếng Việt (brief §15). Văn phong miền Bắc, thân, vui, ngắn.
  * Giữ thuật ngữ Anh khi đó là văn hoá UK (meal deal, yellow sticker, deadline, landlord…).
  */
 export const vi = {
-  appName: "Xóm Oii",
+  appName: "Oii-Bus",
   tagline: "Thích ở một mình nhưng thỉnh thoảng sợ cô đơn.",
-  positioning: "OiiMate cho bạn một người để nói chuyện. Xóm Oii cho bạn một chỗ có người.",
+  positioning: "OiiMate cho bạn một người để nói chuyện. Oii-Bus cho bạn một chỗ có người.",
 
   loading: "Đang đợi bus…",
-  loadingWorld: "Bus Oii sắp tới bến…",
+  loadingWorld: "Oii-Bus sắp tới bến…",
   serverDown: "Không gọi được server. Thử lại sau một lát nhé.",
 
   closed: {
-    title: "Bus Oii về bến rồi",
-    body: "Xóm Oii mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).",
+    title: "Oii-Bus về bến rồi",
+    body: "Oii-Bus mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).",
     countdown: "Chuyến tiếp theo sau",
     remindMe: "Nhắc tôi qua OiiMate",
     preview: "Xem thử (offline)",
@@ -24,7 +24,7 @@ export const vi = {
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
   scenes: {
-    bus: { name: "Bus Oii", sub: "tầng thượng · Cùng thành phố", short: "Bus", icon: "🚌" },
+    bus: { name: "Oii-Bus", sub: "tầng thượng · Cùng thành phố", short: "Bus", icon: "🚌" },
     library: {
       name: "Thư viện Oii",
       sub: "tầng giữa · suỵt, yên lặng nhé 🤫",
@@ -98,7 +98,7 @@ export const vi = {
     close: "Đóng",
     voiceLocked: "Voice mở sau 14 ngày hoặc khi bạn thành Đã tin cậy.",
     welcome:
-      "Chào mừng lên Bus Oii! Xe chạy vòng quanh UK cả cuối tuần, từ London tới Edinburgh. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
+      "Chào mừng lên Oii-Bus! Xe chạy vòng quanh UK cả cuối tuần, từ London tới Edinburgh. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
     focusStart: "Tập trung",
     focusStop: "Dừng",
     focusing: "Đang tập trung",
@@ -260,7 +260,7 @@ export const viTemple = {
   chantHint: "Ngồi trên bồ đoàn là tụng kinh. Cứ 10 giây được 1 phúc đức (tối đa 30/ngày).",
   donateTitle: "Hòm công đức",
   donateBody:
-    "Công đức bằng tiền ảo trong Xóm Oii (không phải tiền thật). Mỗi £1 = 2 phúc đức, tối đa 30/ngày.",
+    "Công đức bằng tiền ảo trong Oii-Bus (không phải tiền thật). Mỗi £1 = 2 phúc đức, tối đa 30/ngày.",
   donated: (amount: number, p: number) =>
     `🧧 Công đức £${amount}. Nhà chùa ghi nhận tấm lòng. +${p} phúc đức`,
   wish: (p: number) => `🧶 Bạn buộc một sợi chỉ đỏ lên cây duyên và thầm ước. +${p} phúc đức`,
@@ -281,7 +281,7 @@ export const viTemple = {
     rules: [
       "Chỉ dành cho người từ 18 tuổi, đã xác minh qua OiiMate.",
       "Ẩn danh hoàn toàn. Đừng chia sẻ số điện thoại, địa chỉ hay mạng xã hội ở lần nói chuyện đầu.",
-      "Bị làm phiền? Bấm Chặn hoặc Báo cáo, đội Xóm Oii xem trong 24 giờ.",
+      "Bị làm phiền? Bấm Chặn hoặc Báo cáo, đội Oii-Bus xem trong 24 giờ.",
     ],
     go: "Xin quẻ 🧧",
     needGender: "Chọn “Tôi là” trước đã nhé.",
@@ -297,7 +297,7 @@ export const viTemple = {
     ended: "Cuộc trò chuyện đã kết thúc. Xin quẻ mới không?",
     again: "Xin quẻ mới",
     blocked: "Đã chặn. Hai bạn sẽ không được ghép với nhau nữa.",
-    reported: "Đã gửi báo cáo. Cảm ơn bạn đã giữ Xóm Oii an toàn 🙏",
+    reported: "Đã gửi báo cáo. Cảm ơn bạn đã giữ Oii-Bus an toàn 🙏",
     timeUp: "Hết 10 phút rồi. Hai bạn có muốn nói tiếp không? (bản thật: cả hai cùng bấm “Nói tiếp”)",
     demo: "bản thử · người kia là bot",
     typing: "đang nhập…",
@@ -320,7 +320,7 @@ export const viCity = {
   visitingCity: (c: string, d: string) => `Tới ${c} · ${d}`,
   wave: "👋 Vẫy",
   waved: "Đã vẫy",
-  noPeople: "Chưa có ai ở thành phố này. Rủ bạn bè lên Xóm Oii nhé!",
+  noPeople: "Chưa có ai ở thành phố này. Rủ bạn bè lên Oii-Bus nhé!",
   createTitle: "Tạo kế hoạch",
   planTitle: "Tên kế hoạch",
   planTitlePh: "Ví dụ: Ăn phở ở Chinatown",

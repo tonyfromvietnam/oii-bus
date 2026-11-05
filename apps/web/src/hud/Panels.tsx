@@ -1,5 +1,5 @@
-import { CITIES, cityName, luckPercent, type CityId } from "@xom-oii/shared";
-import { landmarkStatus, type SceneId } from "@xom-oii/world";
+import { CITIES, cityName, luckPercent, type CityId } from "@oii-bus/shared";
+import { landmarkStatus, type SceneId } from "@oii-bus/world";
 import { useEffect, useRef, useState } from "react";
 import { vi, viCity, viTemple } from "../copy/vi";
 import { donate, goToScene } from "../game/actions";

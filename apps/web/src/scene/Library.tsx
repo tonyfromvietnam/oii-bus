@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { LIBRARY_PROPS as L, LIBRARY_SCENE, mulberry32 } from "@xom-oii/world";
+import { LIBRARY_PROPS as L, LIBRARY_SCENE, mulberry32 } from "@oii-bus/world";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { game } from "../game/state";

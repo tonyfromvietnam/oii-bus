@@ -1,5 +1,5 @@
-import type { Hat } from "@xom-oii/shared";
-import { SCENES, seatById, type SceneId } from "@xom-oii/world";
+import type { Hat } from "@oii-bus/shared";
+import { SCENES, seatById, type SceneId } from "@oii-bus/world";
 import type { AvatarAnim } from "./state";
 
 /**

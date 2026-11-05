@@ -1,16 +1,16 @@
-name: xom-oii
+name: oii-bus
 
 services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: xom
-      POSTGRES_PASSWORD: xom
-      POSTGRES_DB: xom_oii
+      POSTGRES_USER: oiibus
+      POSTGRES_PASSWORD: oiibus
+      POSTGRES_DB: oii_bus
     ports: ["5432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U xom -d xom_oii"]
+      test: ["CMD-SHELL", "pg_isready -U oiibus -d oii_bus"]
       interval: 3s
       timeout: 3s
       retries: 20

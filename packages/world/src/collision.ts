@@ -1,4 +1,4 @@
-import { AVATAR_RADIUS } from "@xom-oii/shared";
+import { AVATAR_RADIUS } from "@oii-bus/shared";
 import type { AABB } from "./coords";
 
 export interface Point {
