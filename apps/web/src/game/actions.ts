@@ -6,16 +6,17 @@ import {
   sanitizeUserText,
   type Gesture,
 } from "@oii-bus/shared";
-import { DUCKS, SCENES, landmarkStatus, seatById, type SceneId, type Spot } from "@oii-bus/world";
+import { SCENES, landmarkStatus, seatById, zoneAt, type Spot } from "@oii-bus/world";
 import { awardMerit, applyMerit, type MeritKind } from "@oii-bus/shared";
 import { lofi } from "../audio/lofi";
 import { bell, mo } from "../audio/sfx";
+import { viFarm } from "../copy/farm";
 import { vi, viTemple } from "../copy/vi";
+import { setAfk, useFarm } from "./farm";
 import { meritTotal } from "./match";
 import { bump, gainXp } from "./progress";
 import { XP } from "@oii-bus/shared";
 import { NPCS, type Npc } from "./npcs";
-import { progressQuest } from "./quests";
 import { game } from "./state";
 import { ui } from "./ui";
 
@@ -23,23 +24,20 @@ import { ui } from "./ui";
 
 const pick = <T>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)]!;
 
-export type Interaction = { kind: "spot"; spot: Spot } | { kind: "duck"; id: string } | { kind: "stand-up" };
+export type Interaction = { kind: "spot"; spot: Spot } | { kind: "stand-up" };
 
 export function interactionLabel(i: Interaction): string {
   if (i.kind === "stand-up") return vi.prompts.standUp;
-  if (i.kind === "duck") return vi.prompts.duck;
+  if (i.spot.kind === "work") {
+    const st = viFarm.stations[i.spot.station!];
+    return `${st.icon} ${st.title} · ${st.place}`;
+  }
   return vi.prompts[i.spot.kind];
 }
 
 export function findInteraction(): Interaction | null {
   const p = game.player;
   if (p.pose !== "stand") return { kind: "stand-up" };
-  if (game.scene === "bus") {
-    for (const d of DUCKS) {
-      if (!game.ducksFound.has(d.id) && Math.hypot(d.x - p.x, d.z - p.z) < 1.1)
-        return { kind: "duck", id: d.id };
-    }
-  }
   let best: Spot | null = null;
   let bestD = Infinity;
   for (const s of SCENES[game.scene].spots) {
@@ -65,31 +63,6 @@ function standUp() {
     p.x = seat.x + Math.sin(seat.ry) * 0.7;
     p.z = seat.z + Math.cos(seat.ry) * 0.7;
   }
-  stopFocus();
-  ui().set({ seatedAtDesk: false });
-}
-
-export function goToScene(scene: SceneId) {
-  const u = ui();
-  u.set({ fade: true });
-  setTimeout(() => {
-    const sp = SCENES[scene].spawn;
-    Object.assign(game.player, { x: sp.x, z: sp.z, ry: sp.ry, pose: "stand", seatId: null });
-    game.input.moveTarget = null;
-    game.scene = scene;
-    stopFocus();
-    u.set({ scene, chatOpen: false, seatedAtDesk: false });
-    if (scene === "library") {
-      lofi.start();
-      u.set({ music: { ...ui().music, on: true } });
-      u.showToast(vi.arrive.library);
-    } else if (scene === "temple") {
-      u.showToast(vi.arrive.temple);
-    } else {
-      u.showToast(vi.arrive.bus);
-    }
-    setTimeout(() => ui().set({ fade: false }), 120);
-  }, 280);
 }
 
 export function toggleMusic() {
@@ -111,13 +84,6 @@ export function interact() {
   const p = game.player;
   const u = ui();
   if (i.kind === "stand-up") return standUp();
-  if (i.kind === "duck") {
-    game.ducksFound.add(i.id);
-    gainXp(XP.duck);
-    u.showToast(vi.lines.duck(game.ducksFound.size));
-    progressQuest("ducks", game.ducksFound.size);
-    return;
-  }
   const s = i.spot;
   switch (s.kind) {
     case "seat": {
@@ -125,8 +91,6 @@ export function interact() {
       if (!seat || isSeatTaken(seat.id)) return;
       Object.assign(p, { pose: "sit", seatId: seat.id, x: seat.x, z: seat.z, ry: seat.ry });
       game.input.moveTarget = null;
-      u.set({ seatedAtDesk: !!seat.desk });
-      if (seat.id.startsWith("hotpot")) progressQuest("hotpot", 1);
       return;
     }
     case "photo": {
@@ -138,36 +102,19 @@ export function interact() {
       game.photos.add(current.id);
       gainXp(XP.photo);
       u.showToast(vi.lines.photoTaken(name));
-      progressQuest("photos", game.photos.size);
       return;
     }
-    case "bubble-tea":
-      if (p.holding === "tea") return u.showToast(vi.lines.teaHolding);
-      if (!u.spend(3.8)) return u.showToast(vi.lines.broke);
-      p.holding = "tea";
-      gainXp(XP.bubbleTea);
-      u.showToast(vi.lines.teaBought);
-      progressQuest("tea", 1);
-      return;
     case "karaoke":
       p.gesture = { id: "cheers", until: game.time + 2.5 };
       say("🎤 ♪ ♫ ♪", 3);
       u.showToast(pick(vi.lines.karaoke));
       return;
-    case "meal-deal":
-      if (!u.spend(3.5)) return u.showToast(vi.lines.broke);
-      u.showToast(pick(vi.lines.mealDeal));
+    case "work":
+      useFarm.getState().set({ open: s.station!, last: s.station! });
       return;
-    case "quest-board":
-      u.set({ questsOpen: true });
+    case "statue":
+      void setAfk(true);
       return;
-    case "umbrella":
-      u.showToast(vi.lines.umbrella);
-      return;
-    case "to-library":
-      return goToScene("library");
-    case "to-temple":
-      return goToScene("temple");
     case "meetup-board":
       u.set({ city: { ...u.city, open: true } });
       return;
@@ -179,7 +126,6 @@ export function interact() {
         u.showToast(viTemple.incense(pts));
         gainXp(XP.incense);
         bump("incense");
-        progressQuest("incense", 1);
       }
       return;
     }
@@ -202,16 +148,6 @@ export function interact() {
     case "matchmaker":
       u.set({ duyen: { ...u.duyen, open: true } });
       return;
-    case "to-bus":
-      return goToScene("bus");
-    case "bookshelf":
-      say(pick(vi.lines.books), 4.5);
-      return;
-    case "cat":
-      u.showToast(pick(vi.lines.cat));
-      return;
-    case "radio":
-      return toggleMusic();
   }
 }
 
@@ -237,10 +173,9 @@ export function gesture(id: Gesture) {
       if (distance2D(n, p) < 4.5) {
         game.waved.add(n.id);
         gainXp(XP.wave);
-        n.gesture = { id: n.mode === "study" ? "hug" : "wave", until: game.time + 2.5 };
+        n.gesture = { id: n.mode === "work" ? "hug" : "wave", until: game.time + 2.5 };
       }
     }
-    progressQuest("wave", game.waved.size);
   }
 }
 
@@ -278,17 +213,6 @@ export function npcSays(n: Npc, text: string) {
   ui().pushLog({ who: n.name, text: band === "out" ? vi.hud.murmur : text, band });
 }
 
-export function startFocus() {
-  game.focus.running = true;
-  game.focus.elapsed = 0;
-  ui().set({ focus: { running: true, seconds: 0 } });
-}
-
-export function stopFocus() {
-  game.focus.running = false;
-  ui().set({ focus: { running: false, seconds: 0 } });
-}
-
 /** Cộng phúc đức (theo luật trong @oii-bus/shared). Trả về số điểm được cộng, 0 nếu bị chặn. */
 export function earnMerit(kind: MeritKind, units = 1, quiet = false): number {
   const now = Date.now();
@@ -313,13 +237,5 @@ export function donate(amount: number) {
 /** Gõ mõ khi đang tụng kinh. */
 export const tapMo = mo;
 
-/** Thư viện: một chạm là ngồi vào bàn trống và bắt đầu tập trung. */
-export function sitAndFocus() {
-  const p = game.player;
-  const free = SCENES.library.seats.find((s) => s.desk && !isSeatTaken(s.id));
-  if (!free) return;
-  Object.assign(p, { pose: "sit", seatId: free.id, x: free.x, z: free.z, ry: free.ry });
-  game.input.moveTarget = null;
-  ui().set({ seatedAtDesk: true });
-  startFocus();
-}
+/** Khu đang đứng (cho HUD). */
+export const currentZone = () => zoneAt(game.player.x);

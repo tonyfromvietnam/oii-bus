@@ -139,9 +139,9 @@ export async function drawShareCard(d: CardData): Promise<HTMLCanvasElement> {
   const statY = 910;
   const sw = (W - 72 * 2 - 2 * 24) / 3;
   const stats: [number, string][] = [
-    [d.today.focusMinutes, viDaily.stats.focus],
+    [d.today.work, viDaily.stats.work],
     [d.today.incense, viDaily.stats.incense],
-    [d.today.done, viDaily.stats.stamps],
+    [d.today.merit, viDaily.stats.merit],
   ];
   stats.forEach(([n, label], i) => {
     const x = 72 + i * (sw + 24);

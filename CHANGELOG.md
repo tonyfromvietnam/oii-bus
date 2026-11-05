@@ -8,7 +8,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Added
 
 - **Daily loop**: daily streak (London days), XP with Oyster-zone levels (Zone 6 → Zone 1 → Zone VIP), "today" stats, a daily quote, and a shareable 1080×1350 card with a referral link (`?ref=`).
-- **Hộ chiếu tân sinh viên**: a 12-step first-30-days checklist for new students in the UK (eVisa, GP, council tax, NI number, Railcard…) with tips and official links; each step gives XP.
+- **One giant floor**: Oii-Bus is now a single 88 × 22 m open top deck, like an online pagoda hall where everyone shares one space. Zones from back to front: Chùa Cầu Duyên, Góc Deadline, OiiNails, Quảng trường OiiMate, Oii Viet, Oii Tea and the bus front. A zone bar takes you straight there and the character runs faster.
+- **Máy farm công đức (idle farming)**: tap or hold at each work station to carry bowls of phở, do nail sets, shake bubble tea, write essay paragraphs or strike the wooden fish (công đức). Hire helpers to make stations run on their own, including while the app is closed (offline catch-up, capped at 12 hours). AFK mode dims the screen, pauses 3D rendering, keeps the screen awake and doubles helper speed.
+- OiiMate branding everywhere: logo signs on every shop, flags along the rail, bus livery, plaza floor and HUD.
+- Unlimited levels (Lv 1, 2, 3…) on top of the Oyster zones.
 
 - Standard repository files: README with badges and screenshots, LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, issue and PR templates, CODEOWNERS.
 - Dependabot for npm and GitHub Actions; CodeQL code scanning.
@@ -17,6 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Changed
 
+- Removed the library and temple floors, floor switcher, weekly quests, rubber ducks and the newcomer checklist to keep the game lean.
 - **Oii-Bus is now open source under the MIT License.**
 - Node.js 22 LTS is now the minimum (Node 20 reached end of life).
 - GitHub Actions updated to current major versions.

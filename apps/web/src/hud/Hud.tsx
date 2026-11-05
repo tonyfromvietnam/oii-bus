@@ -2,13 +2,13 @@ import { GESTURES, HATS, cityName, luckPercent, type Hat } from "@oii-bus/shared
 import { SCENES, landmarkStatus } from "@oii-bus/world";
 import { useEffect, useRef, useState } from "react";
 import { vi } from "../copy/vi";
-import { gesture, interact, sendChat, setVolume, sitAndFocus, stopFocus, toggleMusic } from "../game/actions";
-import { FOCUS_GOAL_SECONDS } from "../game/GameLoop";
-import { QUEST_GOALS, QUEST_ORDER } from "../game/quests";
+import { gesture, interact, sendChat, setVolume, toggleMusic } from "../game/actions";
+import { useFarm } from "../game/farm";
 import { game } from "../game/state";
 import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
-import { CityPanel, DonatePanel, FloorSwitcher, SeDuyenPanel } from "./Panels";
+import { CityPanel, DonatePanel, SeDuyenPanel } from "./Panels";
+import { AfkButton, AfkOverlay, AwayModal, FarmChip, OiiBubbles, StationPanel, ZoneBar } from "./Farm";
 import { ProfileChip, ProfilePanel } from "./Profile";
 import { viCity } from "../copy/vi";
 
@@ -28,13 +28,15 @@ export function Hud() {
       <Toast />
       <BottomBar />
       {isTouch && <Joystick />}
-      <QuestPanel />
+      <StationPanel />
       <DonatePanel />
       <SeDuyenPanel />
       <CityPanel />
       <ProfilePanel />
       <Help />
       <Creator />
+      <AwayModal />
+      <AfkOverlay />
       <div
         className="absolute inset-0 bg-[var(--cream)] transition-opacity duration-300"
         style={{ opacity: fade ? 1 : 0 }}
@@ -47,35 +49,22 @@ function TopBar() {
   const scene = useUi((s) => s.scene);
   const where = useUi((s) => s.where);
   const set = useUi((s) => s.set);
-  const doneCount = useUi((s) => Object.keys(s.done).length);
   return (
     <div className="absolute top-0 right-0 left-0 flex items-start justify-between gap-2 p-3">
       <div className={`${pill} flex min-w-0 items-center gap-2 py-1.5 pr-4 pl-2`}>
         <OiiLogo />
         <div className="min-w-0">
           <div className="truncate text-base leading-tight font-black">{vi.scenes[scene].name}</div>
-          {scene === "bus" && (
-            <div className="truncate text-xs font-semibold opacity-70" data-testid="where">
-              {where.now ? `📍 ${where.now}` : `→ ${where.next}`}
-            </div>
-          )}
-          {scene === "temple" && <MeritLine />}
-          {scene === "library" && (
-            <div className="text-xs font-semibold opacity-70">🤫 {vi.hud.quietShort}</div>
-          )}
+          <div className="truncate text-xs font-semibold opacity-70" data-testid="where">
+            {where.now ? `📍 ${where.now}` : `→ ${where.next}`}
+          </div>
+          <MeritLine />
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
+        <FarmChip />
         <ProfileChip />
         <MusicControl />
-        <button
-          type="button"
-          onClick={() => set({ questsOpen: true })}
-          className={`${pill} pointer-events-auto h-10 px-3 text-sm font-bold`}
-          aria-label={vi.hud.quests}
-        >
-          ⭐ {doneCount}/{QUEST_ORDER.length}
-        </button>
         <button
           type="button"
           onClick={() => set({ helpOpen: true })}
@@ -89,17 +78,11 @@ function TopBar() {
   );
 }
 
-/** Hai bong bóng mascot chồng nhau, theo logo OiiMate. */
 function OiiLogo() {
   return (
-    <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden className="mr-1 inline-block align-[-4px]">
-      <path d="M11 1a10 10 0 1 1-6.4 17.7L1 21l1.3-4.6A10 10 0 0 1 11 1z" fill="#a8d3d9" />
-      <path d="M23 3a9 9 0 1 0 5.8 15.9L32 21l-1.1-4.1A9 9 0 0 0 23 3z" fill="#fde3a0" />
-      <circle cx="8" cy="10" r="1.2" fill="#1f2d4d" />
-      <circle cx="13" cy="10" r="1.2" fill="#1f2d4d" />
-      <circle cx="21" cy="12" r="1.1" fill="#1f2d4d" />
-      <circle cx="26" cy="12" r="1.1" fill="#1f2d4d" />
-    </svg>
+    <span className="mr-1">
+      <OiiBubbles size={34} />
+    </span>
   );
 }
 
@@ -186,16 +169,13 @@ function BottomBar() {
   const prompt = useUi((s) => s.prompt);
   const chatOpen = useUi((s) => s.chatOpen);
   const scene = useUi((s) => s.scene);
-  const desk = useUi((s) => s.seatedAtDesk);
-  const focus = useUi((s) => s.focus);
+  const station = useFarm((s) => s.open);
   const set = useUi((s) => s.set);
   const [emotes, setEmotes] = useState(false);
   const quiet = SCENES[scene].quiet;
-  const mm = (s: number) =>
-    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   return (
     <div className="absolute right-0 bottom-0 left-0 flex flex-col items-center gap-2 p-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-      {prompt && !chatOpen && (
+      {prompt && !chatOpen && !station && (
         <button
           type="button"
           onClick={interact}
@@ -206,28 +186,12 @@ function BottomBar() {
           {prompt}
         </button>
       )}
-      {desk && focus.running ? (
-        <div className={`${pill} pointer-events-auto flex items-center gap-3 px-4 py-2`}>
-          <span className="text-sm">
-            ⏱️ <b className="tabular-nums">{mm(focus.seconds)}</b>
-            <span className="opacity-60"> / {mm(FOCUS_GOAL_SECONDS)}</span>
-          </span>
-          <button
-            type="button"
-            onClick={stopFocus}
-            className="rounded-full bg-black/10 px-3 py-1 text-sm font-bold"
-          >
-            {vi.hud.focusStop}
-          </button>
-        </div>
-      ) : (
-        !chatOpen && <MainAction />
-      )}
+      {!chatOpen && !station && <MainAction />}
       {chatOpen ? (
         <ChatInput onClose={() => set({ chatOpen: false })} />
       ) : (
         <div className="flex flex-wrap items-center justify-center gap-1.5">
-          <FloorSwitcher />
+          <ZoneBar />
           {emotes &&
             GESTURES.map((g, i) => (
               <button
@@ -272,42 +236,31 @@ function BottomBar() {
   );
 }
 
-/** Mỗi tầng một việc chính, nút to, rõ ràng. */
+/** Việc chính: treo máy. Bên cạnh là lối tắt Cùng thành phố và Se duyên. */
 function MainAction() {
-  const scene = useUi((s) => s.scene);
   const where = useUi((s) => s.where);
   const set = useUi((s) => s.set);
-  const big =
-    "pointer-events-auto rounded-full bg-[var(--accent)] px-6 py-3 text-base font-black text-white shadow-lg active:scale-[0.98]";
-  if (scene === "bus") {
-    return (
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-2">
       <button
         type="button"
-        className={big}
+        className={`${pill} pointer-events-auto px-4 py-3 text-sm font-bold`}
         data-testid="city-button"
         onClick={() => set({ city: { ...useUi.getState().city, open: true } })}
       >
         📍 {viCity.button}
-        {where.now && <span className="ml-1 font-semibold opacity-80">· {currentCity()}</span>}
+        {where.now && <span className="ml-1 font-semibold opacity-70">· {currentCity()}</span>}
       </button>
-    );
-  }
-  if (scene === "library") {
-    return (
-      <button type="button" className={big} data-testid="focus-button" onClick={sitAndFocus}>
-        ⏱️ {vi.hud.focusStart}
+      <AfkButton />
+      <button
+        type="button"
+        className={`${pill} pointer-events-auto px-4 py-3 text-sm font-bold`}
+        data-testid="seduyen-button"
+        onClick={() => set({ duyen: { ...useUi.getState().duyen, open: true } })}
+      >
+        💞 {vi.hud.seDuyen}
       </button>
-    );
-  }
-  return (
-    <button
-      type="button"
-      className={big}
-      data-testid="seduyen-button"
-      onClick={() => set({ duyen: { ...useUi.getState().duyen, open: true } })}
-    >
-      💞 {vi.hud.seDuyen}
-    </button>
+    </div>
   );
 }
 
@@ -381,62 +334,6 @@ function Modal({
         {children}
       </div>
     </div>
-  );
-}
-
-function QuestPanel() {
-  const open = useUi((s) => s.questsOpen);
-  const done = useUi((s) => s.done);
-  const progress = useUi((s) => s.progress);
-  const set = useUi((s) => s.set);
-  const q = vi.quests;
-  return (
-    <Modal open={open} onClose={() => set({ questsOpen: false })}>
-      <h2 className="font-display text-2xl font-extrabold">⭐ {q.title}</h2>
-      <ul className="mt-3 flex flex-col gap-2">
-        {QUEST_ORDER.map((id) => {
-          const item = q.items[id];
-          const v = progress[id] ?? 0;
-          const goal = QUEST_GOALS[id];
-          return (
-            <li key={id} className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2 shadow-sm">
-              <span className="text-2xl">{item.icon}</span>
-              <div className="min-w-0 flex-1">
-                <div className={`text-sm font-semibold ${done[id] ? "line-through opacity-50" : ""}`}>
-                  {item.title}
-                </div>
-                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-black/10">
-                  <div
-                    className="h-full rounded-full bg-[var(--accent)]"
-                    style={{ width: `${(v / goal) * 100}%` }}
-                  />
-                </div>
-              </div>
-              <span className="text-xs tabular-nums opacity-60">{done[id] ? "✅" : `${v}/${goal}`}</span>
-            </li>
-          );
-        })}
-      </ul>
-      <h3 className="font-display mt-5 text-xl font-extrabold">🛂 {q.passportTitle}</h3>
-      <div className="mt-2 grid grid-cols-4 gap-2">
-        {QUEST_ORDER.map((id) => (
-          <div
-            key={id}
-            className={`flex aspect-square flex-col items-center justify-center rounded-2xl border-2 border-dashed p-1 text-center ${done[id] ? "rotate-[-4deg] border-[var(--accent)] bg-[var(--mint)]" : "border-black/15 opacity-40"}`}
-          >
-            <span className="text-3xl">{q.items[id].icon}</span>
-            <span className="mt-1 text-[11px] leading-tight font-semibold">{q.items[id].stamp}</span>
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={() => set({ questsOpen: false })}
-        className="mt-5 w-full rounded-full bg-[var(--ink)] py-2.5 font-semibold text-white"
-      >
-        {vi.hud.close}
-      </button>
-    </Modal>
   );
 }
 

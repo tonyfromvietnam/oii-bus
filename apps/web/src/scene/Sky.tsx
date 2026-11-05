@@ -47,7 +47,14 @@ export function Sky() {
     uniforms.top.value.copy(DAY.top).lerp(DUSK.top, d);
     uniforms.bottom.value.copy(DAY.bottom).lerp(DUSK.bottom, d);
     fog.color.copy(uniforms.bottom.value);
-    if (sun.current) sun.current.intensity = 2.0 - d * 0.9;
+    if (sun.current) {
+      sun.current.intensity = 2.0 - d * 0.9;
+      // nắng đi theo người chơi: sàn dài 88 m nhưng bóng đổ vẫn nét
+      const px = Math.round(game.player.x / 4) * 4;
+      sun.current.position.set(px + 14, 26, 18);
+      sun.current.target.position.set(px, 0, 0);
+      sun.current.target.updateMatrixWorld();
+    }
     if (hemi.current) hemi.current.intensity = 1.5 - d * 0.4;
     applyDarkness(game.env.darkness);
     clouds.position.x = ((clock.elapsedTime * -2 - game.route * 0.15) % 420) + 140;
@@ -75,42 +82,12 @@ export function Sky() {
         intensity={2}
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-22}
-        shadow-camera-right={22}
-        shadow-camera-top={12}
-        shadow-camera-bottom={-12}
+        shadow-camera-left={-26}
+        shadow-camera-right={26}
+        shadow-camera-top={16}
+        shadow-camera-bottom={-16}
         shadow-camera-near={1}
         shadow-camera-far={80}
-        shadow-bias={-0.0005}
-        shadow-normalBias={0.03}
-      />
-    </>
-  );
-}
-
-/** Ánh sáng ấm trong thư viện. */
-export function LibraryLights() {
-  const { scene } = useThree();
-  useEffect(() => {
-    const prev = scene.background;
-    scene.background = new THREE.Color("#f1f8ec");
-    return () => {
-      scene.background = prev;
-    };
-  }, [scene]);
-  return (
-    <>
-      <hemisphereLight args={["#fff4e6", "#e8c39e", 1.3]} />
-      <directionalLight
-        position={[-6, 12, 9]}
-        color="#ffe8c7"
-        intensity={1.6}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-14}
-        shadow-camera-right={14}
-        shadow-camera-top={10}
-        shadow-camera-bottom={-10}
         shadow-bias={-0.0005}
         shadow-normalBias={0.03}
       />

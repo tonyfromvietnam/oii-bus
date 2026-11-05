@@ -5,6 +5,8 @@ import {
   checkIn,
   checkInXp,
   levelFor,
+  levelNumber,
+  xpForLevel,
   londonDayKey,
   pickForDay,
   referralCode,
@@ -14,17 +16,26 @@ import {
 describe("cấp theo zone", () => {
   it("bắt đầu ở Zone 6 và tiến dần vào trung tâm", () => {
     expect(levelFor(0).zone.zone).toBe(6);
-    expect(levelFor(59).zone.zone).toBe(6);
-    expect(levelFor(60).zone.zone).toBe(5);
-    expect(levelFor(900).zone.zone).toBe(1);
+    expect(levelFor(299).zone.zone).toBe(6);
+    expect(levelFor(300).zone.zone).toBe(5);
+    expect(levelFor(20_000).zone.zone).toBe(1);
     expect(zoneLabel(levelFor(100000).zone)).toBe("Zone VIP");
   });
   it("tính tiến độ trong cấp và XP còn thiếu", () => {
-    const l = levelFor(110);
+    const l = levelFor(650);
     expect(l.zone.zone).toBe(5);
     expect(l.progress).toBeCloseTo(0.5);
-    expect(l.xpToNext).toBe(50);
-    expect(levelFor(5000).next).toBeNull();
+    expect(l.xpToNext).toBe(350);
+    expect(levelFor(60_000).next).toBeNull();
+  });
+  it("cấp số tăng mãi, mốc khớp với xpForLevel", () => {
+    expect(levelNumber(0)).toBe(1);
+    expect(levelNumber(19)).toBe(1);
+    expect(levelNumber(20)).toBe(2);
+    for (const lv of [2, 5, 30]) {
+      expect(levelNumber(xpForLevel(lv))).toBe(lv);
+      expect(levelNumber(xpForLevel(lv) - 1)).toBe(lv - 1);
+    }
   });
   it("các mốc XP tăng dần", () => {
     for (let i = 1; i < ZONES.length; i++) expect(ZONES[i]!.minXp).toBeGreaterThan(ZONES[i - 1]!.minXp);

@@ -1,6 +1,5 @@
 import { PlanCreateSchema, cityName, type CityId, type PlanCreate } from "@oii-bus/shared";
 import { viCity } from "../copy/vi";
-import { progressQuest } from "./quests";
 import { ui } from "./ui";
 import { gainXp } from "./progress";
 import { XP } from "@oii-bus/shared";
@@ -121,7 +120,6 @@ export function createPlan(input: unknown): boolean {
   ui().set({ city: { ...c, plans: [plan, ...c.plans], tab: "plans" } });
   ui().showToast(viCity.created);
   gainXp(XP.plan);
-  progressQuest("plan", 1);
   return true;
 }
 
@@ -133,7 +131,6 @@ export function toggleJoin(id: string) {
     if (!inIt && p.members.length >= p.maxPeople) return p;
     if (!inIt) {
       ui().showToast(viCity.joined);
-      progressQuest("plan", 1);
     }
     return { ...p, members: inIt ? p.members.filter((m) => m !== "me") : [...p.members, "me"] };
   });

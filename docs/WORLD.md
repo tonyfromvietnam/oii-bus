@@ -2,34 +2,56 @@
 
 Hướng mới: **dễ thương, đơn giản, tích cực**. Mọi người ở chung một chỗ, có việc nhỏ để làm.
 
-## Không gian
+## Không gian: một tầng thượng siêu to
 
-| Scene            | Mô tả                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Chat                     | Nhạc          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ | ------------- |
-| `bus` (mặc định) | Tầng thượng mui trần của **Oii-Bus**, chiếc bus hai tầng siêu to chạy vòng quanh UK. 28 địa danh: Big Ben, London Eye, Tower Bridge, St Paul's, The Shard, Buckingham, Windsor, Brighton Pier, vách đá trắng Dover, Stonehenge, Bath, lâu đài Cardiff, núi Snowdon, Oxford, Cotswolds, Cambridge, Birmingham Bullring, Old Trafford, Liverpool, tháp Blackpool, Lake District, York Minster, Angel of the North, tường thành Hadrian, Edinburgh, cầu Forth, Loch Ness (có Nessie), Giant's Causeway. Cảnh dọc đường đổi theo vùng: nhà stucco London, đá vàng Bath, gạch đỏ miền Bắc, đá xám Scotland, đồng quê có cừu, bãi biển chòi tắm. | Có (theo khoảng cách)    | Lofi tuỳ chọn |
-| `library`        | Tầng dưới của bus là **Thư viện Oii**: kệ sách, bàn học đèn xanh, góc đọc, mèo ngủ, cửa sổ thấy London trôi qua.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | **Không** (chỉ biểu cảm) | Lofi tự bật   |
+Giống một chánh điện online: **mọi người ở chung một sàn**, không có tầng, không có thang máy. Sàn rộng 88 × 22 m trên nóc Oii-Bus, chạy vòng quanh UK (28 địa danh trôi qua phía sau, vị trí tính từ giờ thật nên ai cũng thấy cùng một cảnh).
 
-- **Tầng thượng = Cùng thành phố**: chọn thành phố đang ở / sắp tới, xem người cùng thành phố, tạo và tham gia kế hoạch đi chơi. Khi bus đi qua một địa danh, HUD gợi ý số người và kế hoạch ở thành phố đó.
-- Thang máy (nút 🏙️ 📚 🏮 trên HUD) đi thẳng giữa ba tầng, không cần tìm cầu thang.
-- Vị trí trên tuyến tính từ giờ thật (`routeOffset(Date.now())`, `packages/world/src/route.ts`), nên mọi người, mọi instance thấy cùng một địa danh cùng lúc mà server không cần gửi thêm gì.
-- Lofi được sinh bằng WebAudio (`apps/web/src/audio/lofi.ts`): không có file nhạc, không lo bản quyền, nhẹ.
-- Thư viện là `quiet: true` trong `SceneDef`. Từ M2, server từ chối message chat ở scene này.
+Từ đuôi tới đầu xe (`DECK_ZONES` trong `packages/world/src/scenes.ts`):
+
+| Khu                     | Có gì                                                                                                       | Quầy làm việc  |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------- | -------------- |
+| 🏮 Chùa Cầu Duyên       | Chính điện mái cong, lư hương, mõ gỗ to, chuông, miếu Ông Tơ Bà Nguyệt, cây duyên chỉ đỏ, bồ đoàn, đèn lồng | 🪵 Gõ mõ       |
+| 📝 Góc Deadline         | Bàn học, laptop sáng màn hình, kệ sách, đồng hồ 23:59                                                       | 📝 Gõ essay    |
+| 💅 OiiNails             | Kệ hàng trăm lọ sơn, máy hơ gel tím, ghế khách hồng                                                         | 💅 Làm nails   |
+| ⭐ Quảng trường OiiMate | Logo OiiMate in trên sàn, tượng mascot trên **Máy farm công đức** (bấm để treo máy), chỗ xuất phát          |                |
+| 🍜 Oii Viet             | Bếp phở, nồi nước dùng bốc khói, chồng bát, thực đơn, ghế nhựa đỏ, lẩu chung                                | 🍜 Bê phở      |
+| 🧋 Oii Tea              | Quầy trà sữa, cốc trà sữa khổng lồ                                                                          | 🧋 Lắc trà sữa |
+| 📸 Mũi xe               | Khung chụp ảnh với địa danh, karaoke, bảng Cùng thành phố                                                   |                |
+
+Logo OiiMate (hai bong bóng chat) vẽ bằng code trong `apps/web/src/scene/oiiLogo.ts`: trên biển mọi quầy, cờ dọc lan can, thân xe, sàn quảng trường và HUD.
+
+## Máy farm công đức (cày và treo máy)
+
+Logic thuần ở `packages/shared/src/farm.ts` (có test), client ở `apps/web/src/game/farm.ts`.
+
+| Quầy        | Mỗi việc             | Người giúp (giá đầu) | Người giúp làm |
+| ----------- | -------------------- | -------------------- | -------------- |
+| Bê phở      | £1 · 1 XP            | Phụ bếp (£15)        | 0,5 bát/giây   |
+| Làm nails   | £2 · 1 XP            | Thợ nails (£30)      | 0,3 bộ/giây    |
+| Lắc trà sữa | £0,5 · 1 XP          | Máy lắc (£8)         | 0,8 cốc/giây   |
+| Gõ essay    | 3 XP (không ra tiền) | Cốc cà phê (£20)     | 0,25 đoạn/giây |
+| Gõ mõ       | 1 XP · +1 công đức   | Máy gõ mõ (£10)      | 1 tiếng/giây   |
+
+- **Bấm/giữ** nút to ở quầy (hoặc Space) để tự làm. Tối đa 15 lần/giây được tính (chống auto-click).
+- **Thuê người giúp**: giá tăng ×1,55 mỗi người. Người giúp đứng sau quầy nhún nhảy làm việc.
+- **Treo máy** (nút 😴, phím Z, hoặc tượng ở quảng trường): màn tối, ngừng vẽ 3D cho đỡ tốn pin, giữ màn hình sáng (Wake Lock), người giúp làm **nhanh gấp đôi**, bạn tự làm thêm 1 việc/giây ở quầy gần nhất.
+- **Đóng app vẫn được tính**: mở lại là tính bù theo giờ thật (tối đa 12 tiếng) và hiện bảng "Trong lúc bạn đi vắng". Tab bị ẩn cũng vậy (trình duyệt hạn chế đồng hồ nền, nên game tính theo mốc thời gian chứ không đếm nhịp).
+- **Mốc khoe**: 100, 500, 1.000, 5.000, 10.000… việc mỗi quầy, +50 XP thưởng.
+- Công đức từ gõ mõ cộng vào phúc đức để xin quẻ se duyên. Hệ số may mắn vẫn có trần ×3 (`matchWeight`), nên treo máy không "mua" được người.
+- Bản thử lưu trong trình duyệt. Từ M3 server giữ `FarmState` và tính lại bằng cùng hàm `advance` (không tin client).
 
 ## Điều khiển (cố tình đơn giản)
 
 - Camera **cố định góc chéo**, không xoay, không zoom.
 - WASD/mũi tên theo hướng màn hình, hoặc bấm/chạm sàn để đi tới. Mobile: joystick + nút E.
-- E để tương tác, 1–5 là biểu cảm, Enter để chat, Q mở nhiệm vụ.
+- Chạy nhanh (6,5 m/s) vì sàn rộng; thanh khu ở dưới màn hình để chạy thẳng tới khu cần đến.
+- E để vào quầy / tương tác, Space để làm việc, Z để treo máy, 1–5 là biểu cảm, Enter để chat.
 
 ## Giao diện & nhân vật
 
 Theo website OiiMate: nền xanh bạc hà `#f1f8ec`, nút teal `#4e9297`, chữ navy `#1f2d4d`, font Nunito, bong bóng chat có viền và đuôi.
 
 Nhân vật tròn như mascot OiiMate: bong bóng chat có đuôi nhỏ, mắt chấm navy, miệng cười, tay chân tí hon, nhún kiểu thạch khi đi. Tuỳ biến: biệt danh, 6 màu áo, 6 mũ (nón lá, len, mũ tốt nghiệp, tai mèo, tai nghe, không mũ).
-
-## Nhiệm vụ tuần (bản thử)
-
-Tìm 5 vịt cao su · chụp ảnh với 3 địa danh · mua trà sữa · ngồi vào nồi lẩu chung · tập trung 1 phút ở thư viện (bản thật: pomodoro 25') · vẫy tay chào 3 người. Mỗi nhiệm vụ cho một tem trong **Hộ chiếu UK**.
 
 ## Phúc đức & se duyên (luật ở `packages/shared`)
 
@@ -52,13 +74,12 @@ Nhân vật giữ cel-shading. Cảnh vật dùng vật liệu PBR, texture tự
 
 ## Vòng lặp hằng ngày (giữ chân người chơi)
 
-| Phần                   | Cách hoạt động                                                                                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔥 Chuỗi ngày          | Mỗi ngày (theo giờ London) lên xe một lần: +10 XP, cộng thêm 2 XP mỗi ngày liên tiếp (tối đa +20). Bỏ một ngày thì chuỗi bắt đầu lại, giữ kỷ lục. |
-| Cấp theo zone          | Zone 6 "Mới lên xe" → Zone 1 "Dân London chính hiệu" → Zone VIP "Tiền bối Oii-Bus" (`ZONES` trong `packages/shared/src/progress.ts`).             |
-| XP                     | Thắp hương 5 · tụng kinh 1/10 giây · tập trung 2/phút (+20 mỗi phiên) · tem 15 · chụp địa danh 5 · kế hoạch 10 · việc tân sinh viên 10… (`XP`).   |
-| Thẻ khoe               | Ảnh 1080×1350 kiểu OiiMate: mascot, chuỗi ngày, cấp, 3 số liệu hôm nay, câu của ngày, link mời `?ref=`.                                           |
-| Câu mỗi ngày           | Ai mở cùng ngày thấy cùng câu (`pickForDay`).                                                                                                     |
-| Hộ chiếu tân sinh viên | 12 việc trong 30 ngày đầu, mỗi việc có mẹo và link chính thức (gov.uk, NHS, TfL…).                                                                |
+| Phần          | Cách hoạt động                                                                                                                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔥 Chuỗi ngày | Mỗi ngày (theo giờ London) lên xe một lần: +10 XP, cộng thêm 2 XP mỗi ngày liên tiếp (tối đa +20). Bỏ một ngày thì chuỗi bắt đầu lại, giữ kỷ lục.                     |
+| Cấp theo zone | Lv 1, 2, 3… không giới hạn, kèm Zone 6 "Mới lên xe" → Zone 1 "Dân London chính hiệu" → Zone VIP "Tiền bối Oii-Bus" (`ZONES` trong `packages/shared/src/progress.ts`). |
+| XP            | Mỗi việc ở quầy 1–3 · mốc khoe 50 · thắp hương 5 · tụng kinh 1/10 giây · chụp địa danh 5 · kế hoạch 10… (`XP`).                                                       |
+| Thẻ khoe      | Ảnh 1080×1350 kiểu OiiMate: mascot, chuỗi ngày, cấp, 3 số liệu hôm nay, câu của ngày, link mời `?ref=`.                                                               |
+| Câu mỗi ngày  | Ai mở cùng ngày thấy cùng câu (`pickForDay`).                                                                                                                         |
 
 Bản thử lưu tiến độ trong trình duyệt. Từ M3, server giữ XP/chuỗi ngày và ghi nhận lượt mời, dùng cùng hàm trong `@oii-bus/shared`.

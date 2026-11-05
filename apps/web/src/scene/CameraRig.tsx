@@ -12,12 +12,8 @@ const target = new THREE.Vector3();
 const desired = new THREE.Vector3();
 
 /** Góc camera cố định (không xoay, không zoom) để ai cũng điều khiển được. */
-const OFFSET = {
-  bus: new THREE.Vector3(0, 3.7, 12.5),
-  library: new THREE.Vector3(0, 7.5, 10),
-  temple: new THREE.Vector3(0, 6.5, 12),
-};
-const FOV = { bus: 50, library: 42, temple: 46 };
+const OFFSET = new THREE.Vector3(0, 8.5, 13.5);
+const FOV = 48;
 
 /** Camera theo sau từ góc chéo cố định. Chạm/bấm sàn để đi tới. */
 export function CameraRig() {
@@ -58,23 +54,20 @@ export function CameraRig() {
     const dt = Math.min(rawDt, 0.05);
     const p = game.player;
     const b = SCENES[game.scene].bounds;
-    const narrow = (camera as THREE.PerspectiveCamera).aspect < 1;
-    // giữ khung hình trong phạm vi scene để không phí màn hình
-    const marginX = narrow ? 2 : 7;
-    const cx = Math.min(b.maxX - marginX, Math.max(b.minX + marginX, p.x));
-    target.set(cx, game.scene === "bus" ? 1.9 : 0.6, p.z * 0.4 - (game.scene === "bus" ? 1 : 0));
-    const off = OFFSET[game.scene];
-    if (narrow) {
-      // màn dọc (điện thoại): nhìn cao hơn để sàn chiếm nhiều chỗ, trời vẫn còn ở phía trên
-      target.y = game.scene === "bus" ? 1.2 : 0.6;
-      desired.set(target.x, target.y + off.y * 2.1, target.z + off.z * 1.25);
-    } else {
-      desired.set(target.x + off.x, target.y + off.y, target.z + off.z);
-    }
-    // chuyển scene thì nhảy ngay, còn lại đi theo mượt
     const cam = camera as THREE.PerspectiveCamera;
-    if (cam.fov !== FOV[game.scene]) {
-      cam.fov = FOV[game.scene];
+    const narrow = cam.aspect < 1;
+    // giữ khung hình trong phạm vi sàn để không phí màn hình
+    const marginX = narrow ? 3 : 10;
+    const cx = Math.min(b.maxX - marginX, Math.max(b.minX + marginX, p.x));
+    target.set(cx, 0.8, p.z * 0.45 - 1.2);
+    if (narrow) {
+      // màn dọc (điện thoại): nhìn cao hơn để sàn chiếm nhiều chỗ
+      desired.set(target.x, target.y + OFFSET.y * 1.9, target.z + OFFSET.z * 1.2);
+    } else {
+      desired.set(target.x + OFFSET.x, target.y + OFFSET.y, target.z + OFFSET.z);
+    }
+    if (cam.fov !== FOV) {
+      cam.fov = FOV;
       cam.updateProjectionMatrix();
     }
     if (camera.position.distanceTo(desired) > 25) camera.position.copy(desired);

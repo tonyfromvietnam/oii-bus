@@ -1,7 +1,7 @@
-import { levelFor, pickForDay, zoneLabel } from "@oii-bus/shared";
+import { levelFor, levelNumber, pickForDay, xpForLevel, zoneLabel } from "@oii-bus/shared";
 import { useState } from "react";
-import { DAILY_QUOTES, NEWCOMER_TASKS, viDaily } from "../copy/daily";
-import { inviteUrl, toggleNewcomer, useProgress } from "../game/progress";
+import { DAILY_QUOTES, viDaily } from "../copy/daily";
+import { inviteUrl, useProgress } from "../game/progress";
 import { useUi } from "../game/ui";
 import { drawShareCard } from "./shareCard";
 
@@ -27,14 +27,15 @@ export function ProfileChip() {
     >
       <span>🔥 {Math.max(1, streak)}</span>
       <span className="h-4 w-px bg-black/15" />
-      <span className="text-[var(--accent)]">{zoneLabel(lv.zone)}</span>
+      <span className="text-[var(--accent)]">
+        Lv {levelNumber(xp)} · {zoneLabel(lv.zone)}
+      </span>
     </button>
   );
 }
 
 export function ProfilePanel() {
   const open = useProgress((s) => s.open);
-  const tab = useProgress((s) => s.tab);
   const set = useProgress((s) => s.set);
   if (!open) return null;
   return (
@@ -47,19 +48,9 @@ export function ProfilePanel() {
         onClick={(e) => e.stopPropagation()}
         data-testid="profile"
       >
-        <div className="flex gap-1 p-3 pb-0">
-          {(["today", "newcomer"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => set({ tab: t })}
-              className={`flex-1 rounded-full py-2 text-sm font-bold ${tab === t ? "bg-[var(--ink)] text-white" : "bg-white"}`}
-            >
-              {viDaily.tabs[t]}
-            </button>
-          ))}
+        <div className="overflow-y-auto p-5">
+          <Today />
         </div>
-        <div className="overflow-y-auto p-5 pt-4">{tab === "today" ? <Today /> : <Newcomer />}</div>
       </div>
     </div>
   );
@@ -109,12 +100,17 @@ function Today() {
           className="flex-1 rounded-2xl bg-[var(--accent)] p-3 text-center text-white shadow-sm"
           data-testid="level"
         >
-          <div className="text-2xl font-black">{zoneLabel(lv.zone)}</div>
+          <div className="text-2xl font-black">
+            Lv {levelNumber(xp)} · {zoneLabel(lv.zone)}
+          </div>
           <div className="text-xs font-semibold opacity-90">{lv.zone.title}</div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/30">
             <div className="h-full rounded-full bg-[var(--sun)]" style={{ width: `${lv.progress * 100}%` }} />
           </div>
           <div className="mt-1 text-[11px] opacity-90">
+            {viDaily.xpToLevel(xpForLevel(levelNumber(xp) + 1) - xp, levelNumber(xp) + 1)}
+          </div>
+          <div className="text-[11px] opacity-75">
             {lv.next ? viDaily.xpToNext(lv.xpToNext, zoneLabel(lv.next)) : viDaily.maxLevel}
           </div>
         </div>
@@ -126,9 +122,9 @@ function Today() {
         <div className="grid grid-cols-3 gap-2">
           {(
             [
-              ["⏱️", today.focusMinutes, viDaily.stats.focus],
+              ["⚙️", today.work, viDaily.stats.work],
               ["🪔", today.incense, viDaily.stats.incense],
-              ["✅", today.done, viDaily.stats.stamps],
+              ["🪷", today.merit, viDaily.stats.merit],
             ] as const
           ).map(([icon, n, label]) => (
             <div key={label} className="rounded-2xl bg-white p-2 text-center shadow-sm">
@@ -173,83 +169,6 @@ function Today() {
           className="mt-1 w-full rounded-lg bg-white px-2 py-1 font-mono text-[11px]"
         />
       </div>
-    </div>
-  );
-}
-
-function Newcomer() {
-  const done = useProgress((s) => s.newcomer);
-  const count = NEWCOMER_TASKS.filter((t) => done[t.id]).length;
-  const total = NEWCOMER_TASKS.length;
-  const [openId, setOpenId] = useState<string | null>(null);
-  return (
-    <div className="flex flex-col gap-3" data-testid="newcomer">
-      <div>
-        <h2 className="text-xl font-black">{viDaily.newcomer.title}</h2>
-        <p className="text-sm opacity-70">{viDaily.newcomer.intro}</p>
-        <div className="mt-2 flex items-center gap-2">
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/10">
-            <div
-              className="h-full rounded-full bg-[var(--accent)]"
-              style={{ width: `${(count / total) * 100}%` }}
-            />
-          </div>
-          <span className="text-xs font-bold tabular-nums">{viDaily.newcomer.done(count, total)}</span>
-        </div>
-        {count === total && (
-          <p className="mt-2 text-sm font-bold text-[var(--accent)]">{viDaily.newcomer.complete}</p>
-        )}
-      </div>
-      <ul className="flex flex-col gap-2">
-        {NEWCOMER_TASKS.map((t) => {
-          const checked = !!done[t.id];
-          const expanded = openId === t.id;
-          return (
-            <li key={t.id} className="rounded-2xl bg-white shadow-sm">
-              <div className="flex items-center gap-3 px-3 py-2.5">
-                <input
-                  id={`nc-${t.id}`}
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleNewcomer(t.id)}
-                  className="h-5 w-5 accent-[var(--accent)]"
-                />
-                <label
-                  htmlFor={`nc-${t.id}`}
-                  className={`flex-1 text-sm font-bold ${checked ? "line-through opacity-50" : ""}`}
-                >
-                  {t.icon} {t.title}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setOpenId(expanded ? null : t.id)}
-                  className="rounded-full px-2 text-lg opacity-60"
-                  aria-expanded={expanded}
-                  aria-label={t.title}
-                >
-                  {expanded ? "−" : "+"}
-                </button>
-              </div>
-              {expanded && (
-                <div className="px-4 pb-3 text-sm">
-                  <p className="opacity-80">{t.tip}</p>
-                  {t.link && (
-                    <a
-                      className="mt-1 inline-block font-bold text-[var(--accent)] underline"
-                      href={t.link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {viDaily.newcomer.learnMore}: {t.link.label} ↗
-                    </a>
-                  )}
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-      <p className="text-[11px] opacity-50">{viDaily.newcomer.disclaimer}</p>
     </div>
   );
 }

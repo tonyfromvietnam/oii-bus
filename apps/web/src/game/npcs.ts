@@ -1,11 +1,12 @@
-import type { Hat } from "@oii-bus/shared";
-import { SCENES, seatById, type SceneId } from "@oii-bus/world";
+import type { Hat, StationId } from "@oii-bus/shared";
+import { SCENES, STATION_SPOTS, seatById, type SceneId } from "@oii-bus/world";
+import { viFarm } from "../copy/farm";
 import type { AvatarAnim } from "./state";
 
 /**
  * Bạn đồng hành dạng bot cho bản thử offline (để xe không vắng). Từ M2 là người thật qua Colyseus.
  */
-export type NpcMode = "wander" | "sit" | "sleep" | "study" | "sing";
+export type NpcMode = "wander" | "sit" | "sleep" | "sing" | "work";
 
 export interface Npc extends AvatarAnim {
   id: string;
@@ -18,6 +19,7 @@ export interface Npc extends AvatarAnim {
   timer: number;
   nextLineAt: number;
   lines: readonly string[];
+  station?: StationId;
 }
 
 const LINES = {
@@ -38,7 +40,6 @@ const LINES = {
   ],
   suSu: ["🎤 Cả xe ơi, hát cùng nào!", "🎤 Ai song ca với mình không?"],
   mit: ["Zzz… nộp rồi… nộp rồi mà…", "Zzz… cho em gia hạn thêm 1 ngày…"],
-  study: ["📖", "✍️", "🤓"],
 } as const;
 
 const npc = (
@@ -62,6 +63,12 @@ function seated(scene: SceneId, seatId: string) {
   return { x: s.x, z: s.z, ry: s.ry };
 }
 
+/** Bot đứng làm ở quầy, cạnh chỗ người chơi đứng (để xe lúc nào cũng có người đang "cày"). */
+function working(station: StationId, side: -1 | 1) {
+  const sp = STATION_SPOTS[station];
+  return { x: sp.x + side * 1.5, z: sp.z, ry: Math.PI, station };
+}
+
 export const NPCS: Npc[] = [
   npc({
     id: "banh-mi",
@@ -70,8 +77,8 @@ export const NPCS: Npc[] = [
     color: "#fde3a0",
     hat: "cat-ears",
     mode: "wander",
-    x: 0,
-    z: -1,
+    x: -2,
+    z: 2,
     lines: LINES.banhMi,
   }),
   npc({
@@ -81,8 +88,8 @@ export const NPCS: Npc[] = [
     color: "#d6ccf2",
     hat: "none",
     mode: "wander",
-    x: 8,
-    z: -1.2,
+    x: 26,
+    z: 1,
     holding: "tea",
     lines: LINES.traSua,
   }),
@@ -104,9 +111,8 @@ export const NPCS: Npc[] = [
     color: "#c5e3d3",
     hat: "headphones",
     mode: "sing",
-    x: 6.5,
-    z: 1.6,
-    ry: 0,
+    x: 36,
+    z: 7.2,
     lines: LINES.suSu,
   }),
   npc({
@@ -116,42 +122,71 @@ export const NPCS: Npc[] = [
     color: "#ffd2b5",
     hat: "non-la",
     mode: "sleep",
-    ...seated("bus", "front-0-0"),
+    ...seated("bus", "table-0-0"),
     pose: "sleep",
     lines: LINES.mit,
   }),
   npc({
-    id: "bo",
-    name: "Bơ",
-    scene: "library",
-    color: "#c5e3d3",
-    hat: "grad-cap",
-    mode: "study",
-    ...seated("library", "desk-0-1"),
-    pose: "sit",
-    lines: LINES.study,
+    id: "na",
+    name: "Na",
+    scene: "bus",
+    color: "#f6c6cf",
+    hat: "beanie",
+    mode: "work",
+    ...working("pho", 1),
+    lines: viFarm.stations.pho.lines,
   }),
   npc({
     id: "khoai",
     name: "Khoai",
-    scene: "library",
+    scene: "bus",
     color: "#a8d3d9",
     hat: "headphones",
-    mode: "study",
-    ...seated("library", "desk-3-0"),
-    pose: "sit",
-    lines: LINES.study,
+    mode: "work",
+    ...working("nails", -1),
+    lines: viFarm.stations.nails.lines,
   }),
   npc({
-    id: "na",
-    name: "Na",
-    scene: "library",
+    id: "bo",
+    name: "Bơ",
+    scene: "bus",
+    color: "#c5e3d3",
+    hat: "grad-cap",
+    mode: "work",
+    ...working("essay", 1),
+    lines: viFarm.stations.essay.lines,
+  }),
+  npc({
+    id: "gao",
+    name: "Gạo",
+    scene: "bus",
+    color: "#fde3a0",
+    hat: "none",
+    mode: "work",
+    ...working("mo", -1),
+    lines: viFarm.stations.mo.lines,
+  }),
+  npc({
+    id: "sen",
+    name: "Sen",
+    scene: "bus",
     color: "#f6c6cf",
-    hat: "beanie",
-    mode: "sleep",
-    ...seated("library", "armchair-1"),
-    pose: "sleep",
-    lines: ["Zzz…"],
+    hat: "non-la",
+    mode: "sit",
+    ...seated("bus", "cushion-2"),
+    pose: "sit",
+    lines: ["📿 Nam mô…", "🙏"],
+  }),
+  npc({
+    id: "dau",
+    name: "Đậu",
+    scene: "bus",
+    color: "#d6ccf2",
+    hat: "cat-ears",
+    mode: "wander",
+    x: -14,
+    z: 3,
+    lines: LINES.traSua,
   }),
 ];
 

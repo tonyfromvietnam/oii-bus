@@ -13,7 +13,7 @@ export const CHAT_MAX_PER_MINUTE = 20;
 
 // --- Di chuyển ---
 /** Server từ chối tốc độ lớn hơn (m/s). Cho phép sai số mạng nhỏ khi validate. */
-export const MAX_SPEED = 5;
+export const MAX_SPEED = 8;
 export const MAX_SPEED_TOLERANCE = 1.2;
 export const AVATAR_RADIUS = 0.35;
 

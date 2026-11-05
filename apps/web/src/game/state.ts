@@ -53,10 +53,8 @@ export const game = {
   },
   /** Vị trí trên tuyến (m), tính từ giờ thật. */
   route: 0,
-  ducksFound: new Set<string>(),
   waved: new Set<string>(),
   photos: new Set<string>(),
-  focus: { running: false, elapsed: 0 },
   /** Sổ phúc đức tuần này (bản thật: server giữ, MeritEvent). */
   merit: emptyLedger(),
   chantElapsed: 0,

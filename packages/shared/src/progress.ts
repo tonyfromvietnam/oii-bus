@@ -16,12 +16,12 @@ export interface Zone {
 /** Cấp theo zone tàu điện London: đi từ ngoài vào trung tâm. */
 export const ZONES: readonly Zone[] = [
   { zone: 6, minXp: 0, title: "Mới lên xe" },
-  { zone: 5, minXp: 60, title: "Đã quen đường" },
-  { zone: 4, minXp: 160, title: "Thạo meal deal" },
-  { zone: 3, minXp: 320, title: "Dân Railcard" },
-  { zone: 2, minXp: 560, title: "Người quen của cả xe" },
-  { zone: 1, minXp: 900, title: "Dân London chính hiệu" },
-  { zone: 0, minXp: 1400, title: "Tiền bối Oii-Bus" },
+  { zone: 5, minXp: 300, title: "Đã quen đường" },
+  { zone: 4, minXp: 1_000, title: "Thạo meal deal" },
+  { zone: 3, minXp: 3_000, title: "Dân Railcard" },
+  { zone: 2, minXp: 8_000, title: "Người quen của cả xe" },
+  { zone: 1, minXp: 20_000, title: "Dân London chính hiệu" },
+  { zone: 0, minXp: 50_000, title: "Tiền bối Oii-Bus" },
 ];
 
 export interface LevelInfo {
@@ -42,6 +42,14 @@ export function levelFor(xp: number): LevelInfo {
   return { zone, next, progress: (x - zone.minXp) / (next.minXp - zone.minXp), xpToNext: next.minXp - x };
 }
 
+/** Cấp số (không giới hạn) để lúc nào cũng có cấp tiếp theo mà cày: Lv 1, 2, 3... */
+export function levelNumber(xp: number): number {
+  return Math.floor(Math.sqrt(Math.max(0, xp) / 20)) + 1;
+}
+
+/** XP cần để lên cấp số `lv`. */
+export const xpForLevel = (lv: number) => (lv - 1) ** 2 * 20;
+
 /** "Zone 4" hoặc "Zone VIP" cho cấp cao nhất. */
 export const zoneLabel = (z: Zone) => (z.zone === 0 ? "Zone VIP" : `Zone ${z.zone}`);
 
@@ -56,11 +64,9 @@ export const XP = {
   focusSession: 20,
   stamp: 15,
   photo: 5,
-  duck: 3,
-  bubbleTea: 2,
   plan: 10,
   wave: 1,
-  newcomerTask: 10,
+  milestone: 50,
 } as const;
 
 const dayFmt = new Intl.DateTimeFormat("en-CA", {

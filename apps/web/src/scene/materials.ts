@@ -49,7 +49,12 @@ export const shiny = (color: string) => mat(color, 0.12, 0.15);
 
 /** Vật liệu tự phát sáng (đèn, đèn dây, cửa sổ sáng) — sáng hơn khi London tối. */
 export const glowing: THREE.MeshStandardMaterial[] = [];
+const glowCache = new Map<string, THREE.MeshStandardMaterial>();
+/** Cache theo màu + độ sáng: cùng vật liệu thì StaticBuilder gộp được (ít draw call, máy yếu nhẹ hơn). */
 export function glow(color: string, base = 0.35, max = 1): THREE.MeshStandardMaterial {
+  const key = `${color}|${base}|${max}`;
+  const hit = glowCache.get(key);
+  if (hit) return hit;
   const m = new THREE.MeshStandardMaterial({
     color,
     roughness: 0.6,
@@ -59,6 +64,7 @@ export function glow(color: string, base = 0.35, max = 1): THREE.MeshStandardMat
   m.userData.glowBase = base;
   m.userData.glowMax = max;
   glowing.push(m);
+  glowCache.set(key, m);
   return m;
 }
 

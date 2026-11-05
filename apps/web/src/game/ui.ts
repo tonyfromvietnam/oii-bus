@@ -1,7 +1,6 @@
 import type { CityId, DistanceBand, Gender, Hat, Seeking } from "@oii-bus/shared";
 import type { SceneId } from "@oii-bus/world";
 import { create } from "zustand";
-import type { QuestId } from "../copy/vi";
 import { SAMPLE_PLANS, type Plan } from "./city";
 import type { DmMessage } from "./match";
 
@@ -48,15 +47,10 @@ export interface UiState {
   log: LogEntry[];
   chatOpen: boolean;
   helpOpen: boolean;
-  questsOpen: boolean;
   creatorOpen: boolean;
   wallet: number;
   where: { now: string | null; next: string; meters: number; joke: string | null };
-  done: Partial<Record<QuestId, true>>;
-  progress: Partial<Record<QuestId, number>>;
   music: { on: boolean; volume: number };
-  seatedAtDesk: boolean;
-  focus: { running: boolean; seconds: number };
   fade: boolean;
   merit: number;
   donateOpen: boolean;
@@ -79,15 +73,10 @@ export const useUi = create<UiState>((set, get) => ({
   log: [],
   chatOpen: false,
   helpOpen: false,
-  questsOpen: false,
   creatorOpen: true,
-  wallet: 30,
+  wallet: 10,
   where: { now: null, next: "", meters: 0, joke: null },
-  done: {},
-  progress: {},
   music: { on: false, volume: 0.6 },
-  seatedAtDesk: false,
-  focus: { running: false, seconds: 0 },
   fade: false,
   merit: 0,
   donateOpen: false,
