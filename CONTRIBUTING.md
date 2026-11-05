@@ -67,7 +67,8 @@ Repository settings (description, topics, security features, branch protection, 
 
 ```bash
 gh auth login
-./scripts/setup-github.sh
+./scripts/setup-github.sh                                           # macOS / Linux
+powershell -ExecutionPolicy Bypass -File scripts\setup-github.ps1   # Windows
 ```
 
 ## Adding a landmark

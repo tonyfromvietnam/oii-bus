@@ -4,6 +4,8 @@
 #   gh auth login            # nếu chưa đăng nhập GitHub CLI
 #   ./scripts/setup-github.sh
 #
+# Windows: dùng scripts\setup-github.ps1 (PowerShell) thay cho file này.
+#
 # Làm những việc sau (chạy lại nhiều lần cũng an toàn):
 #   1. Mô tả, website, topics, bật Issues/Discussions, tắt Wiki
 #   2. Private vulnerability reporting + Dependabot alerts + security updates + secret scanning
