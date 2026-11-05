@@ -13,7 +13,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { game } from "../game/state";
 import { GROUND, buildLandmark, buildTile, type LandmarkObject } from "./landmarks";
-import { C, glow, toon } from "./materials";
+import { C, glow, mat, metal, shiny, texMat } from "./materials";
 import { signMaterial } from "./signs";
 import { StaticBuilder } from "./StaticBuilder";
 
@@ -25,18 +25,18 @@ const G = GROUND;
 /** Bus siêu to mui trần: thân đỏ, sàn gỗ, lan can vàng, cờ dây, đồ đạc vui. */
 function buildBus(): THREE.Group {
   const b = new StaticBuilder();
-  const red = toon(C.bus);
+  const red = mat(C.bus);
   // thân xe
   b.box(red, HALF_L * 2, -G - 0.9, HALF_W * 2, 0, (G + 0.9) / 2, 0);
-  b.box(toon(C.cream), HALF_L * 2 + 0.02, 0.35, HALF_W * 2 + 0.02, 0, G + 2.0, 0);
-  b.box(toon(C.busDark), HALF_L * 2 + 0.04, 0.3, HALF_W * 2 + 0.04, 0, G + 0.95, 0);
+  b.box(mat(C.cream), HALF_L * 2 + 0.02, 0.35, HALF_W * 2 + 0.02, 0, G + 2.0, 0);
+  b.box(mat(C.busDark), HALF_L * 2 + 0.04, 0.3, HALF_W * 2 + 0.04, 0, G + 0.95, 0);
   // cửa sổ tầng dưới (thư viện sáng đèn ấm bên trong)
   for (let x = -HALF_L + 2; x < HALF_L - 2; x += 2.6) {
     for (const s of [-1, 1])
       b.box(glow("#ffe2a8", 0.45, 1.1), 2.0, 1.4, 0.06, x + 1, G + 3.0, s * (HALF_W + 0.01));
   }
   // kính chắn gió + bảng điểm đến
-  b.box(toon(C.glass), 0.08, 1.8, HALF_W * 2 - 1, HALF_L + 0.01, G + 3.0, 0);
+  b.box(shiny(C.glass), 0.08, 1.8, HALF_W * 2 - 1, HALF_L + 0.01, G + 3.0, 0);
   b.add(
     signMaterial("", { bg: "#3b2f45", fg: "#ffd166", lines: ["N29 · VÒNG LONDON"] }),
     new THREE.PlaneGeometry(5, 0.9),
@@ -57,11 +57,11 @@ function buildBus(): THREE.Group {
   });
   b.add(logo, new THREE.PlaneGeometry(10, 1.5), -4, G + 2.0, HALF_W + 0.04);
   // sàn gỗ
-  b.box(toon(C.deck), HALF_L * 2, 0.2, HALF_W * 2, 0, -0.1, 0);
+  b.box(mat(C.deck), HALF_L * 2, 0.2, HALF_W * 2, 0, -0.1, 0);
   for (let z = -HALF_W + 0.5; z < HALF_W; z += 1)
-    b.box(toon(C.deckLine), HALF_L * 2, 0.012, 0.05, 0, 0.002, z);
+    b.box(mat(C.deckLine), HALF_L * 2, 0.012, 0.05, 0, 0.002, z);
   // lan can quanh tầng thượng (thấp, tròn, vàng)
-  const rail = toon(C.rail);
+  const rail = metal(C.rail);
   for (const s of [-1, 1]) {
     b.box(rail, HALF_L * 2, 0.12, 0.12, 0, 0.95, s * HALF_W);
     b.box(red, HALF_L * 2, 0.5, 0.12, 0, 0.25, s * HALF_W);
@@ -78,7 +78,7 @@ function buildBus(): THREE.Group {
     for (let x = -HALF_L + 1; x < HALF_L; x += 0.9) {
       const sag = Math.sin(((x + HALF_L) / 6) * Math.PI) * 0.15;
       b.add(
-        toon(flags[Math.round((x + HALF_L) / 0.9) % flags.length]!),
+        mat(flags[Math.round((x + HALF_L) / 0.9) % flags.length]!),
         new THREE.ConeGeometry(0.16, 0.3, 3),
         x,
         1.85 - Math.abs(sag),
@@ -88,7 +88,7 @@ function buildBus(): THREE.Group {
         0,
       );
     }
-    b.box(toon(C.ink), HALF_L * 2, 0.02, 0.02, 0, 2.0, s * HALF_W);
+    b.box(mat(C.ink), HALF_L * 2, 0.02, 0.02, 0, 2.0, s * HALF_W);
     for (const x of [-HALF_L, 0, HALF_L]) b.cyl(rail, 0.04, 1.1, x, 1.5, s * HALF_W);
   }
   // đèn dây (sáng khi London tối)
@@ -96,9 +96,9 @@ function buildBus(): THREE.Group {
   for (let x = -HALF_L + 0.5; x < HALF_L; x += 1.4) b.sphere(bulb, 0.06, x, 1.98, -HALF_W);
 
   // --- đồ đạc ---
-  const cushion = toon(C.cushion);
+  const cushion = mat(C.cushion);
   const benchSeat = (x: number, z: number, w: number, d: number, backDir: "x" | "z", backSign: number) => {
-    b.box(toon(C.woodDark), w, 0.35, d, x, 0.17, z);
+    b.box(mat(C.woodDark), w, 0.35, d, x, 0.17, z);
     b.box(cushion, w - 0.05, 0.12, d - 0.05, x, 0.41, z);
     if (backDir === "x") b.box(cushion, 0.15, 0.6, d, x + backSign * (w / 2 - 0.07), 0.75, z);
     else b.box(cushion, w, 0.6, 0.15, x, 0.75, z + backSign * (d / 2 - 0.07));
@@ -108,8 +108,8 @@ function buildBus(): THREE.Group {
 
   // khung ảnh "📸" ở đầu xe
   const fx = P.photo.x + 1.1;
-  b.box(toon(C.white), 0.15, 2.3, 2.6, fx, 1.6, 0);
-  b.box(toon(C.lemon), 0.18, 1.8, 2.1, fx - 0.01, 1.7, 0);
+  b.box(mat(C.white), 0.15, 2.3, 2.6, fx, 1.6, 0);
+  b.box(mat(C.lemon), 0.18, 1.8, 2.1, fx - 0.01, 1.7, 0);
   b.add(
     signMaterial("", { bg: "#ffffff", fg: "#3b2f45", lines: ["📸 Chụp ảnh", "với London!"] }),
     new THREE.PlaneGeometry(1.8, 1.0),
@@ -119,15 +119,15 @@ function buildBus(): THREE.Group {
     0,
     -Math.PI / 2,
   );
-  b.cyl(toon(C.ink), 0.06, 0.6, fx, 0.3, 0);
+  b.cyl(mat(C.ink), 0.06, 0.6, fx, 0.3, 0);
 
   // quầy trà sữa
   const tc = P.teaCart;
-  b.box(toon(C.oiiBlue), 1.6, 0.95, 0.9, tc.x, 0.48, tc.z);
-  b.box(toon(C.white), 1.7, 0.08, 1.0, tc.x, 0.98, tc.z);
+  b.box(mat(C.oiiBlue), 1.6, 0.95, 0.9, tc.x, 0.48, tc.z);
+  b.box(mat(C.white), 1.7, 0.08, 1.0, tc.x, 0.98, tc.z);
   for (let i = 0; i < 4; i++) {
     b.cyl(
-      toon(["#f3d9b1", "#d9b8ff", "#ffc7d1", "#bfe8d6"][i]!),
+      mat(["#f3d9b1", "#d9b8ff", "#ffc7d1", "#bfe8d6"][i]!),
       0.08,
       0.22,
       tc.x - 0.5 + i * 0.33,
@@ -135,8 +135,8 @@ function buildBus(): THREE.Group {
       tc.z + 0.2,
     );
   }
-  b.cyl(toon(C.ink), 0.04, 1.6, tc.x, 1.75, tc.z - 0.2);
-  b.add(toon(C.oiiYellow), new THREE.ConeGeometry(1.2, 0.5, 8), tc.x, 2.6, tc.z - 0.2);
+  b.cyl(mat(C.ink), 0.04, 1.6, tc.x, 1.75, tc.z - 0.2);
+  b.add(mat(C.oiiYellow), new THREE.ConeGeometry(1.2, 0.5, 8), tc.x, 2.6, tc.z - 0.2);
   b.add(
     signMaterial("Trà sữa 🧋", { bg: "#ff8fab", fg: "#ffffff" }),
     new THREE.PlaneGeometry(1.4, 0.35),
@@ -147,10 +147,10 @@ function buildBus(): THREE.Group {
 
   // góc karaoke
   const k = P.karaoke;
-  b.box(toon(C.oiiBlue), 0.6, 1.0, 0.5, k.x + 0.6, 0.5, k.z);
-  b.cyl(toon("#6b5b7b"), 0.18, 0.02, k.x + 0.6, 0.65, k.z - 0.26, Math.PI / 2);
-  b.cyl(toon(C.ink), 0.03, 1.3, k.x - 0.2, 0.65, k.z - 0.1);
-  b.sphere(toon("#c0c0d0"), 0.08, k.x - 0.2, 1.33, k.z - 0.1);
+  b.box(mat(C.oiiBlue), 0.6, 1.0, 0.5, k.x + 0.6, 0.5, k.z);
+  b.cyl(mat("#6b5b7b"), 0.18, 0.02, k.x + 0.6, 0.65, k.z - 0.26, Math.PI / 2);
+  b.cyl(mat(C.ink), 0.03, 1.3, k.x - 0.2, 0.65, k.z - 0.1);
+  b.sphere(mat("#c0c0d0"), 0.08, k.x - 0.2, 1.33, k.z - 0.1);
   b.add(
     signMaterial("🎤 Karaoke", { bg: "#b77cff", fg: "#ffffff" }),
     new THREE.PlaneGeometry(1.1, 0.3),
@@ -163,7 +163,7 @@ function buildBus(): THREE.Group {
 
   // máy meal deal
   const v = P.vending;
-  b.box(toon("#4e9297"), 1.1, 2.0, 0.8, v.x, 1.0, v.z);
+  b.box(mat("#4e9297"), 1.1, 2.0, 0.8, v.x, 1.0, v.z);
   b.box(glow("#e9f6ff", 0.4, 1), 0.75, 1.1, 0.05, v.x - 0.08, 1.25, v.z + 0.41);
   b.add(
     signMaterial("MEAL DEAL £3.50", { bg: "#ffd166", fg: "#3b2f45" }),
@@ -175,21 +175,21 @@ function buildBus(): THREE.Group {
 
   // nồi lẩu chung
   const h = P.hotpot;
-  b.cyl(toon(C.wood), 0.85, 0.08, h.x, 0.72, h.z);
-  b.cyl(toon(C.woodDark), 0.12, 0.7, h.x, 0.35, h.z);
-  b.cyl(toon("#c0c4cc"), 0.4, 0.25, h.x, 0.88, h.z);
-  b.cyl(toon("#ff8a5c"), 0.36, 0.02, h.x, 1.0, h.z);
+  b.cyl(mat(C.wood), 0.85, 0.08, h.x, 0.72, h.z);
+  b.cyl(mat(C.woodDark), 0.12, 0.7, h.x, 0.35, h.z);
+  b.cyl(mat("#c0c4cc"), 0.4, 0.25, h.x, 0.88, h.z);
+  b.cyl(mat("#ff8a5c"), 0.36, 0.02, h.x, 1.0, h.z);
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2;
-    b.cyl(toon(C.white), 0.1, 0.05, h.x + Math.cos(a) * 0.62, 0.78, h.z + Math.sin(a) * 0.62);
+    b.cyl(mat(C.white), 0.1, 0.05, h.x + Math.cos(a) * 0.62, 0.78, h.z + Math.sin(a) * 0.62);
   }
   for (const s of BUS_SCENE.seats.filter((s) => s.id.startsWith("hotpot")))
-    b.cyl(toon(C.peach), 0.25, 0.45, s.x, 0.22, s.z);
+    b.cyl(mat(C.peach), 0.25, 0.45, s.x, 0.22, s.z);
 
   // bảng nhiệm vụ
   const q = P.questBoard;
-  b.box(toon(C.woodDark), 1.4, 1.1, 0.12, q.x, 1.35, q.z);
-  b.box(toon("#e8c39e"), 1.25, 0.95, 0.13, q.x, 1.35, q.z);
+  b.box(mat(C.woodDark), 1.4, 1.1, 0.12, q.x, 1.35, q.z);
+  b.box(mat("#e8c39e"), 1.25, 0.95, 0.13, q.x, 1.35, q.z);
   b.add(
     signMaterial("", { bg: "#fff4e0", fg: "#3b2f45", lines: ["⭐ NHIỆM VỤ", "tuần này"] }),
     new THREE.PlaneGeometry(0.9, 0.55),
@@ -197,13 +197,13 @@ function buildBus(): THREE.Group {
     1.4,
     q.z + 0.08,
   );
-  for (const lx of [-0.5, 0.5]) b.cyl(toon(C.woodDark), 0.04, 0.8, q.x + lx, 0.4, q.z);
+  for (const lx of [-0.5, 0.5]) b.cyl(mat(C.woodDark), 0.04, 0.8, q.x + lx, 0.4, q.z);
 
   // cầu thang xuống thư viện
   const st = P.stairs;
-  b.box(toon("#6b5b7b"), 2.6, 0.02, 1.8, st.x, 0.01, st.z);
+  b.box(mat("#6b5b7b"), 2.6, 0.02, 1.8, st.x, 0.01, st.z);
   for (let i = 0; i < 5; i++)
-    b.box(toon(C.deckLine), 2.4, 0.03, 0.3, st.x - 1 + i * 0.5, -0.2 - i * 0.25, st.z, 0, Math.PI / 2);
+    b.box(mat(C.deckLine), 2.4, 0.03, 0.3, st.x - 1 + i * 0.5, -0.2 - i * 0.25, st.z, 0, Math.PI / 2);
   for (const dz of [-0.95, 0.95]) b.box(rail, 2.6, 0.08, 0.08, st.x, 0.95, st.z + dz);
   b.box(rail, 0.08, 0.08, 1.9, st.x - 1.3, 0.95, st.z);
   b.add(
@@ -215,15 +215,15 @@ function buildBus(): THREE.Group {
     0,
     Math.PI / 2,
   );
-  b.cyl(toon(C.ink), 0.04, 1.0, st.x + 1.35, 0.5, st.z);
+  b.cyl(mat(C.ink), 0.04, 1.0, st.x + 1.35, 0.5, st.z);
 
   // ô dựng sẵn
   const u = P.umbrellas;
-  b.cyl(toon(C.ink), 0.22, 0.6, u.x, 0.3, u.z);
+  b.cyl(mat(C.ink), 0.22, 0.6, u.x, 0.3, u.z);
   [C.oiiBlue, C.oiiYellow, C.accent].forEach((c, i) => {
-    b.cyl(toon(C.ink), 0.02, 1.1, u.x - 0.1 + i * 0.1, 0.75, u.z, 0, 0, (i - 1) * 0.2);
+    b.cyl(mat(C.ink), 0.02, 1.1, u.x - 0.1 + i * 0.1, 0.75, u.z, 0, 0, (i - 1) * 0.2);
     b.add(
-      toon(c),
+      mat(c),
       new THREE.ConeGeometry(0.12, 0.5, 6),
       u.x - 0.1 + i * 0.12 + (i - 1) * 0.15,
       1.2,
@@ -241,13 +241,17 @@ function buildBus(): THREE.Group {
     [-2.4, 3.2],
     [9.2, 3.2],
   ] as const) {
-    b.cyl(toon(C.peach), 0.25, 0.4, px, 0.2, pz);
-    b.sphere(toon(C.leaf), 0.35, px, 0.6, pz);
+    b.cyl(mat(C.peach), 0.25, 0.4, px, 0.2, pz);
+    b.sphere(mat(C.leaf), 0.35, px, 0.6, pz);
   }
 
   // bánh xe
   const g = new THREE.Group();
-  for (const m of b.build()) g.add(m);
+  for (const m of b.build()) {
+    m.castShadow = true;
+    m.receiveShadow = true;
+    g.add(m);
+  }
   return g;
 }
 
@@ -257,9 +261,9 @@ function buildWheels(): THREE.Mesh[] {
   geo.rotateX(Math.PI / 2);
   for (const x of [-HALF_L + 3, -HALF_L + 5.2, HALF_L - 3.5]) {
     for (const s of [-1, 1]) {
-      const m = new THREE.Mesh(geo, toon(C.tyre));
+      const m = new THREE.Mesh(geo, mat(C.tyre));
       m.position.set(x, G + 0.95, s * (HALF_W - 0.2));
-      const hub = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 0.62), toon(C.white));
+      const hub = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 0.62), mat(C.white));
       m.add(hub);
       wheels.push(m);
     }
@@ -288,17 +292,17 @@ function Ducks() {
             refs.current[i] = el;
           }}
         >
-          <mesh position={[0, 0.13, 0]} scale={[1, 0.8, 1.2]} material={toon("#ffd84a")}>
+          <mesh position={[0, 0.13, 0]} scale={[1, 0.8, 1.2]} material={mat("#ffd84a")}>
             <sphereGeometry args={[0.16, 12, 10]} />
           </mesh>
-          <mesh position={[0, 0.3, 0.1]} material={toon("#ffd84a")}>
+          <mesh position={[0, 0.3, 0.1]} material={mat("#ffd84a")}>
             <sphereGeometry args={[0.1, 12, 10]} />
           </mesh>
-          <mesh position={[0, 0.29, 0.21]} scale={[1, 0.5, 1]} material={toon("#ff9a3c")}>
+          <mesh position={[0, 0.29, 0.21]} scale={[1, 0.5, 1]} material={mat("#ff9a3c")}>
             <sphereGeometry args={[0.05, 8, 6]} />
           </mesh>
           {[-0.045, 0.045].map((x) => (
-            <mesh key={x} position={[x, 0.33, 0.18]} material={toon(C.ink)}>
+            <mesh key={x} position={[x, 0.33, 0.18]} material={mat(C.ink)}>
               <sphereGeometry args={[0.015, 6, 6]} />
             </mesh>
           ))}
@@ -354,6 +358,21 @@ const TOY: Partial<Record<LandmarkId, number>> = {
   liverpool: 16,
   "angel-north": 13,
   edinburgh: 16,
+  "st-pauls": 17,
+  shard: 22,
+  windsor: 12,
+  "white-cliffs": 10,
+  cardiff: 14,
+  snowdon: 18,
+  cotswolds: 7,
+  cambridge: 13,
+  blackpool: 20,
+  "lake-district": 12,
+  york: 17,
+  "hadrians-wall": 7,
+  "forth-bridge": 12,
+  "loch-ness": 11,
+  "giants-causeway": 8,
 };
 const MAX_WIDTH = 60;
 const LANDMARK_Z = -46;
@@ -410,10 +429,14 @@ function Scenery() {
   return (
     <group>
       <group ref={road}>
-        <mesh rotation-x={-Math.PI / 2} position={[0, G, 0]} material={toon(C.road)}>
+        <mesh rotation-x={-Math.PI / 2} position={[0, G, 0]} material={texMat("asphalt", C.road, 60, 1.4)}>
           <planeGeometry args={[600, 14]} />
         </mesh>
-        <mesh rotation-x={-Math.PI / 2} position={[0, G - 0.1, 0]} material={toon(C.grass)}>
+        <mesh
+          rotation-x={-Math.PI / 2}
+          position={[0, G - 0.1, 0]}
+          material={texMat("grass", C.grass, 60, 26)}
+        >
           <planeGeometry args={[600, 260]} />
         </mesh>
       </group>

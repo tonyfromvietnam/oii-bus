@@ -26,7 +26,7 @@ describe("tuyến Bus Oii vòng quanh UK", () => {
     expect(s.next.id).toBe("london-eye");
     expect(s.metersToNext).toBeCloseTo(48);
   });
-  it("vòng lại về Big Ben sau Edinburgh", () => {
+  it("vòng lại về Big Ben sau Giant's Causeway", () => {
     const s = landmarkStatus(ROUTE_LENGTH - 40);
     expect(s.next.id).toBe("big-ben");
     expect(s.metersToNext).toBeGreaterThan(0);
@@ -49,5 +49,13 @@ describe("tuyến Bus Oii vòng quanh UK", () => {
     const stone = LANDMARKS.find((l) => l.id === "stonehenge")!;
     expect(nearestLandmark(stone.at + 20).terrain).toBe("country");
     expect(nearestLandmark(LANDMARKS.find((l) => l.id === "brighton-pier")!.at).terrain).toBe("coast");
+  });
+});
+
+describe("thành phố của địa danh", () => {
+  it("mỗi địa danh gắn với một thành phố trong danh sách", async () => {
+    const { CITIES } = await import("@xom-oii/shared");
+    const ids = new Set(CITIES.map((c) => c.id));
+    for (const lm of LANDMARKS) expect(ids.has(lm.city)).toBe(true);
   });
 });

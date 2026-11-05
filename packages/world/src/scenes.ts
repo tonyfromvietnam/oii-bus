@@ -3,12 +3,14 @@ import { box, type AABB } from "./coords";
 /**
  * Hai không gian của Xóm Oii (bản vẽ lại sau review M1):
  *  - "bus": tầng trên mui trần của chiếc bus hai tầng siêu to chạy vòng London. Mặc định, mọi người ở đây.
- *  - "library": tầng dưới là thư viện yên lặng, nghe lofi, không chat chữ.
+ *    Tầng thượng còn là nơi tìm người cùng thành phố và rủ nhau lên kế hoạch đi chơi.
+ *  - "library": tầng giữa là thư viện yên lặng, nghe lofi, không chat chữ.
+ *  - "temple": tầng dưới cùng là "Chùa Cầu Duyên": thắp hương, tụng kinh, công đức, xin se duyên 1:1.
  *
  * Toạ độ cục bộ mỗi scene, sàn y = 0. Bus: đầu xe ở +x, camera nhìn từ phía +z.
  */
 
-export type SceneId = "bus" | "library";
+export type SceneId = "bus" | "library" | "temple";
 
 export type SpotKind =
   | "seat"
@@ -22,7 +24,14 @@ export type SpotKind =
   | "to-bus"
   | "bookshelf"
   | "cat"
-  | "radio";
+  | "radio"
+  | "meetup-board"
+  | "to-temple"
+  | "incense"
+  | "donate"
+  | "wish-tree"
+  | "matchmaker"
+  | "bell";
 
 export interface Spot {
   id: string;
@@ -41,6 +50,8 @@ export interface Seat {
   ry: number;
   /** Ghế học ở thư viện: ngồi vào thì bật được hẹn giờ tập trung. */
   desk?: boolean;
+  /** Bồ đoàn ở chùa: ngồi vào là tụng kinh, tích đức theo thời gian. */
+  chant?: boolean;
 }
 
 export interface SceneDef {
@@ -78,6 +89,7 @@ export const BUS_PROPS = {
   questBoard: { x: -12, z: -3.25 },
   stairs: { x: -14.4, z: 2.3 },
   umbrellas: { x: -11.6, z: 3.1 },
+  meetupBoard: { x: 9.4, z: 3.3 },
 } as const;
 
 const P = BUS_PROPS;
@@ -122,6 +134,7 @@ export const BUS_SCENE: SceneDef = {
     box(P.questBoard.x, P.questBoard.z, 1.4, 0.3),
     box(P.stairs.x, P.stairs.z, 2.6, 1.8),
     box(P.umbrellas.x, P.umbrellas.z, 0.5, 0.5),
+    box(P.meetupBoard.x, P.meetupBoard.z, 1.6, 0.3),
   ],
   seats: busSeats,
   spots: [
@@ -132,6 +145,7 @@ export const BUS_SCENE: SceneDef = {
     { id: "quest-board", kind: "quest-board", x: P.questBoard.x, z: P.questBoard.z + 0.6, radius: 1.4 },
     { id: "umbrella", kind: "umbrella", x: P.umbrellas.x, z: P.umbrellas.z - 0.6, radius: 1.1 },
     { id: "to-library", kind: "to-library", x: P.stairs.x + 1.9, z: P.stairs.z, radius: 1.3 },
+    { id: "meetup-board", kind: "meetup-board", x: P.meetupBoard.x, z: P.meetupBoard.z - 0.65, radius: 1.4 },
     ...seatSpots(busSeats),
   ],
   spawn: { x: 3, z: 0.6, ry: 0 },
@@ -152,6 +166,7 @@ export const LIBRARY_PROPS = {
   radio: { x: 0, z: -5.4 },
   shelvesWest: { x: -8.6 },
   shelvesEast: { x: 8.6 },
+  downStairs: { x: 1.8, z: 4.9 },
 } as const;
 
 const L = LIBRARY_PROPS;
@@ -180,6 +195,7 @@ export const LIBRARY_SCENE: SceneDef = {
     box(L.stairs.x, L.stairs.z + 0.4, 2.2, 1.6),
     box(L.radio.x, L.radio.z, 1.2, 0.5),
     box(L.nook.x, L.nook.z + 0.2, 1.2, 0.8), // bàn trà nhỏ giữa hai ghế
+    box(L.downStairs.x, L.downStairs.z, 2.2, 1.4),
   ],
   seats: libSeats,
   spots: [
@@ -188,13 +204,76 @@ export const LIBRARY_SCENE: SceneDef = {
     { id: "bookshelf-e", kind: "bookshelf", x: L.shelvesEast.x - 0.9, z: -2.5, radius: 1.4 },
     { id: "cat", kind: "cat", x: L.cat.x, z: L.cat.z - 0.5, radius: 1.1 },
     { id: "radio", kind: "radio", x: L.radio.x, z: L.radio.z + 0.7, radius: 1.3 },
+    { id: "to-temple", kind: "to-temple", x: L.downStairs.x, z: L.downStairs.z - 1.25, radius: 1.1 },
     ...seatSpots(libSeats),
   ],
   spawn: { x: -4.2, z: 3.4, ry: 0 },
   quiet: true,
 };
 
-export const SCENES: Record<SceneId, SceneDef> = { bus: BUS_SCENE, library: LIBRARY_SCENE };
+// -------------------------------------------------------------- TEMPLE ----
+/**
+ * Chùa Cầu Duyên: sân chùa lát đá, chính điện mái cong phía sau, lư hương giữa sân,
+ * miếu Ông Tơ Bà Nguyệt (xin se duyên), cây duyên buộc chỉ đỏ, hòm công đức, góc tụng kinh,
+ * đèn lồng hoa sen kiểu chùa Hàn treo khắp sân, tháp đá, hồ cá koi.
+ */
+export const TEMPLE_PROPS = {
+  incense: { x: 0, z: -1.6 },
+  matchmaker: { x: -7.6, z: -4.6 },
+  wishTree: { x: 7.8, z: -3.6 },
+  donate: { x: 3.6, z: -5.2 },
+  bell: { x: -3.6, z: -5.2 },
+  chantAltar: { x: -5.4, z: 1.6 },
+  pond: { x: 7.4, z: 3.4 },
+  pagoda: { x: -10.4, z: 1.8 },
+  stairs: { x: -10.2, z: 5.6 },
+} as const;
+
+const TP = TEMPLE_PROPS;
+
+const templeSeats: Seat[] = [-1.6, -0.4, 0.8].flatMap((dx, i) =>
+  [1, 0].map((row) => ({
+    id: `cushion-${i}-${row}`,
+    x: TP.chantAltar.x + dx * 1.2 + 0.4,
+    z: TP.chantAltar.z + 1.6 + row * 1.3,
+    ry: Math.PI,
+    chant: true,
+  })),
+);
+
+export const TEMPLE_SCENE: SceneDef = {
+  id: "temple",
+  bounds: { minX: -12, maxX: 12, minZ: -7, maxZ: 7 },
+  colliders: [
+    box(TP.incense.x, TP.incense.z, 1.6, 1.6),
+    box(TP.matchmaker.x, TP.matchmaker.z - 0.4, 3.2, 1.6),
+    box(TP.wishTree.x, TP.wishTree.z, 1.4, 1.4),
+    box(TP.donate.x, TP.donate.z, 1.2, 0.8),
+    box(TP.bell.x, TP.bell.z, 1.2, 1.2),
+    box(TP.chantAltar.x, TP.chantAltar.z, 3.4, 0.8),
+    box(TP.pond.x, TP.pond.z, 4.4, 3.0),
+    box(TP.pagoda.x, TP.pagoda.z, 1.6, 1.6),
+    box(TP.stairs.x, TP.stairs.z + 0.4, 2.4, 1.4),
+  ],
+  seats: templeSeats,
+  spots: [
+    { id: "incense", kind: "incense", x: TP.incense.x, z: TP.incense.z + 1.4, radius: 1.5 },
+    { id: "matchmaker", kind: "matchmaker", x: TP.matchmaker.x, z: TP.matchmaker.z + 1.1, radius: 1.6 },
+    { id: "wish-tree", kind: "wish-tree", x: TP.wishTree.x - 1.3, z: TP.wishTree.z + 0.6, radius: 1.4 },
+    { id: "donate", kind: "donate", x: TP.donate.x, z: TP.donate.z + 1.0, radius: 1.3 },
+    { id: "bell", kind: "bell", x: TP.bell.x, z: TP.bell.z + 1.1, radius: 1.3 },
+    { id: "to-library", kind: "to-library", x: TP.stairs.x + 1.8, z: TP.stairs.z - 0.4, radius: 1.3 },
+    ...seatSpots(templeSeats),
+  ],
+  spawn: { x: -6.8, z: 5.2, ry: Math.PI },
+  quiet: false,
+};
+
+export const SCENES: Record<SceneId, SceneDef> = {
+  bus: BUS_SCENE,
+  library: LIBRARY_SCENE,
+  temple: TEMPLE_SCENE,
+};
 
 export function seatById(scene: SceneId, id: string): Seat | undefined {
   return SCENES[scene].seats.find((s) => s.id === id);

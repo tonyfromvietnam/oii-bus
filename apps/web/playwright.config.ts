@@ -4,7 +4,9 @@ const args = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignor
 
 export default defineConfig({
   testDir: "e2e",
-  timeout: 60_000,
+  timeout: 90_000,
+  workers: 1,
+  expect: { timeout: 15_000 },
   use: {
     baseURL: "http://localhost:4173",
     launchOptions: {

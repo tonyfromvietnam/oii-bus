@@ -1,8 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { londonDarkness } from "@xom-oii/shared";
+import { CHANT_SECONDS, londonDarkness } from "@xom-oii/shared";
 import { SCENES, landmarkStatus, resolveCollisions, routeOffset } from "@xom-oii/world";
-import { vi } from "../copy/vi";
-import { findInteraction, interactionLabel, npcSays } from "./actions";
+import { vi, viTemple } from "../copy/vi";
+import { endSession } from "./match";
+import { seatById } from "@xom-oii/world";
+import { earnMerit, findInteraction, interactionLabel, npcSays, tapMo } from "./actions";
 import { NPCS, randomWalkable } from "./npcs";
 import { progressQuest } from "./quests";
 import { game } from "./state";
@@ -94,6 +96,27 @@ export function GameLoop() {
       }
       game.env.darkness = londonDarkness(new Date());
     }
+
+    // tụng kinh trên bồ đoàn: gõ mõ đều, cứ CHANT_SECONDS giây được 1 phúc đức
+    const seat = p.pose === "sit" && p.seatId ? seatById(game.scene, p.seatId) : null;
+    if (seat?.chant) {
+      const before = game.chantElapsed;
+      game.chantElapsed += dt;
+      if (Math.floor(game.chantElapsed / 0.9) !== Math.floor(before / 0.9)) {
+        tapMo();
+        p.gesture = { id: "sorry", until: game.time + 0.4 };
+      }
+      if (Math.floor(game.chantElapsed / CHANT_SECONDS) !== Math.floor(before / CHANT_SECONDS)) {
+        const pts = earnMerit("chant", 1, true);
+        if (pts > 0) p.bubble = { text: viTemple.chant(pts), until: game.time + 2 };
+      }
+    } else {
+      game.chantElapsed = 0;
+    }
+
+    // hết giờ phiên se duyên
+    const d = ui().duyen;
+    if (d.step === "chat" && Date.now() > d.endsAt) endSession("time");
 
     if (game.focus.running) {
       game.focus.elapsed += dt;

@@ -1,4 +1,4 @@
-import type { Gesture, Hat } from "@xom-oii/shared";
+import { emptyLedger, type Gesture, type Hat } from "@xom-oii/shared";
 import { SCENES, type SceneId } from "@xom-oii/world";
 
 /**
@@ -57,6 +57,9 @@ export const game = {
   waved: new Set<string>(),
   photos: new Set<string>(),
   focus: { running: false, elapsed: 0 },
+  /** Sổ phúc đức tuần này (bản thật: server giữ, MeritEvent). */
+  merit: emptyLedger(),
+  chantElapsed: 0,
   env: { darkness: 0 },
 };
 

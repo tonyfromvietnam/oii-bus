@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { mulberry32, type HouseStyle, type LandmarkId, type Terrain } from "@xom-oii/world";
 import { signMaterial } from "./signs";
-import { C, glow, toon } from "./materials";
+import { C, glow, mat, shiny, texMat } from "./materials";
 import { StaticBuilder } from "./StaticBuilder";
 
 /**
@@ -11,7 +11,7 @@ import { StaticBuilder } from "./StaticBuilder";
 export const GROUND = -4.6;
 
 type B = StaticBuilder;
-const T = toon;
+const T = mat;
 
 function finish(b: B): THREE.Group {
   const g = new THREE.Group();
@@ -659,6 +659,436 @@ function edinburgh(): THREE.Group {
   return finish(b);
 }
 
+// ------------------------------------------------------- thêm địa danh ---
+function stPauls(): THREE.Group {
+  const b = new StaticBuilder();
+  const cream = T("#efe6d2");
+  const white = T("#fbf8f0");
+  const lead = T("#8f9ea8");
+  b.box(cream, 40, 14, 18, 0, 7, 0);
+  windows(b, T("#8b9db0"), -17, 17, 5, 9.05, 1.2, 3, 3.4);
+  // mặt tiền 2 tầng cột + trán tường
+  for (const row of [0, 1])
+    for (let i = 0; i < 8; i++) b.cyl(white, 0.5, 6, -8.4 + i * 2.4, 3 + row * 6.2, 10);
+  b.box(cream, 20, 1, 2, 0, 6.3, 10);
+  b.box(cream, 20, 1, 2, 0, 12.5, 10);
+  b.add(cream, new THREE.ConeGeometry(11, 3.4, 3), 0, 14.7, 10, 0, 0, 0, 1, 1, 0.2);
+  // hai tháp chuông phía trước
+  for (const tx of [-14, 14]) {
+    b.box(cream, 6, 22, 6, tx, 11, 6);
+    b.add(cream, new THREE.CylinderGeometry(2.4, 2.8, 5, 12), tx, 24.5, 6);
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      b.cyl(white, 0.25, 4.6, tx + Math.cos(a) * 2.6, 24.5, 6 + Math.sin(a) * 2.6);
+    }
+    b.add(lead, new THREE.SphereGeometry(2.2, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), tx, 27, 6);
+    cone(b, T(C.gold), 0.4, 2.6, tx, 29, 6, 6);
+  }
+  // trống + mái vòm lớn + đèn lồng
+  b.add(cream, new THREE.CylinderGeometry(10, 10, 9, 28), 0, 18.5, -2);
+  for (let i = 0; i < 24; i++) {
+    const a = (i / 24) * Math.PI * 2;
+    b.cyl(white, 0.38, 8, Math.cos(a) * 10.4, 18.5, -2 + Math.sin(a) * 10.4);
+  }
+  b.add(T("#e6dcc4"), new THREE.CylinderGeometry(10.8, 10.8, 1, 28), 0, 23.4, -2);
+  b.add(cream, new THREE.CylinderGeometry(8.6, 8.8, 2.4, 28), 0, 25, -2);
+  b.add(lead, new THREE.SphereGeometry(8.6, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), 0, 26.2, -2);
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    b.box(
+      T("#a9b5bd"),
+      0.3,
+      6,
+      0.3,
+      Math.cos(a) * 6.3,
+      31.4,
+      -2 + Math.sin(a) * 6.3,
+      Math.sin(a) * 0.75,
+      0,
+      -Math.cos(a) * 0.75,
+    );
+  }
+  b.add(white, new THREE.CylinderGeometry(1.4, 1.6, 4, 12), 0, 36.6, -2);
+  b.sphere(T(C.gold), 0.7, 0, 39.2, -2);
+  b.box(T(C.gold), 0.2, 1.6, 0.2, 0, 40.4, -2);
+  return finish(b);
+}
+
+function shard(): THREE.Group {
+  const b = new StaticBuilder();
+  const glass = shiny("#a9cfe6");
+  // tháp kính nhọn, các mặt kính lệch nhau
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+    b.add(
+      glass,
+      new THREE.ConeGeometry(9.5, 92 - i * 3, 3, 1),
+      Math.cos(a) * 1.2,
+      (92 - i * 3) / 2,
+      Math.sin(a) * 1.2,
+      0,
+      a,
+      0,
+    );
+  }
+  b.add(T("#dcecf6"), new THREE.ConeGeometry(10, 80, 4), 0, 40, 0, 0, Math.PI / 4);
+  for (let y = 6; y < 80; y += 6) {
+    const r = 10 * (1 - y / 80) * 1.02;
+    b.add(T("#f4f8fb"), new THREE.TorusGeometry(r, 0.12, 3, 4), 0, y, 0, Math.PI / 2, 0, Math.PI / 4);
+  }
+  // nhà thấp xung quanh cho có tỉ lệ
+  b.box(T("#cbbfae"), 22, 6, 10, -20, 3, 4);
+  b.box(T("#b7a998"), 14, 9, 10, 20, 4.5, 2);
+  return finish(b);
+}
+
+function windsor(): THREE.Group {
+  const b = new StaticBuilder();
+  const stone = T("#cfc6b4");
+  const stoneDark = T("#b8ae9a");
+  const crenel = (x: number, z: number, w: number, d: number, y: number) => {
+    for (let cx = x - w / 2 + 0.5; cx <= x + w / 2; cx += 1.4) b.box(stone, 0.8, 0.8, d, cx, y + 0.4, z);
+  };
+  b.add(
+    T("#9fd49a"),
+    new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2),
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    34,
+    5,
+    14,
+  );
+  // tường thành dài + các tháp vuông
+  b.box(stone, 56, 8, 4, 0, 8, 2);
+  crenel(0, 2, 56, 4, 12);
+  for (const tx of [-26, -14, 14, 26]) {
+    b.box(stoneDark, 6, 13, 6, tx, 9.5, 2);
+    crenel(tx, 2, 6, 6, 16);
+  }
+  // Round Tower trên đồi giữa
+  b.add(
+    T("#a7d197"),
+    new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+    0,
+    12,
+    -3,
+    0,
+    0,
+    0,
+    10,
+    4,
+    8,
+  );
+  b.add(stone, new THREE.CylinderGeometry(6, 6.4, 12, 24), 0, 20, -3);
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2;
+    b.box(stone, 0.9, 1, 0.9, Math.cos(a) * 5.8, 26.5, -3 + Math.sin(a) * 5.8);
+  }
+  b.cyl(T(C.ink), 0.12, 6, 0, 29.5, -3);
+  b.box(T("#d8323f"), 4, 2.4, 0.12, 2, 31.5, -3);
+  b.box(T("#3a5fcd"), 2, 1.2, 0.13, 3, 32.1, -3);
+  b.box(T(C.gold), 2, 1.2, 0.13, 1, 30.9, -3);
+  windows(b, T("#7a8796"), -22, 22, 8, 4.05, 1, 2, 4);
+  return finish(b);
+}
+
+function whiteCliffs(): THREE.Group {
+  const b = new StaticBuilder();
+  const rnd = mulberry32(14);
+  // vách đá phấn trắng, mặt cắt gồ ghề, cỏ xanh phía trên
+  for (let i = 0; i < 12; i++) {
+    const x = -42 + i * 7.5;
+    const h = 16 + rnd() * 6;
+    b.box(T(["#f6f4ee", "#ecebe4", "#fbfaf6"][i % 3]!), 8, h, 10, x, h / 2, rnd() * 2);
+    b.box(T("#9fd49a"), 8.2, 1, 10.5, x, h + 0.5, rnd() * 2 - 0.2);
+    for (let k = 0; k < 3; k++) b.box(T("#dcdad2"), 0.4, h * 0.6, 0.3, x - 3 + k * 3, h * 0.45, 5.2);
+  }
+  // hải đăng trắng-đỏ
+  for (let i = 0; i < 6; i++) b.cyl(T(i % 2 ? "#d8323f" : "#ffffff"), 1.4 - i * 0.12, 2, 30, 23 + i * 2, -2);
+  b.sphere(glow("#fff1b0", 0.6, 1.5), 0.9, 30, 35.5, -2);
+  // biển phía trước
+  b.box(shiny("#8fd0e6"), 100, 0.3, 14, 0, 0.1, 12);
+  return finish(b);
+}
+
+function cardiff(): THREE.Group {
+  const b = new StaticBuilder();
+  const stone = T("#c9b9a0");
+  const stoneDark = T("#b2a088");
+  // tường thành + tháp đồng hồ trang trí (Clock Tower) + keep Norman trên gò
+  b.box(stone, 50, 8, 3, 0, 4, 6);
+  for (let cx = -24.5; cx <= 25; cx += 1.4) b.box(stone, 0.8, 0.8, 3, cx, 8.4, 6);
+  b.box(stoneDark, 8, 24, 8, 16, 12, 2);
+  for (const [dx, dz, ry] of [
+    [0, 4.05, 0],
+    [4.05, 0, Math.PI / 2],
+  ] as const) {
+    b.add(T("#ffffff"), new THREE.CircleGeometry(2.4, 24), 16 + dx, 18, 2 + dz, 0, ry);
+    b.add(T(C.gold), new THREE.RingGeometry(2.3, 2.7, 24), 16 + dx * 1.002, 18, 2 + dz * 1.002, 0, ry);
+  }
+  pyramid(b, T("#5f7f86"), 8.6, 6, 16, 24, 2);
+  for (const dx of [-3.6, 3.6])
+    for (const dz of [-3.6, 3.6]) cone(b, T("#5f7f86"), 0.6, 3, 16 + dx, 24, 2 + dz, 8);
+  b.add(T("#a7d197"), new THREE.ConeGeometry(12, 9, 24), -14, 4.5, -2);
+  b.add(stone, new THREE.CylinderGeometry(5.5, 6, 6, 12), -14, 12, -2);
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    b.box(stone, 1, 1, 1, -14 + Math.cos(a) * 5.4, 15.5, -2 + Math.sin(a) * 5.4);
+  }
+  // cờ rồng đỏ xứ Wales
+  b.cyl(T(C.ink), 0.12, 6, 16, 33, 2);
+  b.box(T("#ffffff"), 4, 1.2, 0.12, 18, 35.6, 2);
+  b.box(T("#3faa5b"), 4, 1.2, 0.12, 18, 34.4, 2);
+  b.add(T("#d8323f"), new THREE.ConeGeometry(0.7, 2, 4), 18, 35, 2.1, 0, 0, Math.PI / 2);
+  return finish(b);
+}
+
+function snowdon(): THREE.Group {
+  const b = new StaticBuilder();
+  // dãy núi xám xanh, đỉnh tuyết, tàu leo núi nhỏ
+  b.add(T("#7f8f86"), new THREE.ConeGeometry(30, 34, 7), 0, 17, -4);
+  b.add(T("#8a9a8f"), new THREE.ConeGeometry(22, 24, 6), -28, 12, 2);
+  b.add(T("#93a396"), new THREE.ConeGeometry(20, 20, 6), 26, 10, 3);
+  b.add(T("#ffffff"), new THREE.ConeGeometry(8.8, 9, 7), 0, 29.5, -4);
+  b.add(T("#ffffff"), new THREE.ConeGeometry(5, 5, 6), -28, 21.5, 2);
+  b.add(T("#9fd49a"), new THREE.CylinderGeometry(40, 44, 3, 16), 0, 1.5, 4);
+  b.box(T("#d8323f"), 3, 1.6, 1.6, 10, 14, 14, 0, 0, 0.5);
+  b.box(T("#7a5a3a"), 22, 0.3, 0.6, 14, 10, 14, 0, 0, 0.5);
+  return finish(b);
+}
+
+function cotswolds(): THREE.Group {
+  const b = new StaticBuilder();
+  const stone = T("#e2c78c");
+  const roof = T("#b9a780");
+  // dãy nhà đá vàng mái dốc (Arlington Row), suối nhỏ, cầu đá
+  for (let i = 0; i < 8; i++) {
+    const x = -24 + i * 6.2;
+    b.box(stone, 6, 4.5, 5, x, 2.25, 0);
+    b.add(roof, new THREE.ConeGeometry(4.4, 3.4, 4, 1), x, 6.2, 0, 0, Math.PI / 4, 0, 1, 1, 0.75);
+    b.box(stone, 0.9, 2, 0.9, x + 2, 7.4, 0);
+    b.box(T("#7a8796"), 1, 1, 0.2, x - 1.4, 2.6, 2.55);
+    b.box(T("#7a8796"), 1, 1, 0.2, x + 1.4, 2.6, 2.55);
+    b.box(T(["#5f8a6b", "#3d5f8a", "#8a3d3d"][i % 3]!), 0.9, 1.8, 0.2, x, 0.9, 2.55);
+    b.sphere(T("#c98ab8"), 0.5, x + 2.6, 0.5, 3);
+  }
+  b.box(shiny("#9ccfe0"), 60, 0.2, 3, 0, 0.1, 6);
+  b.add(stone, new THREE.TorusGeometry(2.4, 0.5, 6, 12, Math.PI), 10, 0.1, 6, 0, Math.PI / 2, 0);
+  return finish(b);
+}
+
+function cambridge(): THREE.Group {
+  const b = new StaticBuilder();
+  const stone = T("#e9dcc0");
+  const stoneDark = T("#d6c6a4");
+  // King's College Chapel: sảnh dài, cửa sổ kính màu cao, 4 tháp nhọn ở góc
+  b.box(stone, 44, 22, 12, 0, 11, 0);
+  for (let i = 0; i < 11; i++) {
+    const x = -19 + i * 3.8;
+    b.box(stoneDark, 0.9, 24, 0.9, x - 1.9, 12, 6.1);
+    b.box(T("#7b8fb3"), 2.4, 15, 0.2, x, 11, 6.05);
+    cone(b, stoneDark, 0.4, 2.4, x - 1.9, 24, 6.1, 4);
+  }
+  b.box(stoneDark, 44.4, 1, 12.4, 0, 22.5, 0);
+  for (const dx of [-21.5, 21.5]) {
+    for (const dz of [-5.6, 5.6]) {
+      b.box(stone, 2.4, 28, 2.4, dx, 14, dz);
+      cone(b, stoneDark, 1.3, 5, dx, 28, dz, 8);
+    }
+  }
+  b.box(T("#7b8fb3"), 0.2, 16, 7, 22.05, 12, 0);
+  // sông Cam + thuyền punting
+  b.box(shiny("#8cc6c9"), 70, 0.2, 6, 0, 0.1, 13);
+  for (const px of [-10, 12]) {
+    b.box(T("#7a5a3a"), 5, 0.5, 1.4, px, 0.4, 13);
+    b.box(T(C.ink), 0.08, 4, 0.08, px + 2, 2.4, 13, 0, 0, 0.3);
+  }
+  b.add(T("#9fd49a"), new THREE.BoxGeometry(70, 0.3, 4), 0, 0.15, 8.5);
+  return finish(b);
+}
+
+function blackpool(): THREE.Group {
+  const b = new StaticBuilder();
+  const red = T("#b8452f");
+  // tháp sắt kiểu Eiffel đỏ nâu trên toà nhà gạch, bãi biển phía trước
+  b.box(texMat("brick", "#b85a45"), 30, 10, 14, 0, 5, 0);
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+    b.box(
+      red,
+      0.9,
+      46,
+      0.9,
+      Math.cos(a) * 3.2,
+      33,
+      Math.sin(a) * 3.2,
+      Math.sin(a) * 0.09,
+      0,
+      -Math.cos(a) * 0.09,
+    );
+  }
+  for (let y = 14; y < 55; y += 4) {
+    const r = 5.6 - (y - 10) * 0.075;
+    b.box(red, r * 2, 0.35, r * 2, 0, y, 0);
+    b.box(red, r * 2, 0.35, 0.35, 0, y + 2, r, 0, 0, 0.6);
+    b.box(red, r * 2, 0.35, 0.35, 0, y + 2, -r, 0, 0, -0.6);
+  }
+  b.box(T("#f2e9d8"), 4.6, 3, 4.6, 0, 57, 0);
+  cone(b, red, 2, 4, 0, 58.5, 0, 4);
+  b.box(T(C.gold), 0.2, 3, 0.2, 0, 64, 0);
+  b.box(T("#efe0bf"), 60, 0.2, 10, 0, 0.1, 13);
+  return finish(b);
+}
+
+function lakeDistrict(): THREE.Group {
+  const b = new StaticBuilder();
+  const rnd = mulberry32(17);
+  // núi xanh thoai thoải, hồ phẳng lặng, thuyền nhỏ, cừu
+  for (const [x, r, h, c] of [
+    [-24, 22, 18, "#7fae78"],
+    [4, 26, 24, "#6f9f6c"],
+    [30, 20, 15, "#86b57f"],
+  ] as const)
+    b.add(T(c), new THREE.ConeGeometry(r, h, 8), x, h / 2, -10);
+  b.box(shiny("#7fb8d0"), 80, 0.3, 16, 0, 0.15, 6);
+  for (const bx of [-8, 14]) {
+    b.box(T("#ffffff"), 3, 0.6, 1, bx, 0.6, 6);
+    b.box(T(C.ink), 0.1, 3, 0.1, bx, 2.2, 6);
+    b.add(T("#ffffff"), new THREE.ConeGeometry(1, 2.4, 3), bx + 0.6, 2.4, 6, 0, Math.PI / 2, 0);
+  }
+  for (let i = 0; i < 8; i++) {
+    const x = -36 + rnd() * 72;
+    b.add(T(C.white), new THREE.SphereGeometry(1, 10, 8), x, 1, 15 + rnd() * 3, 0, 0, 0, 1.1, 0.8, 0.8);
+    b.sphere(T(C.ink), 0.4, x + 1.1, 1.3, 15.5);
+  }
+  for (let x = -38; x < 38; x += 1.6) b.box(T("#bfb6a6"), 1.5, 1, 1, x, 0.5, 19);
+  return finish(b);
+}
+
+function york(): THREE.Group {
+  const b = new StaticBuilder();
+  const stone = T("#e2d3b4");
+  const stoneDark = T("#cbb995");
+  // York Minster: thân gothic, cửa sổ hoa hồng, 2 tháp tây + tháp trung tâm
+  b.box(stone, 46, 22, 16, 4, 11, 0);
+  for (let i = 0; i < 9; i++) b.box(T("#7b8fb3"), 2.2, 12, 0.2, -14 + i * 4.2, 11, 8.05);
+  for (const tx of [-22, -12]) {
+    b.box(stone, 8, 38, 8, tx, 19, 2);
+    for (const dx of [-3.4, 3.4])
+      for (const dz of [-3.4, 3.4]) cone(b, stoneDark, 0.6, 4, tx + dx, 38, 2 + dz, 4);
+    b.box(T("#7b8fb3"), 3, 10, 0.2, tx, 22, 6.05);
+  }
+  b.box(stone, 10, 18, 10, 8, 31, 0);
+  for (const dx of [-4.4, 4.4]) for (const dz of [-4.4, 4.4]) cone(b, stoneDark, 0.6, 4, 8 + dx, 40, dz, 4);
+  b.add(T("#b4466a"), new THREE.CircleGeometry(3, 24), -17, 14, 6.12);
+  // phố The Shambles: nhà gỗ đổ nghiêng
+  for (let i = 0; i < 5; i++) {
+    const x = 18 + i * 4;
+    b.box(T("#f2ead8"), 3.8, 7, 4, x, 3.5, 10, 0, 0, (i % 2 ? 1 : -1) * 0.04);
+    for (const by of [2, 5]) b.box(T("#4a3426"), 3.9, 0.25, 4.1, x, by, 10);
+    b.add(T("#7d6a5a"), new THREE.ConeGeometry(3, 2.4, 4, 1), x, 8.2, 10, 0, Math.PI / 4, 0, 1, 1, 0.8);
+  }
+  return finish(b);
+}
+
+function hadriansWall(): THREE.Group {
+  const b = new StaticBuilder();
+  const rnd = mulberry32(21);
+  // tường đá La Mã chạy trên sống đồi lượn sóng + pháo đài nhỏ (milecastle) + cây cô đơn Sycamore Gap
+  for (let i = 0; i < 30; i++) {
+    const x = -45 + i * 3;
+    const y = 4 + Math.sin(i * 0.4) * 3;
+    b.add(
+      T("#9fcf8f"),
+      new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2),
+      x,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3.4,
+      y,
+      8,
+    );
+    b.box(T(["#b8b0a2", "#a9a194", "#c3bbad"][Math.floor(rnd() * 3)]!), 3.1, 2, 1.6, x, y + 1, 0);
+  }
+  b.box(T("#b8b0a2"), 6, 4, 6, 6, 6.5 + Math.sin(17 * 0.4) * 3, 0);
+  b.cyl(T("#6b4f3a"), 0.5, 5, -12, 4 + Math.sin(11 * 0.4) * 3 + 2.5, -1.5);
+  b.sphere(T("#6fae5c"), 3.6, -12, 4 + Math.sin(11 * 0.4) * 3 + 6.8, -1.5);
+  return finish(b);
+}
+
+function forthBridge(): THREE.Group {
+  const b = new StaticBuilder();
+  const red = T("#c0392b");
+  // cầu đường sắt dầm hẫng đỏ: 3 khối kim cương nối nhau
+  for (const cx of [-30, 0, 30]) {
+    for (const s of [-1, 1]) {
+      b.box(red, 1, 30, 1, cx + s * 6, 15, 0, 0, 0, s * 0.42);
+      b.box(red, 1, 30, 1, cx + s * 6, 15, 0, 0, 0, -s * 0.42);
+      b.box(red, 15, 1, 1, cx + s * 7.5, 26, 0, 0, 0, -s * 0.5);
+      b.box(red, 15, 1, 1, cx + s * 7.5, 4, 0, 0, 0, s * 0.5);
+    }
+    b.box(red, 2, 34, 2, cx, 17, 0);
+    b.box(T("#9a9286"), 8, 4, 6, cx, -1, 0);
+  }
+  b.box(red, 90, 1.4, 3, 0, 10, 0);
+  b.box(T("#7a3a2a"), 4, 1, 1.6, 8, 11.2, 0); // tàu hoả nhỏ
+  b.box(T("#ffd166"), 4, 1, 1.6, 12.2, 11.2, 0);
+  b.box(shiny("#7fb8d0"), 110, 0.3, 30, 0, -0.2, 2);
+  return finish(b);
+}
+
+function lochNess(): THREE.Group {
+  const b = new StaticBuilder();
+  // hồ dài, núi Highland, lâu đài Urquhart đổ nát, và… Nessie!
+  b.add(T("#7f9f78"), new THREE.ConeGeometry(28, 20, 7), -20, 10, -16);
+  b.add(T("#8aa983"), new THREE.ConeGeometry(30, 22, 7), 22, 11, -18);
+  b.box(shiny("#5f8fa8"), 100, 0.3, 18, 0, 0.15, 4);
+  const stone = T("#a59c8c");
+  b.box(stone, 6, 14, 6, -18, 7, -4);
+  for (let cx = -20.5; cx <= -15.5; cx += 1.2) b.box(stone, 0.7, 0.8, 6, cx, 14.4, -4);
+  b.box(stone, 14, 4, 2, -8, 2, -4);
+  b.box(stone, 4, 6, 2, -2, 3, -4);
+  // Nessie: cổ dài và hai bướu nổi trên mặt nước
+  const ness = T("#4f8f6e");
+  b.add(ness, new THREE.CapsuleGeometry(0.6, 5, 4, 10), 12, 2.8, 6, 0, 0, -0.3);
+  b.sphere(ness, 0.9, 12.9, 5.6, 6);
+  b.sphere(T(C.ink), 0.12, 13.5, 5.8, 6.6);
+  for (const hx of [15, 18])
+    b.add(ness, new THREE.SphereGeometry(1.3, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), hx, 0.3, 6);
+  return finish(b);
+}
+
+function giantsCauseway(): THREE.Group {
+  const b = new StaticBuilder();
+  const rnd = mulberry32(44);
+  // hàng nghìn cột đá lục giác bậc thang xuống biển, vách đá phía sau
+  b.box(T("#6f7f6a"), 80, 16, 12, 0, 8, -14);
+  b.box(T("#9fd49a"), 80, 1, 12.5, 0, 16.5, -14);
+  for (let i = 0; i < 18; i++) {
+    for (let j = 0; j < 10; j++) {
+      const x = -30 + i * 3.4 + (j % 2) * 1.7;
+      const z = -6 + j * 2.9;
+      const h = Math.max(0.6, 7 - j * 0.6 - Math.abs(i - 9) * 0.25 + rnd() * 1.2);
+      b.add(
+        T(["#4a4e52", "#575b5f", "#3f4347"][Math.floor(rnd() * 3)]!),
+        new THREE.CylinderGeometry(1.6, 1.6, h, 6),
+        x,
+        h / 2,
+        z,
+      );
+    }
+  }
+  b.box(shiny("#6fa8c0"), 100, 0.3, 20, 0, 0.3, 26);
+  return finish(b);
+}
+
 export interface LandmarkObject {
   group: THREE.Group;
   update?: (t: number) => void;
@@ -694,6 +1124,36 @@ export function buildLandmark(id: LandmarkId): LandmarkObject {
       return { group: angelNorth() };
     case "edinburgh":
       return { group: edinburgh() };
+    case "st-pauls":
+      return { group: stPauls() };
+    case "shard":
+      return { group: shard() };
+    case "windsor":
+      return { group: windsor() };
+    case "white-cliffs":
+      return { group: whiteCliffs() };
+    case "cardiff":
+      return { group: cardiff() };
+    case "snowdon":
+      return { group: snowdon() };
+    case "cotswolds":
+      return { group: cotswolds() };
+    case "cambridge":
+      return { group: cambridge() };
+    case "blackpool":
+      return { group: blackpool() };
+    case "lake-district":
+      return { group: lakeDistrict() };
+    case "york":
+      return { group: york() };
+    case "hadrians-wall":
+      return { group: hadriansWall() };
+    case "forth-bridge":
+      return { group: forthBridge() };
+    case "loch-ness":
+      return { group: lochNess() };
+    case "giants-causeway":
+      return { group: giantsCauseway() };
   }
 }
 

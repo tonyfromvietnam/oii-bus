@@ -49,6 +49,30 @@ enum ReportStatus {
   dismissed
 }
 
+enum Gender {
+  male
+  female
+}
+
+enum Seeking {
+  opposite
+  any
+}
+
+enum MeritKind {
+  incense
+  chant
+  donate
+  wish
+  bell
+}
+
+enum MatchStatus {
+  active
+  ended
+  reported
+}
+
 enum QuestKind {
   solo
   pair
@@ -71,6 +95,11 @@ model User {
   bannedAt       DateTime?
   banReason      String?
   invitedById    String?
+  /// Chỉ hỏi khi dùng Se duyên ở Chùa Cầu Duyên. Không bắt buộc.
+  gender         Gender?
+  seeking        Seeking   @default(opposite)
+  /// "Cùng thành phố" ở tầng thượng.
+  homeCity       String?
   createdAt      DateTime  @default(now())
 
   invitedBy User?  @relation("Invites", fields: [invitedById], references: [id])
@@ -88,6 +117,13 @@ model User {
   submissions    QuestSubmission[]
   stamps         Stamp[]
   auditActions   AuditLog[]
+  meritEvents    MeritEvent[]
+  matchesA       MatchSession[]    @relation("MatchA")
+  matchesB       MatchSession[]    @relation("MatchB")
+  directMessages DirectMessage[]
+  plansCreated   Plan[]
+  planMembers    PlanMember[]
+  visits         CityVisit[]
 
   @@index([invitedById])
 }
@@ -227,4 +263,92 @@ model AuditLog {
 
   @@index([createdAt])
   @@index([targetId])
+}
+
+/// Phúc đức ở Chùa Cầu Duyên. Server tính điểm (cooldown + trần mỗi ngày), reset mỗi tuần.
+model MeritEvent {
+  id        String    @id @default(cuid())
+  userId    String
+  kind      MeritKind
+  points    Int
+  /// Tuần ISO, ví dụ "2026-W45" — điểm chỉ tính trong tuần.
+  week      String
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, week])
+}
+
+/// Một phiên se duyên 1:1 ẩn danh.
+model MatchSession {
+  id        String      @id @default(cuid())
+  userAId   String
+  userBId   String
+  status    MatchStatus @default(active)
+  startedAt DateTime    @default(now())
+  endedAt   DateTime?
+
+  userA    User            @relation("MatchA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB    User            @relation("MatchB", fields: [userBId], references: [id], onDelete: Cascade)
+  messages DirectMessage[]
+
+  @@index([userAId, startedAt])
+  @@index([userBId, startedAt])
+}
+
+/// Tin nhắn 1:1. Giữ 14 ngày như ChatLog, chỉ dùng cho moderation khi có report.
+model DirectMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  senderId  String
+  text      String   @db.VarChar(120)
+  createdAt DateTime @default(now())
+
+  session MatchSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sender  User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+}
+
+/// "Cùng thành phố": một kế hoạch đi chơi (ăn uống, đi dạo, học nhóm…).
+model Plan {
+  id          String    @id @default(cuid())
+  creatorId   String
+  city        String
+  title       String    @db.VarChar(60)
+  note        String    @default("") @db.VarChar(200)
+  startsAt    DateTime
+  maxPeople   Int
+  cancelledAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  creator User         @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  members PlanMember[]
+
+  @@index([city, startsAt])
+}
+
+model PlanMember {
+  planId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([planId, userId])
+}
+
+/// Thành phố sắp đến (để gợi ý người cùng thành phố trong khoảng ngày đó).
+model CityVisit {
+  id     String   @id @default(cuid())
+  userId String
+  city   String
+  from   DateTime
+  to     DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([city, from])
 }

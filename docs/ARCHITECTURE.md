@@ -255,3 +255,30 @@ flowchart LR
 3. **Domain**: production `xom.oiimate.app` + `api.xom.oiimate.app`. Giai đoạn đầu: staging tạm trên `duychinhdinh.com`.
 4. **Từ cấm**: team OiiMate cung cấp danh sách, đặt ở `packages/shared/src/wordlist/`.
 5. **Bot**: team bot thêm lệnh `/xom` và ký HMAC theo §3.1.
+
+## 10. Se duyên, phúc đức, Cùng thành phố (thêm sau review)
+
+> Thay đổi phạm vi so với brief v1: brief để "gặp mặt ngoài đời" ngoài phạm vi. Theo yêu cầu mới, v1 có **se duyên 1:1** và **kế hoạch đi chơi cùng thành phố**, nên cần cổng 18+/đã xác minh và moderation chặt hơn (xem `docs/DEPLOY.md`).
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant W as Web
+  participant A as API
+  participant R as Redis
+  participant DB as Postgres
+  W->>A: POST /temple/merit {kind, amount?}
+  A->>DB: đọc MeritEvent tuần này → awardMerit() (cooldown + trần)
+  A->>DB: ghi MeritEvent
+  W->>A: POST /match/queue {gender, seeking}
+  A->>R: ZADD match:queue (priority = queuePriority)
+  loop mỗi giây (worker)
+    A->>R: lấy hàng đợi → matchQueue() → tạo MatchSession
+    A-->>W: WS "match:found" {sessionId, partnerAlias}
+  end
+  W->>A: WS "dm" {sessionId, text} → sanitize, rate limit → DirectMessage (giữ 14 ngày)
+```
+
+- Hàm ghép, phúc đức, schema đều thuần và có test trong `packages/shared` (`matching.ts`, `merit.ts`, `schemas.ts`). Server chỉ việc gọi.
+- Danh tính trong se duyên là biệt danh ngẫu nhiên theo phiên, không phải nickname trong Xóm.
+- `Plan`, `PlanMember`, `CityVisit` trong Prisma. Chỉ trả kế hoạch cho tài khoản đã xác minh; tạo kế hoạch cần cờ `trusted`.

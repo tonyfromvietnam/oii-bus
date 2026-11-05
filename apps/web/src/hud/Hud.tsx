@@ -8,6 +8,8 @@ import { QUEST_GOALS, QUEST_ORDER } from "../game/quests";
 import { game } from "../game/state";
 import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
+import { CityPanel, CityPassing, DonatePanel, FloorSwitcher, MeritChip, SeDuyenPanel } from "./Panels";
+import { viCity } from "../copy/vi";
 
 const isTouch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
 const pill =
@@ -26,6 +28,9 @@ export function Hud() {
       <BottomBar />
       {isTouch && <Joystick />}
       <QuestPanel />
+      <DonatePanel />
+      <SeDuyenPanel />
+      <CityPanel />
       <Help />
       <Creator />
       <div
@@ -68,18 +73,36 @@ function TopBar() {
             </div>
           )}
         </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <FloorSwitcher />
+          {scene === "temple" && <MeritChip />}
+          <CityPassing />
+        </div>
         <div className="px-2 text-[11px] font-medium text-[var(--ink)] opacity-60">
           {vi.hud.offlineBadge} · 💷 £{wallet.toFixed(2)}
         </div>
       </div>
       <div className="flex items-center gap-2">
         <MusicControl />
+        {scene === "bus" && (
+          <button
+            type="button"
+            onClick={() => set({ city: { ...useUi.getState().city, open: true } })}
+            className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
+            data-testid="city-button"
+          >
+            📍 <span className="hidden sm:inline">{viCity.button}</span>
+          </button>
+        )}
         <button
           type="button"
           onClick={() => set({ questsOpen: true })}
           className={`${pill} pointer-events-auto px-3 py-2 text-sm font-semibold`}
         >
-          ⭐ {vi.hud.quests} <span className="opacity-60">{doneCount}/6</span>
+          ⭐ <span className="hidden sm:inline">{vi.hud.quests}</span>{" "}
+          <span className="opacity-60">
+            {doneCount}/{QUEST_ORDER.length}
+          </span>
         </button>
         <button
           type="button"
@@ -359,7 +382,7 @@ function QuestPanel() {
         })}
       </ul>
       <h3 className="font-display mt-5 text-xl font-extrabold">🛂 {q.passportTitle}</h3>
-      <div className="mt-2 grid grid-cols-3 gap-2">
+      <div className="mt-2 grid grid-cols-4 gap-2">
         {QUEST_ORDER.map((id) => (
           <div
             key={id}

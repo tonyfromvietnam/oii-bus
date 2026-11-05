@@ -101,3 +101,17 @@ body {
   transform: rotate(35deg) skewX(10deg);
   border-bottom-right-radius: 4px;
 }
+
+/* sợi chỉ hồng đang se */
+@keyframes thread {
+  0%,
+  100% {
+    transform: rotate(-12deg) scale(1);
+  }
+  50% {
+    transform: rotate(12deg) scale(1.12);
+  }
+}
+.thread {
+  animation: thread 0.9s ease-in-out infinite;
+}

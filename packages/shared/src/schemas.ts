@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { CHAT_MAX_LENGTH, NICKNAME_MAX_LENGTH } from "./constants";
 import { TIERS } from "./tiers";
+import { CITY_IDS } from "./cities";
+import { GENDERS, SEEKING } from "./matching";
+import { MERIT_KINDS } from "./merit";
 
 /** Mọi payload client → server phải đi qua các schema này (brief §15). */
 
@@ -94,3 +97,46 @@ export type Gesture = z.infer<typeof GestureSchema>;
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 export type ReportInput = z.infer<typeof ReportSchema>;
 export type Avatar = z.infer<typeof AvatarSchema>;
+
+// --- Chùa Cầu Duyên ---
+export const CitySchema = z.enum(CITY_IDS);
+export const GenderSchema = z.enum(GENDERS);
+export const SeekingSchema = z.enum(SEEKING);
+
+export const MatchRequestSchema = z.object({
+  gender: GenderSchema,
+  seeking: SeekingSchema.default("opposite"),
+});
+
+export const MeritActionSchema = z.object({
+  kind: z.enum(MERIT_KINDS),
+  /** £ ảo khi công đức (1–20). */
+  amount: z.number().int().min(1).max(20).optional(),
+});
+
+export const DirectMessageSchema = z.object({
+  sessionId: z.string().min(1).max(64),
+  text: z
+    .string()
+    .min(1)
+    .max(CHAT_MAX_LENGTH * 2),
+});
+
+// --- Cùng thành phố: kế hoạch đi chơi ---
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Ngày dạng YYYY-MM-DD");
+export const PlanCreateSchema = z.object({
+  title: z.string().trim().min(3, "Tên kế hoạch ít nhất 3 ký tự").max(60),
+  city: CitySchema,
+  date: isoDate,
+  time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Giờ dạng HH:MM"),
+  maxPeople: z.number().int().min(2).max(12),
+  note: z.string().trim().max(200).default(""),
+});
+
+export const CityProfileSchema = z.object({
+  homeCity: CitySchema.nullable(),
+  visiting: z.array(z.object({ city: CitySchema, from: isoDate, to: isoDate })).max(5),
+});
+
+export type MatchRequest = z.infer<typeof MatchRequestSchema>;
+export type PlanCreate = z.infer<typeof PlanCreateSchema>;

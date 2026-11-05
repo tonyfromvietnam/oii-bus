@@ -1,6 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { game } from "../game/state";
 import { applyDarkness } from "./materials";
 import { StaticBuilder } from "./StaticBuilder";
@@ -67,7 +68,22 @@ export function Sky() {
       </mesh>
       <primitive object={clouds} />
       <hemisphereLight ref={hemi} args={["#eef8f6", "#e9dcc4", 1.5]} />
-      <directionalLight ref={sun} position={[30, 50, 40]} color="#fff1d6" intensity={2} />
+      <directionalLight
+        ref={sun}
+        position={[14, 26, 18]}
+        color="#fff1d6"
+        intensity={2}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-22}
+        shadow-camera-right={22}
+        shadow-camera-top={12}
+        shadow-camera-bottom={-12}
+        shadow-camera-near={1}
+        shadow-camera-far={80}
+        shadow-bias={-0.0005}
+        shadow-normalBias={0.03}
+      />
     </>
   );
 }
@@ -84,8 +100,37 @@ export function LibraryLights() {
   }, [scene]);
   return (
     <>
-      <hemisphereLight args={["#fff4e6", "#e8c39e", 1.6]} />
-      <directionalLight position={[-6, 10, 8]} color="#ffe8c7" intensity={1.4} />
+      <hemisphereLight args={["#fff4e6", "#e8c39e", 1.3]} />
+      <directionalLight
+        position={[-6, 12, 9]}
+        color="#ffe8c7"
+        intensity={1.6}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-14}
+        shadow-camera-right={14}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10}
+        shadow-bias={-0.0005}
+        shadow-normalBias={0.03}
+      />
     </>
   );
+}
+
+/** Ánh sáng môi trường mềm (RoomEnvironment → PMREM): kính, nước, kim loại phản chiếu nhẹ. */
+export function EnvLight({ intensity = 0.45 }: { intensity?: number }) {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    const pmrem = new THREE.PMREMGenerator(gl);
+    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = env;
+    scene.environmentIntensity = intensity;
+    return () => {
+      scene.environment = null;
+      env.dispose();
+      pmrem.dispose();
+    };
+  }, [gl, scene, intensity]);
+  return null;
 }

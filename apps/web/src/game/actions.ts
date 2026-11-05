@@ -7,8 +7,11 @@ import {
   type Gesture,
 } from "@xom-oii/shared";
 import { DUCKS, SCENES, landmarkStatus, seatById, type SceneId, type Spot } from "@xom-oii/world";
+import { awardMerit, applyMerit, type MeritKind } from "@xom-oii/shared";
 import { lofi } from "../audio/lofi";
-import { vi } from "../copy/vi";
+import { bell, mo } from "../audio/sfx";
+import { vi, viTemple } from "../copy/vi";
+import { meritTotal } from "./match";
 import { NPCS, type Npc } from "./npcs";
 import { progressQuest } from "./quests";
 import { game } from "./state";
@@ -78,6 +81,8 @@ export function goToScene(scene: SceneId) {
       lofi.start();
       u.set({ music: { ...ui().music, on: true } });
       u.showToast(vi.lines.toLibrary);
+    } else if (scene === "temple") {
+      u.showToast(vi.lines.toTemple);
     } else {
       u.showToast(vi.lines.toBus);
     }
@@ -156,6 +161,40 @@ export function interact() {
       return;
     case "to-library":
       return goToScene("library");
+    case "to-temple":
+      return goToScene("temple");
+    case "meetup-board":
+      u.set({ city: { ...u.city, open: true } });
+      return;
+    case "incense": {
+      const pts = earnMerit("incense");
+      if (pts > 0) {
+        p.holding = null;
+        p.gesture = { id: "sorry", until: game.time + 2.5 };
+        u.showToast(viTemple.incense(pts));
+        progressQuest("incense", 1);
+      }
+      return;
+    }
+    case "wish-tree": {
+      const pts = earnMerit("wish");
+      if (pts > 0) u.showToast(viTemple.wish(pts));
+      return;
+    }
+    case "bell": {
+      const pts = earnMerit("bell");
+      if (pts > 0) {
+        bell();
+        u.showToast(viTemple.bell(pts));
+      }
+      return;
+    }
+    case "donate":
+      u.set({ donateOpen: true });
+      return;
+    case "matchmaker":
+      u.set({ duyen: { ...u.duyen, open: true } });
+      return;
     case "to-bus":
       return goToScene("bus");
     case "bookshelf":
@@ -241,3 +280,27 @@ export function stopFocus() {
   game.focus.running = false;
   ui().set({ focus: { running: false, seconds: 0 } });
 }
+
+/** Cộng phúc đức (theo luật trong @xom-oii/shared). Trả về số điểm được cộng, 0 nếu bị chặn. */
+export function earnMerit(kind: MeritKind, units = 1, quiet = false): number {
+  const now = Date.now();
+  const r = awardMerit(kind, game.merit, now, units);
+  if (!r.ok) {
+    if (!quiet) ui().showToast(r.reason === "cooldown" ? viTemple.cooldown(r.waitSec) : viTemple.cap);
+    return 0;
+  }
+  game.merit = applyMerit(game.merit, kind, r.points, now);
+  ui().set({ merit: meritTotal() });
+  return r.points;
+}
+
+export function donate(amount: number) {
+  const u = ui();
+  if (!u.spend(amount)) return u.showToast(viTemple.broke);
+  const pts = earnMerit("donate", amount);
+  if (pts > 0) u.showToast(viTemple.donated(amount, pts));
+  u.set({ donateOpen: false });
+}
+
+/** Gõ mõ khi đang tụng kinh. */
+export const tapMo = mo;

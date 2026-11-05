@@ -13,8 +13,16 @@ export function useKeyboard() {
     const down = (e: KeyboardEvent) => {
       if (isTyping(e)) return;
       const ui = useUi.getState();
-      if (e.code === "Escape") ui.set({ helpOpen: false, questsOpen: false });
-      if (ui.creatorOpen || ui.questsOpen || ui.helpOpen) return;
+      if (e.code === "Escape")
+        ui.set({
+          helpOpen: false,
+          questsOpen: false,
+          donateOpen: false,
+          duyen: { ...ui.duyen, open: false },
+          city: { ...ui.city, open: false },
+        });
+      if (ui.creatorOpen || ui.questsOpen || ui.helpOpen || ui.donateOpen || ui.duyen.open || ui.city.open)
+        return;
       if (e.code === "Enter") {
         e.preventDefault();
         game.input.keys.clear();
@@ -23,6 +31,7 @@ export function useKeyboard() {
       }
       if (e.code === "KeyE" && !e.repeat) interact();
       if (e.code === "KeyQ" && !e.repeat) ui.set({ questsOpen: true });
+      if (e.code === "KeyC" && !e.repeat) ui.set({ city: { ...ui.city, open: true } });
       const n = Number(e.key);
       if (!e.repeat && n >= 1 && n <= GESTURES.length) gesture(GESTURES[n - 1]!);
       if (e.code.startsWith("Arrow")) e.preventDefault();

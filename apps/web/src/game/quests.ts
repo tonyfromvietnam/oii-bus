@@ -9,9 +9,20 @@ export const QUEST_GOALS: Record<QuestId, number> = {
   hotpot: 1,
   focus: 1,
   wave: 3,
+  incense: 1,
+  plan: 1,
 };
 
-export const QUEST_ORDER: QuestId[] = ["ducks", "photos", "tea", "hotpot", "focus", "wave"];
+export const QUEST_ORDER: QuestId[] = [
+  "ducks",
+  "photos",
+  "tea",
+  "hotpot",
+  "focus",
+  "wave",
+  "incense",
+  "plan",
+];
 
 /** Cập nhật tiến độ; đủ mục tiêu thì trao tem (một lần). */
 export function progressQuest(id: QuestId, value: number) {

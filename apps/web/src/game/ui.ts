@@ -1,7 +1,9 @@
-import type { DistanceBand, Hat } from "@xom-oii/shared";
+import type { CityId, DistanceBand, Gender, Hat, Seeking } from "@xom-oii/shared";
 import type { SceneId } from "@xom-oii/world";
 import { create } from "zustand";
 import type { QuestId } from "../copy/vi";
+import { SAMPLE_PLANS, type Plan } from "./city";
+import type { DmMessage } from "./match";
 
 export interface LogEntry {
   id: number;
@@ -14,6 +16,27 @@ export interface Me {
   nickname: string;
   color: string;
   hat: Hat;
+}
+
+export interface DuyenState {
+  open: boolean;
+  step: "intro" | "searching" | "chat" | "ended";
+  gender: Gender | null;
+  seeking: Seeking;
+  partner: { name: string; city: CityId } | null;
+  messages: DmMessage[];
+  endsAt: number;
+  typing: boolean;
+}
+
+export interface CityState {
+  open: boolean;
+  tab: "people" | "plans";
+  home: CityId | null;
+  visiting: { city: CityId; from: string; to: string }[];
+  view: CityId | null;
+  plans: Plan[];
+  waved: string[];
 }
 
 export interface UiState {
@@ -34,6 +57,10 @@ export interface UiState {
   seatedAtDesk: boolean;
   focus: { running: boolean; seconds: number };
   fade: boolean;
+  merit: number;
+  donateOpen: boolean;
+  duyen: DuyenState;
+  city: CityState;
   setPrompt: (p: string | null) => void;
   showToast: (text: string) => void;
   pushLog: (e: Omit<LogEntry, "id">) => void;
@@ -53,7 +80,7 @@ export const useUi = create<UiState>((set, get) => ({
   helpOpen: false,
   questsOpen: false,
   creatorOpen: true,
-  wallet: 15,
+  wallet: 30,
   where: { now: null, next: "", meters: 0, joke: null },
   done: {},
   progress: {},
@@ -61,6 +88,19 @@ export const useUi = create<UiState>((set, get) => ({
   seatedAtDesk: false,
   focus: { running: false, seconds: 0 },
   fade: false,
+  merit: 0,
+  donateOpen: false,
+  duyen: {
+    open: false,
+    step: "intro",
+    gender: null,
+    seeking: "opposite",
+    partner: null,
+    messages: [],
+    endsAt: 0,
+    typing: false,
+  },
+  city: { open: false, tab: "plans", home: null, visiting: [], view: null, plans: SAMPLE_PLANS, waved: [] },
   setPrompt: (prompt) => {
     if (get().prompt !== prompt) set({ prompt });
   },

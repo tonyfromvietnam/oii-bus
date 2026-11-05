@@ -1,3 +1,4 @@
+import type { CityId } from "@xom-oii/shared";
 import { wrapCentered } from "./util";
 
 /**
@@ -13,16 +14,31 @@ export type LandmarkId =
   | "big-ben"
   | "london-eye"
   | "tower-bridge"
+  | "st-pauls"
+  | "shard"
   | "buckingham"
+  | "windsor"
   | "brighton-pier"
+  | "white-cliffs"
   | "stonehenge"
   | "bath"
+  | "cardiff"
+  | "snowdon"
   | "oxford"
+  | "cotswolds"
+  | "cambridge"
   | "birmingham"
   | "old-trafford"
   | "liverpool"
+  | "blackpool"
+  | "lake-district"
+  | "york"
   | "angel-north"
-  | "edinburgh";
+  | "hadrians-wall"
+  | "edinburgh"
+  | "forth-bridge"
+  | "loch-ness"
+  | "giants-causeway";
 
 /** Kiểu cảnh dọc đường quanh mỗi địa danh. */
 export type Terrain = "city" | "country" | "coast" | "river";
@@ -35,29 +51,47 @@ export interface Landmark {
   at: number;
   terrain: Terrain;
   houses: HouseStyle;
+  /** Thành phố gần nhất (để gợi ý người cùng thành phố khi bus đi qua). */
+  city: CityId;
 }
 
-const ORDER: [LandmarkId, Terrain, HouseStyle][] = [
-  ["big-ben", "city", "london"],
-  ["london-eye", "city", "london"],
-  ["tower-bridge", "river", "london"],
-  ["buckingham", "city", "london"],
-  ["brighton-pier", "coast", "london"],
-  ["stonehenge", "country", "stone"],
-  ["bath", "city", "bath"],
-  ["oxford", "city", "bath"],
-  ["birmingham", "city", "brick"],
-  ["old-trafford", "city", "brick"],
-  ["liverpool", "river", "brick"],
-  ["angel-north", "country", "stone"],
-  ["edinburgh", "city", "stone"],
+const ORDER: [LandmarkId, Terrain, HouseStyle, CityId][] = [
+  ["big-ben", "city", "london", "london"],
+  ["london-eye", "river", "london", "london"],
+  ["tower-bridge", "river", "london", "london"],
+  ["st-pauls", "city", "london", "london"],
+  ["shard", "city", "london", "london"],
+  ["buckingham", "city", "london", "london"],
+  ["windsor", "country", "brick", "london"],
+  ["brighton-pier", "coast", "london", "brighton"],
+  ["white-cliffs", "coast", "london", "canterbury"],
+  ["stonehenge", "country", "stone", "southampton"],
+  ["bath", "city", "bath", "bath"],
+  ["cardiff", "city", "stone", "cardiff"],
+  ["snowdon", "country", "stone", "bangor"],
+  ["oxford", "city", "bath", "oxford"],
+  ["cotswolds", "country", "bath", "oxford"],
+  ["cambridge", "city", "bath", "cambridge"],
+  ["birmingham", "city", "brick", "birmingham"],
+  ["old-trafford", "city", "brick", "manchester"],
+  ["liverpool", "river", "brick", "liverpool"],
+  ["blackpool", "coast", "brick", "lancaster"],
+  ["lake-district", "country", "stone", "lancaster"],
+  ["york", "city", "stone", "york"],
+  ["angel-north", "country", "stone", "newcastle"],
+  ["hadrians-wall", "country", "stone", "newcastle"],
+  ["edinburgh", "city", "stone", "edinburgh"],
+  ["forth-bridge", "river", "stone", "edinburgh"],
+  ["loch-ness", "country", "stone", "glasgow"],
+  ["giants-causeway", "coast", "stone", "belfast"],
 ];
 
-export const LANDMARKS: Landmark[] = ORDER.map(([id, terrain, houses], i) => ({
+export const LANDMARKS: Landmark[] = ORDER.map(([id, terrain, houses, city], i) => ({
   id,
   at: i * LANDMARK_SPACING,
   terrain,
   houses,
+  city,
 }));
 
 export const ROUTE_LENGTH = LANDMARKS.length * LANDMARK_SPACING;

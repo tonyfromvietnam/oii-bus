@@ -24,8 +24,19 @@ export const vi = {
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
   scenes: {
-    bus: { name: "Bus Oii", sub: "tầng thượng · đang vòng quanh UK" },
-    library: { name: "Thư viện Oii", sub: "tầng dưới · suỵt, yên lặng nhé 🤫" },
+    bus: { name: "Bus Oii", sub: "tầng thượng · Cùng thành phố", short: "Tầng thượng", icon: "🏙️" },
+    library: {
+      name: "Thư viện Oii",
+      sub: "tầng giữa · suỵt, yên lặng nhé 🤫",
+      short: "Thư viện",
+      icon: "📚",
+    },
+    temple: {
+      name: "Chùa Cầu Duyên",
+      sub: "tầng dưới cùng · thắp hương, se duyên",
+      short: "Chùa",
+      icon: "🏮",
+    },
   },
 
   creator: {
@@ -90,6 +101,7 @@ export const vi = {
     ["Enter", "Chat"],
     ["1 – 5", "Biểu cảm"],
     ["Q", "Nhiệm vụ & hộ chiếu"],
+    ["C", "Cùng thành phố"],
   ],
 
   gestures: {
@@ -116,6 +128,13 @@ export const vi = {
     cat: "Vuốt mèo",
     radio: "Bật/tắt lofi",
     duck: "Nhặt vịt 🦆",
+    "meetup-board": "Bảng hẹn đi chơi 📍",
+    "to-temple": "Xuống Chùa Cầu Duyên 🏮",
+    incense: "Thắp hương 🪔",
+    donate: "Công đức 🧧",
+    "wish-tree": "Buộc chỉ đỏ lên cây duyên",
+    matchmaker: "Xin quẻ se duyên 💞",
+    bell: "Thỉnh chuông 🔔",
   },
 
   lines: {
@@ -137,6 +156,7 @@ export const vi = {
     umbrella: "Ô để sẵn cho mọi người. Đây là London mà ☂️",
     toLibrary: "Xuống cầu thang… tầng dưới là thư viện! Lofi đang phát 🎧",
     toBus: "Lên tầng thượng, gió mát quá 🌤️",
+    toTemple: "Xuống tầng dưới cùng… ở đây có hẳn một ngôi chùa 🏮",
     books: [
       "📖 “Viết essay 3000 chữ trong một đêm (và sống sót)”",
       "📖 “Harvard referencing cho người mới”",
@@ -157,19 +177,46 @@ export const vi = {
     "big-ben": { name: "Big Ben · London", joke: "Đồng hồ này đúng giờ hơn bus nhiều 😅" },
     "london-eye": { name: "London Eye", joke: "Vé £30, ngắm từ bus thì free 🎡" },
     "tower-bridge": { name: "Tower Bridge", joke: "Không phải London Bridge đâu nha 🌉" },
+    "st-pauls": { name: "Nhà thờ St Paul's", joke: "Mái vòm to thứ hai thế giới, đẹp nhất London ⛪" },
+    shard: { name: "The Shard", joke: "Cao nhất UK, giá thuê nhà quanh đây cũng vậy 🏙️" },
     buckingham: { name: "Cung điện Buckingham", joke: "Vua có ở nhà không ta? 👑" },
+    windsor: { name: "Lâu đài Windsor", joke: "Lâu đài còn người ở lâu đời nhất thế giới 🏰" },
     "brighton-pier": { name: "Brighton Pier", joke: "Biển Anh: gió nhiều hơn nắng, nhưng vẫn vui 🌊" },
+    "white-cliffs": { name: "Vách đá trắng Dover", joke: "Trời trong là thấy cả nước Pháp bên kia 🇫🇷" },
     stonehenge: { name: "Stonehenge · Wiltshire", joke: "5000 năm rồi vẫn chưa ai biết để làm gì 🪨" },
     bath: { name: "Royal Crescent · Bath", joke: "Phim cổ trang quay ở đây suốt 🎩" },
+    cardiff: {
+      name: "Lâu đài Cardiff · Wales",
+      joke: "Biển báo hai thứ tiếng, chữ Wales nhiều phụ âm lắm 🏴",
+    },
+    snowdon: { name: "Núi Snowdon · Wales", joke: "Leo 3 tiếng, lên đỉnh thì… sương mù 🏔️" },
     oxford: { name: "Radcliffe Camera · Oxford", joke: "Thư viện đẹp thế này, deadline cũng dịu đi 📚" },
+    cotswolds: { name: "Làng Cotswolds", joke: "Làng cổ như tranh, nhà nào cũng như trong lịch 🏡" },
+    cambridge: {
+      name: "King's College · Cambridge",
+      joke: "Chèo thuyền punting, nhớ đừng rơi xuống sông 🛶",
+    },
     birmingham: { name: "Bullring · Birmingham", joke: "Toà nhà đính 15.000 cái đĩa bạc ✨" },
     "old-trafford": {
       name: "Old Trafford · Manchester",
       joke: "Cuối tuần có trận thì cả thành phố đỏ rực ⚽",
     },
     liverpool: { name: "Royal Liver Building · Liverpool", joke: "Hai chú chim Liver canh bến cảng 🐦" },
+    blackpool: { name: "Tháp Blackpool", joke: "Bản sao tháp Eiffel, kèm kem ốc quế 🍦" },
+    "lake-district": { name: "Lake District", joke: "Hồ, núi, cừu, và mưa — chuẩn nước Anh 🐑" },
+    york: { name: "York Minster", joke: "Phố cổ York như bước ra từ Harry Potter 🧙" },
     "angel-north": { name: "Angel of the North · Gateshead", joke: "Sải cánh 54 m, rộng hơn máy bay 747 ✈️" },
+    "hadrians-wall": {
+      name: "Tường thành Hadrian",
+      joke: "Người La Mã xây tường chắn… gió lạnh miền Bắc 🧱",
+    },
     edinburgh: { name: "Lâu đài Edinburgh", joke: "Lên Scotland rồi, nhớ mang áo ấm 🏴" },
+    "forth-bridge": { name: "Cầu Forth · Scotland", joke: "Cầu đỏ sơn mãi không xong (nghe đồn vậy) 🌉" },
+    "loch-ness": { name: "Hồ Loch Ness", joke: "Nhìn kỹ mặt hồ… có thấy Nessie không? 🦕" },
+    "giants-causeway": {
+      name: "Giant's Causeway · Bắc Ireland",
+      joke: "40.000 cột đá lục giác, bus bơi qua biển tới đây 🌊",
+    },
   } satisfies Record<LandmarkId, { name: string; joke: string }>,
 
   quests: {
@@ -184,8 +231,106 @@ export const vi = {
       hotpot: { title: "Ngồi vào nồi lẩu chung", stamp: "Lẩu là chân ái", icon: "🍲" },
       focus: { title: "Tập trung 1 phút ở thư viện", stamp: "Mọt sách", icon: "📚" },
       wave: { title: "Vẫy tay chào 3 người", stamp: "Người quen của cả xe", icon: "👋" },
+      incense: { title: "Thắp một nén hương ở Chùa Cầu Duyên", stamp: "Có tâm", icon: "🪔" },
+      plan: { title: "Tạo hoặc tham gia một kế hoạch đi chơi", stamp: "Hay đi chơi", icon: "📍" },
     },
   },
 } as const;
 
 export type QuestId = keyof typeof vi.quests.items;
+
+/** Chùa Cầu Duyên + se duyên 1:1. */
+export const viTemple = {
+  merit: "Phúc đức",
+  luck: "Cơ hội se duyên",
+  meritHint:
+    "Thắp hương, tụng kinh, công đức, buộc chỉ đỏ, thỉnh chuông để tích phúc đức. Phúc đức càng nhiều, Ông Tơ càng ưu tiên se duyên cho bạn (reset mỗi tuần).",
+  incense: (p: number) => `🪔 Thắp ba nén hương. Khói bay thơm lắm. +${p} phúc đức`,
+  chant: (p: number) => `📿 Tụng kinh… +${p} phúc đức`,
+  chantHint: "Ngồi trên bồ đoàn là tụng kinh. Cứ 10 giây được 1 phúc đức (tối đa 30/ngày).",
+  donateTitle: "Hòm công đức",
+  donateBody:
+    "Công đức bằng tiền ảo trong Xóm Oii (không phải tiền thật). Mỗi £1 = 2 phúc đức, tối đa 30/ngày.",
+  donated: (amount: number, p: number) =>
+    `🧧 Công đức £${amount}. Nhà chùa ghi nhận tấm lòng. +${p} phúc đức`,
+  wish: (p: number) => `🧶 Bạn buộc một sợi chỉ đỏ lên cây duyên và thầm ước. +${p} phúc đức`,
+  bell: (p: number) => `🔔 Boong… tiếng chuông vang khắp sân chùa. +${p} phúc đức`,
+  cooldown: (s: number) => `Từ từ thôi, ${s} giây nữa làm lại nhé 🙏`,
+  cap: "Hôm nay đủ phúc đức cho việc này rồi. Mai quay lại nhé 🙏",
+  broke: "Ví hết tiền ảo rồi 🥲",
+
+  seDuyen: {
+    title: "Xin quẻ se duyên 💞",
+    body: "Ông Tơ Bà Nguyệt sẽ ghép bạn ngẫu nhiên với một người lạ để nói chuyện 1:1, ẩn danh, trong 10 phút. Hợp thì nói tiếp.",
+    iAm: "Tôi là",
+    male: "Nam",
+    female: "Nữ",
+    seeking: "Muốn gặp",
+    opposite: "Người khác giới",
+    any: "Ai cũng được",
+    rules: [
+      "Chỉ dành cho người từ 18 tuổi, đã xác minh qua OiiMate.",
+      "Ẩn danh hoàn toàn. Đừng chia sẻ số điện thoại, địa chỉ hay mạng xã hội ở lần nói chuyện đầu.",
+      "Bị làm phiền? Bấm Chặn hoặc Báo cáo, đội Xóm Oii xem trong 24 giờ.",
+    ],
+    go: "Xin quẻ 🧧",
+    needGender: "Chọn “Tôi là” trước đã nhé.",
+    searching: "Ông Tơ đang se chỉ hồng…",
+    searchingSub: "Phúc đức càng nhiều, se càng nhanh.",
+    cancel: "Huỷ",
+    matched: (name: string) => `💞 Quẻ tốt! Bạn được se duyên với ${name}.`,
+    safety: "Ẩn danh. Lịch sự, vui vẻ, và đừng gửi thông tin cá nhân nhé.",
+    placeholder: "Nhắn gì đó…",
+    end: "Kết thúc",
+    block: "Chặn",
+    report: "Báo cáo",
+    ended: "Cuộc trò chuyện đã kết thúc. Xin quẻ mới không?",
+    again: "Xin quẻ mới",
+    blocked: "Đã chặn. Hai bạn sẽ không được ghép với nhau nữa.",
+    reported: "Đã gửi báo cáo. Cảm ơn bạn đã giữ Xóm Oii an toàn 🙏",
+    timeUp: "Hết 10 phút rồi. Hai bạn có muốn nói tiếp không? (bản thật: cả hai cùng bấm “Nói tiếp”)",
+    demo: "bản thử · người kia là bot",
+    typing: "đang nhập…",
+  },
+} as const;
+
+/** Tầng thượng: tìm người cùng thành phố, rủ nhau lên kế hoạch. */
+export const viCity = {
+  button: "Cùng thành phố",
+  title: "📍 Cùng thành phố",
+  body: "Gặp người đang sống ở, hoặc sắp tới, cùng thành phố với bạn. Rủ nhau ăn phở, đi dạo, học nhóm.",
+  myCity: "Mình đang ở",
+  visiting: "Sắp tới",
+  addVisit: "Thêm",
+  from: "Từ",
+  to: "Đến",
+  choose: "Chọn thành phố",
+  tabs: { people: "Mọi người", plans: "Kế hoạch" },
+  livesIn: (c: string) => `Ở ${c}`,
+  visitingCity: (c: string, d: string) => `Tới ${c} · ${d}`,
+  wave: "👋 Vẫy",
+  waved: "Đã vẫy",
+  noPeople: "Chưa có ai ở thành phố này. Rủ bạn bè lên Xóm Oii nhé!",
+  createTitle: "Tạo kế hoạch",
+  planTitle: "Tên kế hoạch",
+  planTitlePh: "Ví dụ: Ăn phở ở Chinatown",
+  city: "Thành phố",
+  date: "Ngày",
+  time: "Giờ",
+  maxPeople: "Tối đa",
+  note: "Ghi chú",
+  notePh: "Gặp ở đâu, mang gì…",
+  create: "Đăng kế hoạch",
+  join: "Tham gia",
+  leave: "Rời",
+  full: "Đủ người",
+  members: (n: number, max: number) => `${n}/${max} người`,
+  example: "ví dụ",
+  mine: "của bạn",
+  created: "Đã đăng kế hoạch. Mọi người cùng thành phố sẽ thấy 📍",
+  joined: "Đã tham gia! Nhóm chat của kế hoạch sẽ có ở bản sau.",
+  safety:
+    "An toàn: gặp ở nơi công cộng, đi theo nhóm, báo cho bạn bè biết. Chỉ tài khoản đã xác minh mới thấy kế hoạch.",
+  passing: (city: string, people: number, plans: number) => `📍 ${city}: ${people} người · ${plans} kế hoạch`,
+  invalid: "Kiểm tra lại thông tin kế hoạch nhé.",
+} as const;

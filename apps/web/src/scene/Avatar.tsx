@@ -1,11 +1,11 @@
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import type { Hat } from "@xom-oii/shared";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { vi } from "../copy/vi";
 import type { AvatarAnim } from "../game/state";
-import { C, toon } from "./materials";
+import { C, cel } from "./materials";
 
 interface Props {
   anim: AvatarAnim;
@@ -41,13 +41,20 @@ export function Avatar({ anim, color, hat, name, alumni, isMe }: Props) {
   const blinkAt = useRef(2 + Math.random() * 3);
   const last = useRef({ bubble: null as string | null, emoji: null as string | null });
 
-  const mat = useMemo(() => toon(color), [color]);
-  const dark = useMemo(() => toon(new THREE.Color(color).multiplyScalar(0.8).getStyle()), [color]);
+  const mat = useMemo(() => cel(color), [color]);
+  const dark = useMemo(() => cel(new THREE.Color(color).multiplyScalar(0.8).getStyle()), [color]);
   // đuôi bong bóng: xanh thì bên trái, vàng/ấm thì bên phải (như logo)
   const tailSide = useMemo(
     () => (new THREE.Color(color).getHSL({ h: 0, s: 0, l: 0 }).h > 0.3 ? -1 : 1),
     [color],
   );
+
+  // đổ bóng thật lên sàn (trừ bóng tròn giả dưới chân)
+  useEffect(() => {
+    root.current?.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh && !(o as THREE.Mesh).userData.flat) o.castShadow = true;
+    });
+  }, [hat, color]);
 
   useFrame((state, dt) => {
     const r = root.current;
@@ -142,12 +149,12 @@ export function Avatar({ anim, color, hat, name, alumni, isMe }: Props) {
 
   return (
     <group ref={root}>
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0.01, 0]}>
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.01, 0]} userData={{ flat: true }}>
         <circleGeometry args={[0.46, 24]} />
         <meshBasicMaterial color="#1f2d4d" transparent opacity={0.12} depthWrite={false} />
       </mesh>
       {isMe && (
-        <mesh rotation-x={-Math.PI / 2} position={[0, 0.015, 0]}>
+        <mesh rotation-x={-Math.PI / 2} position={[0, 0.015, 0]} userData={{ flat: true }}>
           <ringGeometry args={[0.52, 0.6, 32]} />
           <meshBasicMaterial color="#4e9297" transparent opacity={0.9} depthWrite={false} />
         </mesh>
@@ -177,12 +184,12 @@ export function Avatar({ anim, color, hat, name, alumni, isMe }: Props) {
         {/* mặt */}
         <group ref={eyes} position={[0, 0.06, R * 0.93]}>
           {[-0.15, 0.15].map((x) => (
-            <mesh key={x} position={[x, 0, 0]} scale={[1, 1, 0.5]} material={toon(C.ink)}>
+            <mesh key={x} position={[x, 0, 0]} scale={[1, 1, 0.5]} material={cel(C.ink)}>
               <sphereGeometry args={[0.055, 12, 10]} />
             </mesh>
           ))}
         </group>
-        <mesh position={[0, -0.07, R * 0.94]} rotation-z={Math.PI} material={toon(C.ink)}>
+        <mesh position={[0, -0.07, R * 0.94]} rotation-z={Math.PI} material={cel(C.ink)}>
           <torusGeometry args={[0.065, 0.017, 6, 14, Math.PI]} />
         </mesh>
         {[-0.28, 0.28].map((x) => (
@@ -191,7 +198,7 @@ export function Avatar({ anim, color, hat, name, alumni, isMe }: Props) {
             position={[x, -0.06, R * 0.85]}
             rotation-y={x * 1.3}
             scale={[1, 0.6, 0.3]}
-            material={toon(C.blush)}
+            material={cel(C.blush)}
           >
             <sphereGeometry args={[0.07, 10, 8]} />
           </mesh>
@@ -207,13 +214,13 @@ export function Avatar({ anim, color, hat, name, alumni, isMe }: Props) {
             </mesh>
             {i === 1 && (
               <group ref={cup} position={[0, -0.22, 0.08]} visible={false}>
-                <mesh material={toon("#f3d9b1")}>
+                <mesh material={cel("#f3d9b1")}>
                   <cylinderGeometry args={[0.07, 0.055, 0.17, 10]} />
                 </mesh>
-                <mesh position={[0, -0.05, 0]} material={toon(C.ink)}>
+                <mesh position={[0, -0.05, 0]} material={cel(C.ink)}>
                   <cylinderGeometry args={[0.058, 0.055, 0.05, 10]} />
                 </mesh>
-                <mesh position={[0.02, 0.15, 0]} rotation-z={-0.2} material={toon(C.accent)}>
+                <mesh position={[0.02, 0.15, 0]} rotation-z={-0.2} material={cel(C.accent)}>
                   <cylinderGeometry args={[0.012, 0.012, 0.18, 6]} />
                 </mesh>
               </group>
@@ -249,10 +256,10 @@ function HatMesh({ hat, color }: { hat: Hat; color: string }) {
     case "non-la":
       return (
         <group position={[0, top + 0.04, 0]}>
-          <mesh material={toon("#f1d58f")}>
+          <mesh material={cel("#f1d58f")}>
             <coneGeometry args={[0.6, 0.34, 24]} />
           </mesh>
-          <mesh position={[0, -0.13, 0]} rotation-x={Math.PI / 2} material={toon("#e3bf6b")}>
+          <mesh position={[0, -0.13, 0]} rotation-x={Math.PI / 2} material={cel("#e3bf6b")}>
             <torusGeometry args={[0.5, 0.015, 4, 28]} />
           </mesh>
         </group>
@@ -260,10 +267,10 @@ function HatMesh({ hat, color }: { hat: Hat; color: string }) {
     case "beanie":
       return (
         <group position={[0, top - 0.16, 0]}>
-          <mesh material={toon(C.oiiYellow)}>
+          <mesh material={cel(C.oiiYellow)}>
             <sphereGeometry args={[0.47, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2.4]} />
           </mesh>
-          <mesh position={[0, 0.5, 0]} material={toon(C.white)}>
+          <mesh position={[0, 0.5, 0]} material={cel(C.white)}>
             <sphereGeometry args={[0.1, 10, 8]} />
           </mesh>
         </group>
@@ -271,13 +278,13 @@ function HatMesh({ hat, color }: { hat: Hat; color: string }) {
     case "grad-cap":
       return (
         <group position={[0, top, 0]}>
-          <mesh material={toon(C.ink)}>
+          <mesh material={cel(C.ink)}>
             <cylinderGeometry args={[0.24, 0.27, 0.12, 14]} />
           </mesh>
-          <mesh position={[0, 0.08, 0]} rotation-y={Math.PI / 4} material={toon(C.ink)}>
+          <mesh position={[0, 0.08, 0]} rotation-y={Math.PI / 4} material={cel(C.ink)}>
             <boxGeometry args={[0.66, 0.04, 0.66]} />
           </mesh>
-          <mesh position={[0.26, -0.03, 0.15]} material={toon(C.gold)}>
+          <mesh position={[0.26, -0.03, 0.15]} material={cel(C.gold)}>
             <boxGeometry args={[0.03, 0.22, 0.03]} />
           </mesh>
         </group>
@@ -287,10 +294,10 @@ function HatMesh({ hat, color }: { hat: Hat; color: string }) {
         <group position={[0, top - 0.05, 0]}>
           {[-0.24, 0.24].map((x) => (
             <group key={x} position={[x, 0.04, 0]} rotation-z={-x * 1.1}>
-              <mesh material={toon(color)}>
+              <mesh material={cel(color)}>
                 <coneGeometry args={[0.13, 0.24, 12]} />
               </mesh>
-              <mesh position={[0, -0.02, 0.05]} material={toon(C.pink)}>
+              <mesh position={[0, -0.02, 0.05]} material={cel(C.pink)}>
                 <coneGeometry args={[0.07, 0.14, 10]} />
               </mesh>
             </group>
@@ -300,11 +307,11 @@ function HatMesh({ hat, color }: { hat: Hat; color: string }) {
     case "headphones":
       return (
         <group position={[0, 0.05, 0]}>
-          <mesh material={toon(C.ink)}>
+          <mesh material={cel(C.ink)}>
             <torusGeometry args={[0.53, 0.035, 6, 24, Math.PI]} />
           </mesh>
           {[-0.52, 0.52].map((x) => (
-            <mesh key={x} position={[x, 0, 0]} rotation-z={Math.PI / 2} material={toon(C.accent)}>
+            <mesh key={x} position={[x, 0, 0]} rotation-z={Math.PI / 2} material={cel(C.accent)}>
               <cylinderGeometry args={[0.14, 0.14, 0.1, 16]} />
             </mesh>
           ))}

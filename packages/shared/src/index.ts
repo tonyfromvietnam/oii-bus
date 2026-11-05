@@ -5,3 +5,6 @@ export * from "./schemas";
 export * from "./text";
 export * from "./proximity";
 export * from "./sun";
+export * from "./cities";
+export * from "./merit";
+export * from "./matching";

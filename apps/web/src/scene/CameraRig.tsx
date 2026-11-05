@@ -12,8 +12,12 @@ const target = new THREE.Vector3();
 const desired = new THREE.Vector3();
 
 /** Góc camera cố định (không xoay, không zoom) để ai cũng điều khiển được. */
-const OFFSET = { bus: new THREE.Vector3(0, 3.7, 12.5), library: new THREE.Vector3(0, 7.5, 10) };
-const FOV = { bus: 50, library: 42 };
+const OFFSET = {
+  bus: new THREE.Vector3(0, 3.7, 12.5),
+  library: new THREE.Vector3(0, 7.5, 10),
+  temple: new THREE.Vector3(0, 6.5, 12),
+};
+const FOV = { bus: 50, library: 42, temple: 46 };
 
 /** Camera theo sau từ góc chéo cố định. Chạm/bấm sàn để đi tới. */
 export function CameraRig() {

@@ -2,11 +2,11 @@
 
 > Thích ở một mình nhưng thỉnh thoảng sợ cô đơn.
 
-Phần tiếp theo của OiiMate: lên **Bus Oii**, chiếc bus hai tầng siêu to chạy vòng London, cùng mọi người. Tầng dưới là thư viện yên lặng nghe lofi. Nhân vật chibi dễ thương, điều khiển đơn giản, có nhiệm vụ tuần và hộ chiếu tem. Mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).
+Phần tiếp theo của OiiMate: lên **Bus Oii**, chiếc bus siêu to chạy vòng quanh UK qua 28 địa danh. Tầng thượng tìm người cùng thành phố và rủ nhau đi chơi; tầng giữa là thư viện lofi; tầng dưới cùng là Chùa Cầu Duyên (thắp hương, tích phúc đức, xin quẻ se duyên 1:1). Nhân vật chibi dễ thương, điều khiển đơn giản, có nhiệm vụ tuần và hộ chiếu tem. Mở từ Thứ 6 19:00 tới hết Chủ nhật (giờ London).
 
 Thiết kế thế giới: [`docs/WORLD.md`](docs/WORLD.md).
 
-Kiến trúc: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Moderation: [`docs/MODERATION.md`](docs/MODERATION.md)
+Kiến trúc: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Triển khai: [`docs/DEPLOY.md`](docs/DEPLOY.md) · Moderation: [`docs/MODERATION.md`](docs/MODERATION.md)
 
 ## Chạy local
 
