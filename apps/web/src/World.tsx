@@ -15,6 +15,8 @@ import { CameraRig } from "./scene/CameraRig";
 import { Library } from "./scene/Library";
 import { EnvLight, LibraryLights, Sky } from "./scene/Sky";
 import { Temple } from "./scene/Temple";
+import { Street } from "./scene/Street";
+import { buddyAnim, useHandbook } from "./game/handbook";
 
 /** `?lowfx`: tắt bóng đổ, giảm độ phân giải (máy yếu, test tự động). */
 const LOW_FX = typeof location !== "undefined" && new URLSearchParams(location.search).has("lowfx");
@@ -24,12 +26,13 @@ export default function World() {
   useKeyboard();
   const scene = useUi((s) => s.scene);
   const me = useUi((s) => s.me);
+  const buddy = useHandbook((s) => s.buddy);
   useEffect(() => {
     readReferral();
     // lên xe (sau khi tạo nhân vật): điểm danh chuỗi ngày, rồi câu chào ngắn
     return useUi.subscribe((s, prev) => {
       if (prev.creatorOpen && !s.creatorOpen) {
-        s.showToast(vi.arrive.bus);
+        s.showToast(vi.arrive.street);
         setTimeout(dailyCheckIn, 2200);
       }
     });
@@ -48,7 +51,12 @@ export default function World() {
         style={{ touchAction: "none" }}
       >
         <EnvLight />
-        {scene === "bus" ? (
+        {scene === "street" ? (
+          <>
+            <Sky />
+            <Street />
+          </>
+        ) : scene === "bus" ? (
           <>
             <Sky />
             <BusWorld />
@@ -65,6 +73,7 @@ export default function World() {
           </>
         )}
         <Avatar anim={game.player} color={me.color} hat={me.hat} name={me.nickname} isMe />
+        {buddy && <Avatar anim={buddyAnim} color={buddy.color} hat={buddy.hat} name={`🤝 ${buddy.name}`} />}
         {NPCS.filter((n) => n.scene === scene).map((n) => (
           <Avatar key={n.id} anim={n} color={n.color} hat={n.hat} name={n.name} />
         ))}

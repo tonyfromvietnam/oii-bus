@@ -3,6 +3,7 @@ import { CHANT_SECONDS, londonDarkness } from "@oii-bus/shared";
 import { SCENES, landmarkStatus, resolveCollisions, routeOffset } from "@oii-bus/world";
 import { vi, viTemple } from "../copy/vi";
 import { endSession } from "./match";
+import { updateBuddy } from "./handbook";
 import { bump, gainXp } from "./progress";
 import { XP } from "@oii-bus/shared";
 import { seatById } from "@oii-bus/world";
@@ -75,6 +76,7 @@ export function GameLoop() {
     }
 
     updateNpcs(dt);
+    updateBuddy(dt);
 
     // --- việc chậm (5 Hz): prompt, địa danh, tập trung, ánh sáng ---
     slowTimer -= dt;

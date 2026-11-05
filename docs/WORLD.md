@@ -10,7 +10,7 @@ Hướng mới: **dễ thương, đơn giản, tích cực**. Mọi người ở
 | `library`        | Tầng dưới của bus là **Thư viện Oii**: kệ sách, bàn học đèn xanh, góc đọc, mèo ngủ, cửa sổ thấy London trôi qua.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | **Không** (chỉ biểu cảm) | Lofi tự bật   |
 
 - **Tầng thượng = Cùng thành phố**: chọn thành phố đang ở / sắp tới, xem người cùng thành phố, tạo và tham gia kế hoạch đi chơi. Khi bus đi qua một địa danh, HUD gợi ý số người và kế hoạch ở thành phố đó.
-- Thang máy (nút 🏙️ 📚 🏮 trên HUD) đi thẳng giữa ba tầng, không cần tìm cầu thang.
+- Thanh tầng trên HUD (🏪 Phố UK, 🚌, 📚, 🏮) đi thẳng giữa các tầng; tầng chưa mở có 🔒, không cần tìm cầu thang.
 - Vị trí trên tuyến tính từ giờ thật (`routeOffset(Date.now())`, `packages/world/src/route.ts`), nên mọi người, mọi instance thấy cùng một địa danh cùng lúc mà server không cần gửi thêm gì.
 - Lofi được sinh bằng WebAudio (`apps/web/src/audio/lofi.ts`): không có file nhạc, không lo bản quyền, nhẹ.
 - Thư viện là `quiet: true` trong `SceneDef`. Từ M2, server từ chối message chat ở scene này.
@@ -52,13 +52,31 @@ Nhân vật giữ cel-shading. Cảnh vật dùng vật liệu PBR, texture tự
 
 ## Vòng lặp hằng ngày (giữ chân người chơi)
 
-| Phần                   | Cách hoạt động                                                                                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔥 Chuỗi ngày          | Mỗi ngày (theo giờ London) lên xe một lần: +10 XP, cộng thêm 2 XP mỗi ngày liên tiếp (tối đa +20). Bỏ một ngày thì chuỗi bắt đầu lại, giữ kỷ lục. |
-| Cấp theo zone          | Zone 6 "Mới lên xe" → Zone 1 "Dân London chính hiệu" → Zone VIP "Tiền bối Oii-Bus" (`ZONES` trong `packages/shared/src/progress.ts`).             |
-| XP                     | Thắp hương 5 · tụng kinh 1/10 giây · tập trung 2/phút (+20 mỗi phiên) · tem 15 · chụp địa danh 5 · kế hoạch 10 · việc tân sinh viên 10… (`XP`).   |
-| Thẻ khoe               | Ảnh 1080×1350 kiểu OiiMate: mascot, chuỗi ngày, cấp, 3 số liệu hôm nay, câu của ngày, link mời `?ref=`.                                           |
-| Câu mỗi ngày           | Ai mở cùng ngày thấy cùng câu (`pickForDay`).                                                                                                     |
-| Hộ chiếu tân sinh viên | 12 việc trong 30 ngày đầu, mỗi việc có mẹo và link chính thức (gov.uk, NHS, TfL…).                                                                |
+| Phần          | Cách hoạt động                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔥 Chuỗi ngày | Mỗi ngày (theo giờ London) lên xe một lần: +10 XP, cộng thêm 2 XP mỗi ngày liên tiếp (tối đa +20). Bỏ một ngày thì chuỗi bắt đầu lại, giữ kỷ lục. |
+| Cấp theo zone | Zone 6 "Mới lên xe" → Zone 1 "Dân London chính hiệu" → Zone VIP "Tiền bối Oii-Bus" (`ZONES` trong `packages/shared/src/progress.ts`).             |
+| XP            | Thắp hương 5 · tụng kinh 1/10 giây · tập trung 2/phút (+20 mỗi phiên) · tem 15 · chụp địa danh 5 · kế hoạch 10 · việc tân sinh viên 10… (`XP`).   |
+| Thẻ khoe      | Ảnh 1080×1350 kiểu OiiMate: mascot, chuỗi ngày, cấp, 3 số liệu hôm nay, câu của ngày, link mời `?ref=`.                                           |
+| Câu mỗi ngày  | Ai mở cùng ngày thấy cùng câu (`pickForDay`).                                                                                                     |
+
+## Cẩm nang tân sinh viên (chiến dịch 7 ngày)
+
+Người mới vào game bắt đầu ở **Phố UK** (`street`): một con phố low-poly có Arrivals, ngân hàng, letting agent, GP, pharmacy, siêu thị, chợ châu Á, tiệm giặt, quán cà phê, ga tàu, lều Freshers và trạm Oii-Bus. Mỗi ngày mở **3 nhiệm vụ**, làm bằng hành động thật: đi tới cửa hàng, nói chuyện với NPC, rồi trả lời câu đố / xếp thứ tự / chọn đồ / làm cùng bạn đồng hành.
+
+| Ngày | Chủ đề              | Mở khoá          |
+| ---- | ------------------- | ---------------- |
+| 1    | 24 giờ đầu tiên     | Tầng bus         |
+| 2    | Tìm chỗ ở           | Thư viện         |
+| 3    | Giấy tờ & ngân hàng | Cùng thành phố   |
+| 4    | Đi lại              | Chùa Cầu Duyên   |
+| 5    | Ăn uống & săn sale  |                  |
+| 6    | Sức khoẻ & mùa đông |                  |
+| 7    | Việc làm & kết nối  | Xin quẻ se duyên |
+
+- Làm xong 3 việc của ngày thì chương sau mở vào **ngày London tiếp theo** (`chapterState` trong `packages/shared/src/handbook.ts`), để người chơi quay lại mỗi ngày.
+- Ngày 1 ghép **bạn đồng hành** ở lều Freshers (`pickMatch`). Bạn đi theo qua các tầng, chat 1:1, và cần đứng gần cho nhiệm vụ đôi (giặt đồ, đi bus, ăn lẩu).
+- Nội dung lấy từ sheet Q&A của OiiMate (đã làm gọn), kèm link gov.uk, NHS, TfL. Tab Hỏi đáp trong cẩm nang có ~55 câu.
+- `?unlock=all` mở hết tầng và chương.
 
 Bản thử lưu tiến độ trong trình duyệt. Từ M3, server giữ XP/chuỗi ngày và ghi nhận lượt mời, dùng cùng hàm trong `@oii-bus/shared`.

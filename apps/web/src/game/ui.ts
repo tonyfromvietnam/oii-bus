@@ -72,7 +72,7 @@ export interface UiState {
 let seq = 0;
 
 export const useUi = create<UiState>((set, get) => ({
-  scene: "bus",
+  scene: "street",
   me: { nickname: "Bánh Bao", color: "#a8d3d9", hat: "beanie" },
   prompt: null,
   toast: null,

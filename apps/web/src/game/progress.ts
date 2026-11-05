@@ -1,6 +1,5 @@
 import {
   REFERRAL_RE,
-  XP,
   checkIn,
   checkInXp,
   levelFor,
@@ -28,18 +27,16 @@ export interface ProgressState {
   xp: number;
   streak: StreakState;
   today: DayStats;
-  newcomer: Record<string, true>;
   refCode: string;
   invitedBy: string | null;
   open: boolean;
-  tab: "today" | "newcomer";
   set: (p: Partial<ProgressState>) => void;
 }
 
 const KEY = "oii-bus:progress";
 const emptyDay = (day: string): DayStats => ({ day, focusMinutes: 0, incense: 0, done: 0 });
 
-type Saved = Pick<ProgressState, "xp" | "streak" | "today" | "newcomer" | "refCode" | "invitedBy">;
+type Saved = Pick<ProgressState, "xp" | "streak" | "today" | "refCode" | "invitedBy">;
 
 function load(): Saved | null {
   try {
@@ -52,8 +49,8 @@ function load(): Saved | null {
 
 function save(s: ProgressState) {
   try {
-    const { xp, streak, today, newcomer, refCode, invitedBy } = s;
-    localStorage.setItem(KEY, JSON.stringify({ xp, streak, today, newcomer, refCode, invitedBy }));
+    const { xp, streak, today, refCode, invitedBy } = s;
+    localStorage.setItem(KEY, JSON.stringify({ xp, streak, today, refCode, invitedBy }));
   } catch {
     /* chế độ ẩn danh / bị chặn: chơi tiếp, chỉ không nhớ */
   }
@@ -66,11 +63,9 @@ export const useProgress = create<ProgressState>((set) => ({
   xp: saved?.xp ?? 0,
   streak: saved?.streak ?? { lastDay: null, days: 0, best: 0 },
   today: saved?.today?.day === todayKey ? saved.today : emptyDay(todayKey),
-  newcomer: saved?.newcomer ?? {},
   refCode: saved?.refCode ?? referralCode(`${Date.now()}-${Math.random()}`),
   invitedBy: saved?.invitedBy ?? null,
   open: false,
-  tab: "today",
   set: (p) => set(p),
 }));
 
@@ -111,19 +106,6 @@ export function dailyCheckIn() {
         ? viDaily.firstDay(xp)
         : viDaily.welcomeBack(r.state.days, xp),
   );
-}
-
-export function toggleNewcomer(id: string) {
-  const cur = { ...get().newcomer };
-  if (cur[id]) {
-    delete cur[id];
-    get().set({ newcomer: cur });
-    return;
-  }
-  cur[id] = true;
-  get().set({ newcomer: cur });
-  gainXp(XP.newcomerTask);
-  bump("done");
 }
 
 /** Đọc ?ref=… khi mở link mời (bản thật: server ghi nhận và thưởng cả hai). */

@@ -10,6 +10,17 @@ import { useUi, type LogEntry, type Me } from "../game/ui";
 import { Joystick } from "./Joystick";
 import { CityPanel, DonatePanel, FloorSwitcher, SeDuyenPanel } from "./Panels";
 import { ProfileChip, ProfilePanel } from "./Profile";
+import {
+  BuddyButton,
+  BuddyChat,
+  HandbookPanel,
+  MatchingOverlay,
+  QuestDialog,
+  QuestTracker,
+  useTodayCount,
+} from "./Handbook";
+import { cityUnlocked, useHandbook } from "../game/handbook";
+import { viHandbook } from "../copy/handbook";
 import { viCity } from "../copy/vi";
 
 const isTouch = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
@@ -33,6 +44,11 @@ export function Hud() {
       <SeDuyenPanel />
       <CityPanel />
       <ProfilePanel />
+      <QuestTracker />
+      <HandbookPanel />
+      <QuestDialog />
+      <BuddyChat />
+      <MatchingOverlay />
       <Help />
       <Creator />
       <div
@@ -228,6 +244,7 @@ function BottomBar() {
       ) : (
         <div className="flex flex-wrap items-center justify-center gap-1.5">
           <FloorSwitcher />
+          <BuddyButton />
           {emotes &&
             GESTURES.map((g, i) => (
               <button
@@ -277,8 +294,34 @@ function MainAction() {
   const scene = useUi((s) => s.scene);
   const where = useUi((s) => s.where);
   const set = useUi((s) => s.set);
+  const todayDone = useTodayCount();
+  useHandbook((s) => s.done);
   const big =
     "pointer-events-auto rounded-full bg-[var(--accent)] px-6 py-3 text-base font-black text-white shadow-lg active:scale-[0.98]";
+  if (scene === "street") {
+    return (
+      <button
+        type="button"
+        className={big}
+        data-testid="handbook-button"
+        onClick={() => useHandbook.getState().set({ open: true })}
+      >
+        {viHandbook.mainAction(todayDone)}
+      </button>
+    );
+  }
+  if (scene === "bus" && !cityUnlocked()) {
+    return (
+      <button
+        type="button"
+        className={`${big} opacity-60`}
+        data-testid="city-button"
+        onClick={() => useUi.getState().showToast(viHandbook.locked(3))}
+      >
+        🔒 {viCity.button}
+      </button>
+    );
+  }
   if (scene === "bus") {
     return (
       <button

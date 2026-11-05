@@ -10,7 +10,7 @@ import { box, type AABB } from "./coords";
  * Toạ độ cục bộ mỗi scene, sàn y = 0. Bus: đầu xe ở +x, camera nhìn từ phía +z.
  */
 
-export type SceneId = "bus" | "library" | "temple";
+export type SceneId = "street" | "bus" | "library" | "temple";
 
 export type SpotKind =
   | "seat"
@@ -31,7 +31,8 @@ export type SpotKind =
   | "donate"
   | "wish-tree"
   | "matchmaker"
-  | "bell";
+  | "bell"
+  | "place";
 
 export interface Spot {
   id: string;
@@ -40,6 +41,8 @@ export interface Spot {
   z: number;
   radius: number;
   seatId?: string;
+  /** Với kind "place": mã địa điểm ở Phố Tân Sinh Viên. */
+  placeId?: PlaceId;
 }
 
 export interface Seat {
@@ -269,7 +272,80 @@ export const TEMPLE_SCENE: SceneDef = {
   quiet: false,
 };
 
+// -------------------------------------------------------------- STREET ----
+/**
+ * Phố Tân Sinh Viên: nơi Oii-Bus thả người mới xuống. Một dãy cửa hàng low-poly phía xa (z âm)
+ * và vài quầy thấp phía gần, mỗi nơi là một chặng trong Cẩm nang tân sinh viên.
+ */
+export type PlaceId =
+  | "arrivals"
+  | "bank"
+  | "letting"
+  | "gp"
+  | "pharmacy"
+  | "supermarket"
+  | "asian"
+  | "laundrette"
+  | "cafe"
+  | "station"
+  | "freshers"
+  | "busstop";
+
+export interface Place {
+  id: PlaceId;
+  x: number;
+  z: number;
+  /** "shop": mặt tiền phía xa; "kiosk": quầy thấp trên phố. */
+  kind: "shop" | "kiosk";
+}
+
+const SHOP_IDS: PlaceId[] = [
+  "arrivals",
+  "bank",
+  "letting",
+  "gp",
+  "pharmacy",
+  "supermarket",
+  "asian",
+  "laundrette",
+  "cafe",
+  "station",
+];
+export const SHOP_WIDTH = 5;
+
+export const STREET_PLACES: Place[] = [
+  ...SHOP_IDS.map((id, i) => ({ id, x: -22.5 + i * SHOP_WIDTH, z: -6.4, kind: "shop" as const })),
+  { id: "freshers", x: -9, z: 3.6, kind: "kiosk" },
+  { id: "busstop", x: 15, z: 3.8, kind: "kiosk" },
+];
+
+export const STREET_SCENE: SceneDef = {
+  id: "street",
+  bounds: { minX: -25, maxX: 25, minZ: -5.4, maxZ: 5.6 },
+  colliders: [
+    box(-9, 4.4, 3.2, 1.4), // gian Freshers
+    box(15, 4.6, 2.8, 1.0), // mái chờ bus
+    ...[-17, -3, 9, 21].map((x) => box(x, 2.2, 0.5, 0.5)), // cột đèn / cây
+  ],
+  seats: [],
+  spots: STREET_PLACES.map((p) => ({
+    id: `place:${p.id}`,
+    kind: "place" as const,
+    x: p.x,
+    z: p.kind === "shop" ? -4.6 : p.z - 1.3,
+    radius: 1.6,
+    placeId: p.id,
+  })),
+  spawn: { x: -20, z: 0.5, ry: 0 },
+  quiet: false,
+};
+
+export function placeSpot(id: PlaceId): Spot {
+  return STREET_SCENE.spots.find((s) => s.placeId === id)!;
+}
+
 export const SCENES: Record<SceneId, SceneDef> = {
+  street: STREET_SCENE,
   bus: BUS_SCENE,
   library: LIBRARY_SCENE,
   temple: TEMPLE_SCENE,

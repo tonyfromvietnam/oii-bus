@@ -40,6 +40,8 @@ Characters are round, cute OiiMate-style mascots; controls are deliberately simp
 | 📚 **Library**                  | Quiet floor: text chat is off, generated lofi plays, one tap sits you at a desk and starts a focus timer.                                                                                                                                        |
 | 🏮 **Chùa Cầu Duyên**           | A Vietnamese-Korean temple courtyard. Light incense, chant, ring the bell, tie a red thread or donate (virtual £) to earn _phúc đức_, then ask Ông Tơ Bà Nguyệt for an anonymous 1:1 match. More merit → better odds (capped, never guaranteed). |
 
+Before the bus, newcomers start on a **UK high street** with a 7-day **newcomer handbook**: 3 real-action quests a day (bank, GP, letting agent, Oyster, yellow-sticker hunting…), a buddy matched on day 1 who follows you around, and floors that unlock as you go.
+
 Plus weekly side quests with a "UK passport" of stamps, proximity chat bands, block/report flows and a Vietnamese UI written in a friendly northern tone.
 
 <table>
@@ -133,7 +135,7 @@ Report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 ## Tiếng Việt
 
-Oii-Bus là "người bạn đồng hành" của OiiMate: một chiếc bus 3D ba tầng chạy vòng quanh UK. Tầng thượng tìm người cùng thành phố và rủ nhau đi chơi, tầng giữa là thư viện yên lặng nghe lofi, tầng dưới cùng là Chùa Cầu Duyên để thắp hương, tích phúc đức và xin quẻ se duyên 1:1.
+Oii-Bus là "người bạn đồng hành" của OiiMate. Người mới bắt đầu ở Phố UK với cẩm nang tân sinh viên 7 ngày (mỗi ngày 3 việc, có bạn đồng hành), rồi mở khoá một chiếc bus 3D ba tầng chạy vòng quanh UK. Tầng thượng tìm người cùng thành phố và rủ nhau đi chơi, tầng giữa là thư viện yên lặng nghe lofi, tầng dưới cùng là Chùa Cầu Duyên để thắp hương, tích phúc đức và xin quẻ se duyên 1:1.
 Tài liệu kỹ thuật chi tiết (tiếng Việt) nằm trong thư mục [`docs/`](docs/).
 
 ## License

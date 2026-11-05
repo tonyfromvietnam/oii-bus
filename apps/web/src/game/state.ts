@@ -27,11 +27,11 @@ export interface PlayerState extends AvatarAnim {
   hat: Hat;
 }
 
-const spawn = SCENES.bus.spawn;
+const spawn = SCENES.street.spawn;
 
 export const game = {
   time: 0,
-  scene: "bus" as SceneId,
+  scene: "street" as SceneId,
   player: {
     x: spawn.x,
     z: spawn.z,
