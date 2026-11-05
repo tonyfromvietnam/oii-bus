@@ -19,7 +19,7 @@ export function Hud() {
   const fade = useUi((s) => s.fade);
   return (
     <div
-      className="pointer-events-none absolute inset-0 select-none"
+      className="pointer-events-none absolute inset-0 z-30 select-none"
       style={{ fontFamily: "var(--font-sans)" }}
     >
       <TopBar />

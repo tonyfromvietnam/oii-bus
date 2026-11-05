@@ -31,7 +31,7 @@ export function FloorSwitcher() {
           className={`rounded-full px-3 py-1 text-sm font-bold ${f === scene ? "bg-[var(--accent)] text-white" : ""}`}
           aria-pressed={f === scene}
         >
-          {vi.scenes[f].icon} <span className="hidden sm:inline">{vi.scenes[f].short}</span>
+          {vi.scenes[f].icon} <span>{vi.scenes[f].short}</span>
         </button>
       ))}
     </div>

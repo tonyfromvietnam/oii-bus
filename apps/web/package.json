@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "build:standalone": "vite build --mode standalone",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:artifact": "vite build --mode artifact"
   },
   "dependencies": {
     "@react-three/drei": "9.117.3",

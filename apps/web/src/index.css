@@ -54,24 +54,6 @@ body {
 .pop {
   animation: pop 0.28s ease-out;
 }
-/* toast canh giữa bằng translate: giữ translate trong animation */
-.pop.-translate-x-1\/2 {
-  animation-name: pop-center;
-}
-@keyframes pop-center {
-  0% {
-    transform: translateX(-50%) scale(0.6);
-    opacity: 0;
-  }
-  70% {
-    transform: translateX(-50%) scale(1.06);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-50%) scale(1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .pop {
     animation: none;

@@ -5,9 +5,13 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig(({ mode }) => {
   // `--mode standalone`: một file HTML duy nhất, vào thẳng phố offline (prototype/staging tĩnh).
-  const standalone = mode === "standalone";
+  // `--mode artifact`: như standalone nhưng JS/CSS là file riêng (app.js, app.css) — an toàn hơn khi
+  // trang được nhúng vào khung HTML của nơi khác (script inline khổng lồ trong <body> bị trình duyệt làm hỏng).
+  const artifact = mode === "artifact";
+  const standalone = mode === "standalone" || artifact;
   return {
-    plugins: [react(), tailwindcss(), ...(standalone ? [viteSingleFile()] : [])],
+    plugins: [react(), tailwindcss(), ...(standalone && !artifact ? [viteSingleFile()] : [])],
+    base: artifact ? "./" : "/",
     define: standalone ? { "import.meta.env.VITE_STANDALONE": JSON.stringify("true") } : {},
     server: {
       port: 5173,
@@ -23,7 +27,14 @@ export default defineConfig(({ mode }) => {
     build: {
       target: "es2022",
       sourcemap: !standalone,
-      outDir: standalone ? "dist-standalone" : "dist",
+      outDir: artifact ? "dist-artifact" : standalone ? "dist-standalone" : "dist",
+      ...(artifact
+        ? {
+            rollupOptions: {
+              output: { inlineDynamicImports: true, entryFileNames: "app.js", assetFileNames: "app.[ext]" },
+            },
+          }
+        : {}),
     },
   };
 });
