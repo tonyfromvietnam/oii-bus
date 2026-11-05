@@ -24,19 +24,7 @@ export const vi = {
   units: { day: "ngày", hour: "giờ", minute: "phút", second: "giây" },
 
   scenes: {
-    bus: { name: "Oii-Bus", sub: "tầng thượng · Cùng thành phố", short: "Bus", icon: "🚌" },
-    library: {
-      name: "Thư viện Oii",
-      sub: "tầng giữa · suỵt, yên lặng nhé 🤫",
-      short: "Thư viện",
-      icon: "📚",
-    },
-    temple: {
-      name: "Chùa Cầu Duyên",
-      sub: "tầng dưới cùng · thắp hương, se duyên",
-      short: "Chùa",
-      icon: "🏮",
-    },
+    bus: { name: "Oii-Bus", sub: "một tầng thượng siêu to", short: "Bus", icon: "🚌" },
   },
 
   creator: {
@@ -70,9 +58,7 @@ export const vi = {
 
   /** Một câu ngắn khi tới mỗi tầng: tầng này để làm gì. */
   arrive: {
-    bus: "🚌 Ngắm UK, đi dạo, tìm bạn cùng thành phố",
-    library: "📚 Yên lặng, nghe lofi, tập trung học",
-    temple: "🏮 Thắp hương để tăng duyên, rồi xin quẻ",
+    bus: "🚌 Ghé Oii Viet bê phở, OiiNails làm móng, chùa gõ mõ. Treo máy vẫn lên cấp!",
   },
 
   hud: {
@@ -83,11 +69,9 @@ export const vi = {
     now: "Đang qua",
     next: "Sắp tới",
     meters: "m",
-    quests: "Nhiệm vụ",
-    passport: "Hộ chiếu",
     chat: "Chat",
     chatPlaceholder: "Nói gì đó… (Enter gửi, Esc huỷ)",
-    quietChat: "Thư viện yên lặng: chỉ dùng biểu cảm thôi nha 🤫",
+    quietChat: "Khu này yên lặng: chỉ dùng biểu cảm thôi nha 🤫",
     you: "Bạn",
     murmur: "· · ·",
     music: "Lofi",
@@ -98,19 +82,17 @@ export const vi = {
     close: "Đóng",
     voiceLocked: "Voice mở sau 14 ngày hoặc khi bạn thành Đã tin cậy.",
     welcome:
-      "Chào mừng lên Oii-Bus! Xe chạy vòng quanh UK cả cuối tuần, từ London tới Edinburgh. Đi dạo, uống trà sữa, nhặt vịt, hay xuống thư viện nghe lofi nhé.",
-    focusStart: "Tập trung",
-    focusStop: "Dừng",
-    focusing: "Đang tập trung",
+      "Chào mừng lên Oii-Bus! Một tầng thượng siêu to chạy vòng quanh UK. Làm thêm ở Oii Viet, OiiNails, Oii Tea, gõ essay, gõ mõ ở chùa. Thuê người giúp rồi treo máy, tắt app vẫn được tính.",
   },
 
   help: [
     ["W A S D / ←↑↓→", "Đi lại"],
     ["Bấm / chạm sàn", "Đi tới chỗ đó"],
-    ["E", "Tương tác · ngồi · đứng dậy"],
+    ["E", "Vào quầy · ngồi · đứng dậy"],
+    ["Space", "Làm việc (khi mở quầy)"],
+    ["Z", "Treo máy"],
     ["Enter", "Chat"],
     ["1 – 5", "Biểu cảm"],
-    ["Q", "Nhiệm vụ & hộ chiếu"],
     ["C", "Cùng thành phố"],
   ],
 
@@ -127,19 +109,10 @@ export const vi = {
     seat: "Ngồi",
     standUp: "Đứng dậy",
     photo: "Chụp ảnh với địa danh 📸",
-    "bubble-tea": "Mua trà sữa £3.80",
     karaoke: "Hát karaoke",
-    "meal-deal": "Mua meal deal £3.50",
-    "quest-board": "Xem nhiệm vụ",
-    umbrella: "Lấy ô",
-    "to-library": "Xuống thư viện 📚",
-    "to-bus": "Lên tầng thượng 🚌",
-    bookshelf: "Lấy một cuốn sách",
-    cat: "Vuốt mèo",
-    radio: "Bật/tắt lofi",
-    duck: "Nhặt vịt 🦆",
-    "meetup-board": "Bảng hẹn đi chơi 📍",
-    "to-temple": "Xuống Chùa Cầu Duyên 🏮",
+    "meetup-board": "Cùng thành phố 📍",
+    work: "Làm việc",
+    statue: "Máy farm công đức · treo máy 😴",
     incense: "Thắp hương 🪔",
     donate: "Công đức 🧧",
     "wish-tree": "Buộc chỉ đỏ lên cây duyên",
@@ -149,38 +122,13 @@ export const vi = {
 
   lines: {
     photoNone: "Chưa có địa danh nào ngang xe. Đợi chút nhé!",
-    photoTaken: (name: string) => `📸 Tách! Ảnh với ${name} đã vào hộ chiếu.`,
+    photoTaken: (name: string) => `📸 Tách! Ảnh với ${name}. +XP`,
     photoAgain: (name: string) => `Bạn có ảnh với ${name} rồi, thêm một tấm cho chắc 📸`,
-    teaBought: "Một cốc trà sữa trân châu đường đen, ít đá. Chuẩn vị 🧋",
-    teaHolding: "Tay đang cầm trà sữa rồi, uống hết đã!",
-    broke: "Hết tiền ảo rồi. Tuần sau quay lại nhé 🥲",
     karaoke: [
       "🎤 Bạn hát một bài ballad, cả xe vỗ tay 👏",
       "🎤 Lên nốt cao… hơi phô, nhưng mà tình cảm 💛",
       "🎤 Song ca với bot Su Su. Hay hơn mong đợi!",
     ],
-    mealDeal: [
-      "Sandwich gà, snack, nước cam. Meal deal kinh điển 🥪",
-      "Máy nhả ra một gói yellow sticker 25p. Hời quá!",
-    ],
-    umbrella: "Ô để sẵn cho mọi người. Đây là London mà ☂️",
-    toLibrary: "Xuống cầu thang… tầng dưới là thư viện! Lofi đang phát 🎧",
-    toBus: "Lên tầng thượng, gió mát quá 🌤️",
-    toTemple: "Xuống tầng dưới cùng… ở đây có hẳn một ngôi chùa 🏮",
-    books: [
-      "📖 “Viết essay 3000 chữ trong một đêm (và sống sót)”",
-      "📖 “Harvard referencing cho người mới”",
-      "📖 “100 món ngon từ mì tôm và trứng”",
-      "📖 “Nói chuyện với landlord: tập 2”",
-      "📖 “Hiểu người Anh qua 50 câu ‘Sorry’”",
-    ],
-    cat: [
-      "🐈 Mèo thư viện kêu “meo” rất khẽ.",
-      "🐈 Mèo lim dim, kệ bạn.",
-      "🐈 Mèo ngửi cốc trà sữa của bạn rồi bỏ đi.",
-    ],
-    duck: (n: number) => `🦆 Nhặt được vịt cao su! (${n}/5)`,
-    focusDone: "Tập trung xong một phiên. Giỏi quá! 📚",
   },
 
   landmarks: {
@@ -228,26 +176,7 @@ export const vi = {
       joke: "40.000 cột đá lục giác, bus bơi qua biển tới đây 🌊",
     },
   } satisfies Record<LandmarkId, { name: string; joke: string }>,
-
-  quests: {
-    title: "Nhiệm vụ tuần này",
-    passportTitle: "Hộ chiếu UK",
-    stampEarned: (t: string) => `🎉 Nhận tem: ${t}`,
-    empty: "Chưa có tem nào. Làm nhiệm vụ để sưu tầm nhé!",
-    items: {
-      ducks: { title: "Tìm 5 chú vịt cao su trên xe", stamp: "Thợ săn vịt", icon: "🦆" },
-      photos: { title: "Chụp ảnh với 3 địa danh", stamp: "Khách du lịch", icon: "📸" },
-      tea: { title: "Mua một cốc trà sữa", stamp: "Hội trà sữa", icon: "🧋" },
-      hotpot: { title: "Ngồi vào nồi lẩu chung", stamp: "Lẩu là chân ái", icon: "🍲" },
-      focus: { title: "Tập trung 1 phút ở thư viện", stamp: "Mọt sách", icon: "📚" },
-      wave: { title: "Vẫy tay chào 3 người", stamp: "Người quen của cả xe", icon: "👋" },
-      incense: { title: "Thắp một nén hương ở Chùa Cầu Duyên", stamp: "Có tâm", icon: "🪔" },
-      plan: { title: "Tạo hoặc tham gia một kế hoạch đi chơi", stamp: "Hay đi chơi", icon: "📍" },
-    },
-  },
 } as const;
-
-export type QuestId = keyof typeof vi.quests.items;
 
 /** Chùa Cầu Duyên + se duyên 1:1. */
 export const viTemple = {

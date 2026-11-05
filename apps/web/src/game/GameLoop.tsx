@@ -1,18 +1,19 @@
 import { useFrame } from "@react-three/fiber";
 import { CHANT_SECONDS, londonDarkness } from "@oii-bus/shared";
-import { SCENES, landmarkStatus, resolveCollisions, routeOffset } from "@oii-bus/world";
+import { SCENES, STATION_SPOTS, landmarkStatus, resolveCollisions, routeOffset } from "@oii-bus/world";
 import { vi, viTemple } from "../copy/vi";
+import { useFarm } from "./farm";
 import { endSession } from "./match";
+import { gainXp } from "./progress";
+import { XP } from "@oii-bus/shared";
 import { seatById } from "@oii-bus/world";
 import { earnMerit, findInteraction, interactionLabel, npcSays, tapMo } from "./actions";
 import { NPCS, randomWalkable } from "./npcs";
-import { progressQuest } from "./quests";
 import { game } from "./state";
 import { ui } from "./ui";
 
-const WALK = 3.4;
-/** Giây tập trung cần để có tem (bản thử; bản thật là pomodoro 25 phút). */
-export const FOCUS_GOAL_SECONDS = 60;
+/** Tốc độ chạy (m/s): sàn rộng nên chạy nhanh cho đỡ mỏi tay. */
+const WALK = 6.5;
 
 let slowTimer = 0;
 let lastWhere = "";
@@ -81,6 +82,12 @@ export function GameLoop() {
       const u = ui();
       const i = findInteraction();
       u.setPrompt(i ? interactionLabel(i) : null);
+      // đi xa quầy thì tự đóng bảng làm việc
+      const f = useFarm.getState();
+      if (f.open) {
+        const sp = STATION_SPOTS[f.open];
+        if (Math.hypot(sp.x - p.x, sp.z - p.z) > 3.5) f.set({ open: null });
+      }
       const st = landmarkStatus(game.route);
       const now = st.current ? vi.landmarks[st.current.id].name : null;
       const where = {
@@ -108,7 +115,10 @@ export function GameLoop() {
       }
       if (Math.floor(game.chantElapsed / CHANT_SECONDS) !== Math.floor(before / CHANT_SECONDS)) {
         const pts = earnMerit("chant", 1, true);
-        if (pts > 0) p.bubble = { text: viTemple.chant(pts), until: game.time + 2 };
+        if (pts > 0) {
+          p.bubble = { text: viTemple.chant(pts), until: game.time + 2 };
+          gainXp(XP.chantTick);
+        }
       }
     } else {
       game.chantElapsed = 0;
@@ -117,18 +127,6 @@ export function GameLoop() {
     // hết giờ phiên se duyên
     const d = ui().duyen;
     if (d.step === "chat" && Date.now() > d.endsAt) endSession("time");
-
-    if (game.focus.running) {
-      game.focus.elapsed += dt;
-      const s = Math.floor(game.focus.elapsed);
-      if (s !== ui().focus.seconds) {
-        ui().set({ focus: { running: true, seconds: s } });
-        if (s === FOCUS_GOAL_SECONDS) {
-          ui().showToast(vi.lines.focusDone);
-          progressQuest("focus", 1);
-        }
-      }
-    }
   });
   return null;
 }
@@ -174,6 +172,15 @@ function updateNpcs(dt: number) {
         // đứng yên thì quay về phía người chơi nếu gần
         if (Math.hypot(p.x - n.x, p.z - n.z) < 4) turnTowards(n, Math.atan2(p.x - n.x, p.z - n.z), dt);
       }
+    } else if (n.mode === "work") {
+      // bot cày ở quầy: bấm liên tục như người thật
+      n.speed = 0;
+      n.ry = Math.PI;
+      if (!n.gesture || n.gesture.until < game.time)
+        n.gesture = {
+          id: n.station === "mo" ? "sorry" : "cheers",
+          until: game.time + 0.5 + Math.random() * 0.4,
+        };
     } else if (n.mode === "sing") {
       n.speed = 0;
       n.ry = Math.sin(game.time * 2) * 0.4;

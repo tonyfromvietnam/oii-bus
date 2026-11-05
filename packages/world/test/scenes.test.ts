@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { AVATAR_RADIUS } from "@oii-bus/shared";
-import { DUCKS, SCENES, circleIntersectsBox } from "../src";
+import { AVATAR_RADIUS, STATION_IDS } from "@oii-bus/shared";
+import { BUS_SCENE, DECK_ZONES, SCENES, ZONE_IDS, circleIntersectsBox, zoneAt } from "../src";
 
 const inside = (p: { x: number; z: number }, b: { minX: number; maxX: number; minZ: number; maxZ: number }) =>
   p.x >= b.minX && p.x <= b.maxX && p.z >= b.minZ && p.z <= b.maxZ;
@@ -17,24 +17,33 @@ describe.each(Object.values(SCENES))("scene $id", (scene) => {
   });
   it("spot không phải ghế thì đi tới được (không nằm trong vật cản)", () => {
     for (const s of scene.spots.filter((s) => s.kind !== "seat")) {
-      expect(scene.colliders.some((c) => circleIntersectsBox(s, 0.05, c))).toBe(false);
+      expect(scene.colliders.some((c) => circleIntersectsBox(s, AVATAR_RADIUS, c))).toBe(false);
     }
   });
 });
 
-describe("thư viện", () => {
-  it("là scene yên lặng, bus thì không", () => {
-    expect(SCENES.library.quiet).toBe(true);
-    expect(SCENES.bus.quiet).toBe(false);
+describe("tầng thượng duy nhất", () => {
+  it("chỉ còn một scene, rộng rãi", () => {
+    expect(Object.keys(SCENES)).toEqual(["bus"]);
+    const b = BUS_SCENE.bounds;
+    expect(b.maxX - b.minX).toBeGreaterThanOrEqual(80);
+    expect(b.maxZ - b.minZ).toBeGreaterThanOrEqual(20);
   });
-});
-
-describe("vịt cao su", () => {
-  it("5 con, đều nhặt được (trong sàn bus, không trong vật cản)", () => {
-    expect(DUCKS).toHaveLength(5);
-    for (const d of DUCKS) {
-      expect(inside(d, SCENES.bus.bounds)).toBe(true);
-      expect(SCENES.bus.colliders.some((c) => circleIntersectsBox(d, 0.2, c))).toBe(false);
-    }
+  it("mỗi quầy làm việc có đúng một spot", () => {
+    for (const id of STATION_IDS)
+      expect(BUS_SCENE.spots.filter((s) => s.kind === "work" && s.station === id)).toHaveLength(1);
+  });
+  it("các khu nối liền nhau từ đuôi tới đầu xe", () => {
+    expect(DECK_ZONES[ZONE_IDS[0]].minX).toBe(BUS_SCENE.bounds.minX);
+    for (let i = 1; i < ZONE_IDS.length; i++)
+      expect(DECK_ZONES[ZONE_IDS[i]!].minX).toBe(DECK_ZONES[ZONE_IDS[i - 1]!].maxX);
+    expect(zoneAt(0)).toBe("plaza");
+    expect(zoneAt(-40)).toBe("temple");
+    expect(zoneAt(15)).toBe("viet");
+  });
+  it("mỗi quầy nằm trong khu của nó", () => {
+    const want = { pho: "viet", tea: "tea", nails: "nails", essay: "deadline", mo: "temple" } as const;
+    for (const s of BUS_SCENE.spots.filter((s) => s.kind === "work"))
+      expect(zoneAt(s.x)).toBe(want[s.station!]);
   });
 });

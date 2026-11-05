@@ -10,6 +10,7 @@ import {
 } from "@oii-bus/shared";
 import { chime } from "../audio/sfx";
 import { viTemple } from "../copy/vi";
+import { farmMerit } from "./farm";
 import { game } from "./state";
 import { ui } from "./ui";
 
@@ -80,8 +81,9 @@ const blocked: string[] = [];
 
 const msg = (from: DmMessage["from"], text: string): DmMessage => ({ id: ++seq, from, text });
 
+/** Phúc đức: việc ở chùa trong tuần + công đức gõ mõ (máy farm). */
 export function meritTotal(): number {
-  return Object.values(game.merit.today).reduce((a, b) => a + (b ?? 0), 0);
+  return Object.values(game.merit.today).reduce((a, b) => a + (b ?? 0), 0) + farmMerit();
 }
 
 export function startSearch(gender: Gender, seeking: Seeking) {

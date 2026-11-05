@@ -1,8 +1,8 @@
 import { CITIES, cityName, luckPercent, type CityId } from "@oii-bus/shared";
-import { landmarkStatus, type SceneId } from "@oii-bus/world";
+import { landmarkStatus } from "@oii-bus/world";
 import { useEffect, useRef, useState } from "react";
-import { vi, viCity, viTemple } from "../copy/vi";
-import { donate, goToScene } from "../game/actions";
+import { viCity, viTemple } from "../copy/vi";
+import { donate } from "../game/actions";
 import { CITY_PEOPLE, createPlan, peopleIn, toggleJoin } from "../game/city";
 import { cancelSearch, endSession, sendDm, startSearch } from "../game/match";
 import { game } from "../game/state";
@@ -16,44 +16,6 @@ const ghost = "rounded-full bg-white px-3 py-1.5 text-sm font-bold text-[var(--i
 const field =
   "w-full rounded-xl bg-white px-3 py-2 text-[15px] shadow-sm outline-none focus:ring-2 focus:ring-[var(--accent)]";
 const label = "text-xs font-extrabold tracking-wide uppercase opacity-60";
-
-/** Thang máy giữa ba tầng (không cần đi tìm cầu thang). */
-export function FloorSwitcher() {
-  const scene = useUi((s) => s.scene);
-  const floors: SceneId[] = ["bus", "library", "temple"];
-  return (
-    <div className={`${pill} pointer-events-auto flex gap-1 p-1`} data-testid="floors">
-      {floors.map((f) => (
-        <button
-          key={f}
-          type="button"
-          onClick={() => f !== scene && goToScene(f)}
-          className={`rounded-full px-3 py-1.5 text-sm font-bold ${f === scene ? "bg-[var(--ink)] text-white" : ""}`}
-          aria-pressed={f === scene}
-        >
-          {vi.scenes[f].icon} <span>{vi.scenes[f].short}</span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-/** Phúc đức + cơ hội se duyên (ở chùa). */
-export function MeritChip() {
-  const merit = useUi((s) => s.merit);
-  const set = useUi((s) => s.set);
-  return (
-    <button
-      type="button"
-      onClick={() => set({ duyen: { ...useUi.getState().duyen, open: true } })}
-      className={`${pill} pointer-events-auto px-3 py-1.5 text-sm`}
-      title={viTemple.meritHint}
-      data-testid="merit"
-    >
-      🪷 {viTemple.merit} <b>{merit}</b> · 💞 <b>+{luckPercent(merit)}%</b>
-    </button>
-  );
-}
 
 /** Khi bus đi qua một thành phố: số người + kế hoạch ở đó. */
 export function CityPassing() {

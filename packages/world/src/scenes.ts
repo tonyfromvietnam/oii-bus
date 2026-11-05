@@ -1,32 +1,26 @@
+import type { StationId } from "@oii-bus/shared";
 import { box, type AABB } from "./coords";
 
 /**
- * Hai không gian của Oii-Bus (bản vẽ lại sau review M1):
- *  - "bus": tầng trên mui trần của chiếc bus hai tầng siêu to chạy vòng London. Mặc định, mọi người ở đây.
- *    Tầng thượng còn là nơi tìm người cùng thành phố và rủ nhau lên kế hoạch đi chơi.
- *  - "library": tầng giữa là thư viện yên lặng, nghe lofi, không chat chữ.
- *  - "temple": tầng dưới cùng là "Chùa Cầu Duyên": thắp hương, tụng kinh, công đức, xin se duyên 1:1.
+ * Oii-Bus chỉ còn MỘT tầng: tầng thượng mui trần siêu to (88 × 22 m) chạy vòng quanh UK.
+ * Mọi người ở chung một chỗ, giống một chánh điện online: đi qua lại giữa các khu,
+ * làm việc vặt quen thuộc của du học sinh để cày XP, treo máy vẫn lên cấp.
  *
- * Toạ độ cục bộ mỗi scene, sàn y = 0. Bus: đầu xe ở +x, camera nhìn từ phía +z.
+ * Từ đuôi xe (-x) tới đầu xe (+x):
+ *   Chùa Cầu Duyên · Góc Deadline · OiiNails · Quảng trường OiiMate · Oii Viet · Oii Tea · Mũi xe
+ *
+ * Toạ độ: sàn y = 0, đầu xe ở +x, camera nhìn từ phía +z (z âm là phía xa, đặt đồ cao ở đó).
  */
 
-export type SceneId = "bus" | "library" | "temple";
+export type SceneId = "bus";
 
 export type SpotKind =
   | "seat"
+  | "work"
   | "photo"
-  | "bubble-tea"
   | "karaoke"
-  | "meal-deal"
-  | "quest-board"
-  | "umbrella"
-  | "to-library"
-  | "to-bus"
-  | "bookshelf"
-  | "cat"
-  | "radio"
   | "meetup-board"
-  | "to-temple"
+  | "statue"
   | "incense"
   | "donate"
   | "wish-tree"
@@ -40,6 +34,8 @@ export interface Spot {
   z: number;
   radius: number;
   seatId?: string;
+  /** Spot "work": quầy làm việc nào. */
+  station?: StationId;
 }
 
 export interface Seat {
@@ -48,8 +44,6 @@ export interface Seat {
   z: number;
   /** Hướng nhìn khi ngồi (radian quanh y; 0 = nhìn về +z). */
   ry: number;
-  /** Ghế học ở thư viện: ngồi vào thì bật được hẹn giờ tập trung. */
-  desk?: boolean;
   /** Bồ đoàn ở chùa: ngồi vào là tụng kinh, tích đức theo thời gian. */
   chant?: boolean;
 }
@@ -61,220 +55,146 @@ export interface SceneDef {
   seats: Seat[];
   spots: Spot[];
   spawn: { x: number; z: number; ry: number };
-  /** Thư viện: server không nhận chat chữ, chỉ biểu cảm yên lặng. */
+  /** Không cho chat chữ (giữ cho tương lai, hiện không khu nào bật). */
   quiet: boolean;
 }
 
 const seatSpots = (seats: Seat[]): Spot[] =>
   seats.map((s) => ({ id: `seat:${s.id}`, kind: "seat", x: s.x, z: s.z, radius: 0.85, seatId: s.id }));
 
-// ---------------------------------------------------------------- BUS ----
-const BUS_HALF_L = 16;
-const BUS_HALF_W = 3.5;
+export const DECK_HALF_L = 44;
+export const DECK_HALF_W = 11;
 
-export const BUS_PROPS = {
-  photo: { x: 14.3, z: 0 },
-  frontBenches: [
-    { x: 11, z: -2.1 },
-    { x: 11, z: 2.1 },
+/** Các khu trên tầng thượng, dùng cho cả HUD (biển "Bạn đang ở...") và đồ hoạ. */
+export const ZONE_IDS = ["temple", "deadline", "nails", "plaza", "viet", "tea", "front"] as const;
+export type ZoneId = (typeof ZONE_IDS)[number];
+export const DECK_ZONES: Record<ZoneId, { minX: number; maxX: number }> = {
+  temple: { minX: -44, maxX: -31 },
+  deadline: { minX: -31, maxX: -21 },
+  nails: { minX: -21, maxX: -6 },
+  plaza: { minX: -6, maxX: 7 },
+  viet: { minX: 7, maxX: 23 },
+  tea: { minX: 23, maxX: 32 },
+  front: { minX: 32, maxX: 44 },
+};
+
+export function zoneAt(x: number): ZoneId {
+  return ZONE_IDS.find((z) => x < DECK_ZONES[z].maxX) ?? "front";
+}
+
+/** Vị trí đồ vật chính (đồ hoạ dùng chung để khớp va chạm). */
+export const DECK = {
+  // mũi xe
+  photo: { x: 42.4, z: 0 },
+  karaoke: { x: 37, z: 8.6 },
+  meetupBoard: { x: 37, z: -9.6 },
+  // Oii Tea
+  teaBar: { x: 27.5, z: -9.2, w: 7, d: 1.4 },
+  // Oii Viet
+  phoCounter: { x: 15, z: -9.2, w: 11, d: 1.4 },
+  phoTables: [
+    { x: 10.5, z: -2.5 },
+    { x: 19.5, z: -2.5 },
   ],
-  teaCart: { x: 6.5, z: -2.75 },
-  karaoke: { x: 6.5, z: 2.7 },
-  sideBenches: [
-    { x: -0.5, z: -3.0 },
-    { x: 2.7, z: -3.0 },
-  ],
-  vending: { x: -4.2, z: -3.05 },
-  hotpot: { x: -8, z: 0 },
-  questBoard: { x: -12, z: -3.25 },
-  stairs: { x: -14.4, z: 2.3 },
-  umbrellas: { x: -11.6, z: 3.1 },
-  meetupBoard: { x: 9.4, z: 3.3 },
+  hotpot: { x: 15, z: 3.6 },
+  // quảng trường
+  statue: { x: 0, z: -8.4 },
+  // OiiNails
+  nailBar: { x: -13.5, z: -7.6, w: 9, d: 1.3 },
+  nailShelf: { x: -13.5, z: -10.2, w: 12, d: 0.6 },
+  // Góc Deadline
+  studyDesk: { x: -26, z: -7.4, w: 6.5, d: 1.4 },
+  shelves: { x: -26, z: -10.2, w: 9, d: 0.6 },
+  // chùa
+  hall: { x: -37.5, z: -9.3, w: 11, d: 3 },
+  moStand: { x: -37.5, z: -6.4, w: 1.6, d: 1 },
+  incense: { x: -37.5, z: -1.4 },
+  matchmaker: { x: -42.2, z: -6.2 },
+  bell: { x: -33.2, z: -6.2 },
+  donate: { x: -33.6, z: 4.4 },
+  wishTree: { x: -42.2, z: 4.2 },
+  cushions: { z: 2.8, xs: [-38.9, -37.5, -36.1] },
 } as const;
 
-const P = BUS_PROPS;
+const D = DECK;
 
-const busSeats: Seat[] = [
-  ...P.frontBenches.flatMap((b, i) =>
-    [-0.55, 0.55].map((dz, k) => ({ id: `front-${i}-${k}`, x: b.x, z: b.z + dz, ry: Math.PI / 2 })),
-  ),
-  ...P.sideBenches.flatMap((b, i) =>
-    [-0.6, 0.6].map((dx, k) => ({ id: `side-${i}-${k}`, x: b.x + dx, z: b.z + 0.1, ry: 0 })),
+/** Quầy làm việc: đứng trước quầy, bấm E (hoặc chạm) để mở bảng làm việc. */
+export const STATION_SPOTS: Record<StationId, { x: number; z: number }> = {
+  pho: { x: D.phoCounter.x, z: D.phoCounter.z + 1.6 },
+  tea: { x: D.teaBar.x, z: D.teaBar.z + 1.6 },
+  nails: { x: D.nailBar.x, z: D.nailBar.z + 1.5 },
+  essay: { x: D.studyDesk.x, z: D.studyDesk.z + 1.6 },
+  mo: { x: D.moStand.x, z: D.moStand.z + 1.3 },
+};
+
+const seats: Seat[] = [
+  ...D.phoTables.flatMap((t, i) =>
+    [-1, 1].map((s, k) => ({ id: `table-${i}-${k}`, x: t.x + s * 1.05, z: t.z, ry: (-s * Math.PI) / 2 })),
   ),
   ...[0, 1, 2, 3].map((i) => {
     const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
     return {
       id: `hotpot-${i}`,
-      x: P.hotpot.x + Math.cos(a) * 1.35,
-      z: P.hotpot.z + Math.sin(a) * 1.35,
+      x: D.hotpot.x + Math.cos(a) * 1.4,
+      z: D.hotpot.z + Math.sin(a) * 1.4,
       ry: Math.atan2(-Math.cos(a), -Math.sin(a)),
     };
   }),
+  ...D.cushions.xs.map((x, i) => ({ id: `cushion-${i}`, x, z: D.cushions.z, ry: Math.PI, chant: true })),
 ];
 
-/** Vị trí 5 chú vịt cao su (quest). Nằm trong vùng đi được, cạnh đồ vật cho "khó tìm" một chút. */
-export const DUCKS: { id: string; x: number; z: number }[] = [
-  { id: "duck-front", x: 15.3, z: 3.0 },
-  { id: "duck-tea", x: 8.0, z: -3.0 },
-  { id: "duck-hotpot", x: -9.6, z: 1.6 },
-  { id: "duck-back", x: -15.3, z: -3.0 },
-  { id: "duck-middle", x: 1.2, z: 3.0 },
-];
+const big = (p: { x: number; z: number; w: number; d: number }) => box(p.x, p.z, p.w, p.d);
 
 export const BUS_SCENE: SceneDef = {
   id: "bus",
-  bounds: { minX: -BUS_HALF_L, maxX: BUS_HALF_L, minZ: -BUS_HALF_W, maxZ: BUS_HALF_W },
+  bounds: { minX: -DECK_HALF_L, maxX: DECK_HALF_L, minZ: -DECK_HALF_W + 0.4, maxZ: DECK_HALF_W - 0.4 },
   colliders: [
-    ...P.frontBenches.map((b) => box(b.x + 0.25, b.z, 0.5, 1.9)),
-    ...P.sideBenches.map((b) => box(b.x, b.z - 0.2, 1.9, 0.5)),
-    box(P.teaCart.x, P.teaCart.z, 1.6, 0.9),
-    box(P.karaoke.x, P.karaoke.z, 0.7, 0.6),
-    box(P.vending.x, P.vending.z, 1.1, 0.8),
-    box(P.hotpot.x, P.hotpot.z, 1.5, 1.5),
-    box(P.questBoard.x, P.questBoard.z, 1.4, 0.3),
-    box(P.stairs.x, P.stairs.z, 2.6, 1.8),
-    box(P.umbrellas.x, P.umbrellas.z, 0.5, 0.5),
-    box(P.meetupBoard.x, P.meetupBoard.z, 1.6, 0.3),
+    box(D.karaoke.x, D.karaoke.z, 0.8, 0.7),
+    box(D.meetupBoard.x, D.meetupBoard.z, 2, 0.4),
+    big(D.teaBar),
+    big(D.phoCounter),
+    ...D.phoTables.map((t) => box(t.x, t.z, 1.2, 1.2)),
+    box(D.hotpot.x, D.hotpot.z, 1.6, 1.6),
+    box(D.statue.x, D.statue.z, 2.6, 2.2),
+    big(D.nailBar),
+    big(D.nailShelf),
+    big(D.studyDesk),
+    big(D.shelves),
+    big(D.hall),
+    big(D.moStand),
+    box(D.incense.x, D.incense.z, 1.6, 1.6),
+    box(D.matchmaker.x, D.matchmaker.z, 2.6, 1.4),
+    box(D.bell.x, D.bell.z, 1.3, 1.3),
+    box(D.donate.x, D.donate.z, 1.1, 0.8),
+    box(D.wishTree.x, D.wishTree.z, 1.5, 1.5),
   ],
-  seats: busSeats,
+  seats,
   spots: [
-    { id: "photo", kind: "photo", x: P.photo.x, z: P.photo.z, radius: 1.5 },
-    { id: "bubble-tea", kind: "bubble-tea", x: P.teaCart.x, z: P.teaCart.z + 0.9, radius: 1.5 },
-    { id: "karaoke", kind: "karaoke", x: P.karaoke.x, z: P.karaoke.z - 0.8, radius: 1.3 },
-    { id: "meal-deal", kind: "meal-deal", x: P.vending.x, z: P.vending.z + 0.8, radius: 1.3 },
-    { id: "quest-board", kind: "quest-board", x: P.questBoard.x, z: P.questBoard.z + 0.6, radius: 1.4 },
-    { id: "umbrella", kind: "umbrella", x: P.umbrellas.x, z: P.umbrellas.z - 0.6, radius: 1.1 },
-    { id: "to-library", kind: "to-library", x: P.stairs.x + 1.9, z: P.stairs.z, radius: 1.3 },
-    { id: "meetup-board", kind: "meetup-board", x: P.meetupBoard.x, z: P.meetupBoard.z - 0.65, radius: 1.4 },
-    ...seatSpots(busSeats),
-  ],
-  spawn: { x: 3, z: 0.6, ry: 0 },
-  quiet: false,
-};
-
-// ------------------------------------------------------------ LIBRARY ----
-export const LIBRARY_PROPS = {
-  desks: [
-    { x: -3.4, z: -2.2 },
-    { x: 3.4, z: -2.2 },
-    { x: -3.4, z: 1.3 },
-    { x: 3.4, z: 1.3 },
-  ],
-  stairs: { x: -7.6, z: 4.4 },
-  nook: { x: 6.2, z: 4.3 },
-  cat: { x: 6.9, z: 3.6 },
-  radio: { x: 0, z: -5.4 },
-  shelvesWest: { x: -8.6 },
-  shelvesEast: { x: 8.6 },
-  downStairs: { x: 1.8, z: 4.9 },
-} as const;
-
-const L = LIBRARY_PROPS;
-
-const libSeats: Seat[] = [
-  ...L.desks.flatMap((d, i) =>
-    [-0.8, 0.8].map((dx, k) => ({
-      id: `desk-${i}-${k}`,
-      x: d.x + dx,
-      z: d.z + 0.85,
-      ry: Math.PI,
-      desk: true,
+    ...(Object.entries(STATION_SPOTS) as [StationId, { x: number; z: number }][]).map(([station, p]) => ({
+      id: `work:${station}`,
+      kind: "work" as const,
+      station,
+      x: p.x,
+      z: p.z,
+      radius: 2,
     })),
-  ),
-  { id: "armchair-0", x: L.nook.x - 1.1, z: L.nook.z, ry: Math.PI / 2 },
-  { id: "armchair-1", x: L.nook.x + 1.3, z: L.nook.z - 0.2, ry: -Math.PI / 2 },
-];
-
-export const LIBRARY_SCENE: SceneDef = {
-  id: "library",
-  bounds: { minX: -9, maxX: 9, minZ: -6, maxZ: 6 },
-  colliders: [
-    ...L.desks.map((d) => box(d.x, d.z, 3.0, 0.9)),
-    box(L.shelvesWest.x, -1, 0.8, 8),
-    box(L.shelvesEast.x, -1.6, 0.8, 7),
-    box(L.stairs.x, L.stairs.z + 0.4, 2.2, 1.6),
-    box(L.radio.x, L.radio.z, 1.2, 0.5),
-    box(L.nook.x, L.nook.z + 0.2, 1.2, 0.8), // bàn trà nhỏ giữa hai ghế
-    box(L.downStairs.x, L.downStairs.z, 2.2, 1.4),
+    { id: "photo", kind: "photo", x: D.photo.x, z: D.photo.z, radius: 1.8 },
+    { id: "karaoke", kind: "karaoke", x: D.karaoke.x, z: D.karaoke.z - 1, radius: 1.5 },
+    { id: "meetup-board", kind: "meetup-board", x: D.meetupBoard.x, z: D.meetupBoard.z + 1, radius: 1.6 },
+    { id: "statue", kind: "statue", x: D.statue.x, z: D.statue.z + 1.8, radius: 1.6 },
+    { id: "incense", kind: "incense", x: D.incense.x, z: D.incense.z + 1.4, radius: 1.5 },
+    { id: "matchmaker", kind: "matchmaker", x: D.matchmaker.x, z: D.matchmaker.z + 1.3, radius: 1.6 },
+    { id: "bell", kind: "bell", x: D.bell.x, z: D.bell.z + 1.2, radius: 1.4 },
+    { id: "donate", kind: "donate", x: D.donate.x, z: D.donate.z + 0.9, radius: 1.3 },
+    { id: "wish-tree", kind: "wish-tree", x: D.wishTree.x + 1.4, z: D.wishTree.z + 0.4, radius: 1.4 },
+    ...seatSpots(seats),
   ],
-  seats: libSeats,
-  spots: [
-    { id: "to-bus", kind: "to-bus", x: L.stairs.x + 1.6, z: L.stairs.z - 0.2, radius: 1.3 },
-    { id: "bookshelf-w", kind: "bookshelf", x: L.shelvesWest.x + 0.9, z: -1, radius: 1.4 },
-    { id: "bookshelf-e", kind: "bookshelf", x: L.shelvesEast.x - 0.9, z: -2.5, radius: 1.4 },
-    { id: "cat", kind: "cat", x: L.cat.x, z: L.cat.z - 0.5, radius: 1.1 },
-    { id: "radio", kind: "radio", x: L.radio.x, z: L.radio.z + 0.7, radius: 1.3 },
-    { id: "to-temple", kind: "to-temple", x: L.downStairs.x, z: L.downStairs.z - 1.25, radius: 1.1 },
-    ...seatSpots(libSeats),
-  ],
-  spawn: { x: -4.2, z: 3.4, ry: 0 },
-  quiet: true,
-};
-
-// -------------------------------------------------------------- TEMPLE ----
-/**
- * Chùa Cầu Duyên: sân chùa lát đá, chính điện mái cong phía sau, lư hương giữa sân,
- * miếu Ông Tơ Bà Nguyệt (xin se duyên), cây duyên buộc chỉ đỏ, hòm công đức, góc tụng kinh,
- * đèn lồng hoa sen kiểu chùa Hàn treo khắp sân, tháp đá, hồ cá koi.
- */
-export const TEMPLE_PROPS = {
-  incense: { x: 0, z: -1.6 },
-  matchmaker: { x: -7.6, z: -4.6 },
-  wishTree: { x: 7.8, z: -3.6 },
-  donate: { x: 3.6, z: -5.2 },
-  bell: { x: -3.6, z: -5.2 },
-  chantAltar: { x: -5.4, z: 1.6 },
-  pond: { x: 7.4, z: 3.4 },
-  pagoda: { x: -10.4, z: 1.8 },
-  stairs: { x: -10.2, z: 5.6 },
-} as const;
-
-const TP = TEMPLE_PROPS;
-
-const templeSeats: Seat[] = [-1.6, -0.4, 0.8].flatMap((dx, i) =>
-  [1, 0].map((row) => ({
-    id: `cushion-${i}-${row}`,
-    x: TP.chantAltar.x + dx * 1.2 + 0.4,
-    z: TP.chantAltar.z + 1.6 + row * 1.3,
-    ry: Math.PI,
-    chant: true,
-  })),
-);
-
-export const TEMPLE_SCENE: SceneDef = {
-  id: "temple",
-  bounds: { minX: -12, maxX: 12, minZ: -7, maxZ: 7 },
-  colliders: [
-    box(TP.incense.x, TP.incense.z, 1.6, 1.6),
-    box(TP.matchmaker.x, TP.matchmaker.z - 0.4, 3.2, 1.6),
-    box(TP.wishTree.x, TP.wishTree.z, 1.4, 1.4),
-    box(TP.donate.x, TP.donate.z, 1.2, 0.8),
-    box(TP.bell.x, TP.bell.z, 1.2, 1.2),
-    box(TP.chantAltar.x, TP.chantAltar.z, 3.4, 0.8),
-    box(TP.pond.x, TP.pond.z, 4.4, 3.0),
-    box(TP.pagoda.x, TP.pagoda.z, 1.6, 1.6),
-    box(TP.stairs.x, TP.stairs.z + 0.4, 2.4, 1.4),
-  ],
-  seats: templeSeats,
-  spots: [
-    { id: "incense", kind: "incense", x: TP.incense.x, z: TP.incense.z + 1.4, radius: 1.5 },
-    { id: "matchmaker", kind: "matchmaker", x: TP.matchmaker.x, z: TP.matchmaker.z + 1.1, radius: 1.6 },
-    { id: "wish-tree", kind: "wish-tree", x: TP.wishTree.x - 1.3, z: TP.wishTree.z + 0.6, radius: 1.4 },
-    { id: "donate", kind: "donate", x: TP.donate.x, z: TP.donate.z + 1.0, radius: 1.3 },
-    { id: "bell", kind: "bell", x: TP.bell.x, z: TP.bell.z + 1.1, radius: 1.3 },
-    { id: "to-library", kind: "to-library", x: TP.stairs.x + 1.8, z: TP.stairs.z - 0.4, radius: 1.3 },
-    ...seatSpots(templeSeats),
-  ],
-  spawn: { x: -6.8, z: 5.2, ry: Math.PI },
+  spawn: { x: 0, z: 2.5, ry: 0 },
   quiet: false,
 };
 
-export const SCENES: Record<SceneId, SceneDef> = {
-  bus: BUS_SCENE,
-  library: LIBRARY_SCENE,
-  temple: TEMPLE_SCENE,
-};
+export const SCENES: Record<SceneId, SceneDef> = { bus: BUS_SCENE };
 
-export function seatById(scene: SceneId, id: string): Seat | undefined {
-  return SCENES[scene].seats.find((s) => s.id === id);
+export function seatById(_scene: SceneId, id: string): Seat | undefined {
+  return BUS_SCENE.seats.find((s) => s.id === id);
 }

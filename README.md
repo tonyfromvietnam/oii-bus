@@ -16,7 +16,7 @@ _Thích ở một mình nhưng thỉnh thoảng sợ cô đơn._
 
 [**Live prototype**](https://tonyfromvietnam.github.io/oii-bus/) · [Architecture](docs/ARCHITECTURE.md) · [World design](docs/WORLD.md) · [Deploy](docs/DEPLOY.md) · [Changelog](CHANGELOG.md)
 
-<img src="docs/images/bus.png" alt="Oii-Bus top deck passing Big Ben" width="820" />
+<img src="docs/images/bus.png" alt="Oii-Bus giant top deck with the OiiMate plaza" width="820" />
 
 </div>
 
@@ -34,24 +34,30 @@ Characters are round, cute OiiMate-style mascots; controls are deliberately simp
 
 ## Features
 
-| Floor                           | What you do there                                                                                                                                                                                                                                |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🚌 **Top deck: Cùng thành phố** | Watch the UK go by, find people who live in (or are visiting) your city, create and join meetup plans. Bubble tea, karaoke, a shared hotpot and hidden rubber ducks.                                                                             |
-| 📚 **Library**                  | Quiet floor: text chat is off, generated lofi plays, one tap sits you at a desk and starts a focus timer.                                                                                                                                        |
-| 🏮 **Chùa Cầu Duyên**           | A Vietnamese-Korean temple courtyard. Light incense, chant, ring the bell, tie a red thread or donate (virtual £) to earn _phúc đức_, then ask Ông Tơ Bà Nguyệt for an anonymous 1:1 match. More merit → better odds (capped, never guaranteed). |
+One giant open top deck (88 × 22 m) where everyone hangs out together, like an online pagoda hall:
 
-Plus weekly side quests with a "UK passport" of stamps, proximity chat bands, block/report flows and a Vietnamese UI written in a friendly northern tone.
+| Zone                        | What you do there                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 🍜 **Oii Viet**             | Carry bowls of phở for tips. Hire kitchen helpers so the restaurant runs itself.                                          |
+| 💅 **OiiNails**             | Do nail sets (£2 each). Hire more nail techs.                                                                             |
+| 🧋 **Oii Tea**              | Shake bubble tea. Buy an auto-shaker.                                                                                     |
+| 📝 **Góc Deadline**         | Write essay paragraphs: no money, triple XP. Every extra coffee writes for you.                                           |
+| 🏮 **Chùa Cầu Duyên**       | Strike the wooden fish for _công đức_, light incense, then ask Ông Tơ Bà Nguyệt for an anonymous 1:1 match (capped odds). |
+| ⭐ **Quảng trường OiiMate** | The "Máy farm công đức" statue: go AFK and keep levelling up.                                                             |
+| 📸 **Bus front**            | Photos with the UK landmark passing by, karaoke, same-city meetup board.                                                  |
+
+**Idle by design:** helpers keep working while the tab is hidden or the app is closed (offline catch-up up to 12 h), and AFK mode dims the screen, pauses 3D rendering and doubles helper speed. Plus daily streaks, unlimited levels, a shareable card, proximity chat bands, block/report flows and a Vietnamese UI written in a friendly northern tone.
 
 <table>
   <tr>
-    <td><img src="docs/images/temple.png" alt="Chùa Cầu Duyên temple floor" /></td>
-    <td><img src="docs/images/library.png" alt="Quiet library with focus timer" /></td>
-    <td><img src="docs/images/same-city.png" alt="Same-city meetup planner" /></td>
+    <td><img src="docs/images/oii-viet.png" alt="Carrying bowls of phở at Oii Viet" /></td>
+    <td><img src="docs/images/temple.png" alt="Chùa Cầu Duyên zone on the deck" /></td>
+    <td><img src="docs/images/afk.png" alt="AFK mode, the merit farming machine" /></td>
   </tr>
   <tr align="center">
+    <td>Oii Viet: bê phở</td>
     <td>Chùa Cầu Duyên</td>
-    <td>Library focus mode</td>
-    <td>Same-city plans</td>
+    <td>Treo máy (AFK)</td>
   </tr>
 </table>
 
@@ -104,7 +110,7 @@ apps/
   server/     Fastify API (+ Colyseus rooms in M2)
 packages/
   shared/     Constants, zod schemas, opening hours, proximity, merit and matching logic
-  world/      Scenes (bus, library, temple), colliders, seats, spots, UK route
+  world/      The single deck: zones, work stations, colliders, seats, UK route
 prisma/       Database schema
 docs/         Architecture, world design, deployment, getting started
 ```
@@ -133,7 +139,7 @@ Report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 ## Tiếng Việt
 
-Oii-Bus là "người bạn đồng hành" của OiiMate: một chiếc bus 3D ba tầng chạy vòng quanh UK. Tầng thượng tìm người cùng thành phố và rủ nhau đi chơi, tầng giữa là thư viện yên lặng nghe lofi, tầng dưới cùng là Chùa Cầu Duyên để thắp hương, tích phúc đức và xin quẻ se duyên 1:1.
+Oii-Bus là "người bạn đồng hành" của OiiMate: một tầng thượng bus 3D siêu to chạy vòng quanh UK, mọi người ở chung một chỗ. Bê phở ở Oii Viet, làm nails ở OiiNails, lắc trà sữa, gõ essay, gõ mõ tích công đức ở Chùa Cầu Duyên rồi xin quẻ se duyên 1:1. Thuê người giúp và treo máy: tắt app vẫn lên cấp.
 Tài liệu kỹ thuật chi tiết (tiếng Việt) nằm trong thư mục [`docs/`](docs/).
 
 ## License
